@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 import Header from "./Header";
 import Footer from "./Footer";
+import MobileBottomNav from "./MobileBottomNav";
 import { AppProvider, useApp } from "@/context/AppContext";
 import CompareFloatingBar from "@/components/common/CompareFloatingBar";
 import PriceAlertModal from "@/components/common/PriceAlertModal";
@@ -13,30 +14,21 @@ interface SiteLayoutProps {
 }
 
 function SiteLayoutInner({ children }: SiteLayoutProps) {
-  const pathname = usePathname();
   const { theme } = useApp();
-  const isHomePage = pathname === "/";
   const isDark = theme === "dark";
 
   return (
     <div
-      className={
-        isHomePage
-          ? `flex flex-col h-screen max-h-screen overflow-hidden relative selection:bg-sky-500 selection:text-white transition-colors duration-200 ${
-              isDark ? "bg-slate-950 text-slate-100" : "bg-slate-100 text-slate-900"
-            }`
-          : `flex flex-col min-h-screen relative selection:bg-sky-500 selection:text-white transition-colors duration-200 ${
-              isDark ? "bg-slate-950 text-slate-100" : "bg-slate-50 text-slate-900"
-            }`
-      }
+      className={`flex flex-col min-h-screen relative selection:bg-blue-500 selection:text-white transition-colors duration-200 pb-16 lg:pb-0 ${
+        isDark ? "bg-[#080a0f] text-slate-100" : "bg-slate-50 text-slate-900"
+      }`}
     >
       <Header />
-      <main className={isHomePage ? "flex-1 w-full overflow-hidden" : "flex-1 w-full"}>
-        {children}
-      </main>
-      {!isHomePage && <Footer />}
+      <main className="flex-1 w-full">{children}</main>
+      <Footer />
 
       {/* Global Interactive Tooling */}
+      <MobileBottomNav />
       <CompareFloatingBar />
       <PriceAlertModal />
       <ToastContainer />

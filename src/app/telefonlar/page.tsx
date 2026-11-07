@@ -29,7 +29,7 @@ export default async function PhonesPage({ searchParams }: PageProps) {
   ]);
 
   return (
-    <div className="min-h-screen pb-20 transition-colors duration-200">
+    <div className="min-h-screen transition-colors duration-200">
       <PhoneCatalogClient
         initialPhones={phones}
         brands={brands}

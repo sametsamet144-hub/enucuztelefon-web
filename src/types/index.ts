@@ -227,6 +227,7 @@ export interface FilterOptions {
 }
 
 export type SortOption =
+  | "popular"
   | "price-asc"
   | "price-desc"
   | "newest"

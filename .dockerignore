@@ -1,0 +1,12 @@
+node_modules
+.next
+.git
+.github
+out
+backend/bin
+backend/obj
+*.log
+.env
+.env.local
+.env.*.local
+dataprotection-keys

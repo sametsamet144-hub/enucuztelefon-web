@@ -1,0 +1,171 @@
+import type { Guide } from "@/types";
+
+export const guides: Guide[] = [
+  {
+    id: "1",
+    slug: "2025-en-iyi-orta-segment-telefon",
+    title: "2026'nın En İyi Orta Segment Telefonları",
+    excerpt:
+      "15.000 - 30.000 TL bütçeyle alabileceğiniz en iyi fiyat/performans akıllı telefonlar.",
+    content:
+      "<p>Orta segment telefon pazarı her geçen yıl daha rekabetçi hale geliyor. 120Hz AMOLED ekranlar, OIS destekli 50 MP kameralar ve 5000 mAh bataryalar artık bu segmentte standart hale geldi.</p><p>Samsung Galaxy A55, POCO X6 Pro ve Redmi Note 13 Pro 5G modelleri Türkiye pazarında en yüksek fiyat/performans değerini sunan seçenekler olarak öne çıkıyor.</p>",
+    coverImage: "/guides/mid-range.jpg",
+    category: "Satın Alma Rehberleri",
+    tags: ["orta-segment", "bütçe", "fiyat-performans"],
+    publishedAt: "2026-10-01",
+    updatedAt: "2026-11-01",
+    readingTime: 8,
+    author: "EnUcuzTelefon Editörü",
+    relatedPhones: ["samsung-galaxy-a55", "poco-x6-pro", "redmi-note-13-pro-5g"],
+  },
+  {
+    id: "2",
+    slug: "iphone-16-pro-max-inceleme",
+    title: "iPhone 16 Pro Max Detaylı İnceleme",
+    excerpt: "Apple'ın A18 Pro çipli ve 5x telefoto kameralı en güçlü telefonunu her yönüyle inceliyoruz.",
+    content:
+      "<p>iPhone 16 Pro Max, 6.9 inç Super Retina XDR OLED ekranı, 3nm A18 Pro işlemcisi ve Kamera Denetimi düğmesiyle mobil fotoğrafçılık ve performansta yeni bir standart belirliyor.</p>",
+    coverImage: "/guides/iphone-16-pro.jpg",
+    category: "İncelemeler",
+    tags: ["apple", "iphone", "flagship"],
+    publishedAt: "2026-09-20",
+    readingTime: 12,
+    author: "EnUcuzTelefon Editörü",
+    relatedPhones: ["iphone-16-pro-max"],
+  },
+  {
+    id: "3",
+    slug: "telefon-satin-alma-rehberi",
+    title: "Telefon Satın Alma: Dikkat Edilmesi Gerekenler",
+    excerpt: "Yeni telefon alırken işlemci, kamera, batarya ve garanti konusunda nelere dikkat etmelisiniz?",
+    content:
+      "<p>Akıllı telefon satın almadan önce kullanım amacınızı, güncelleme desteğini ve resmi distribütör garantisini mutlaka kontrol etmelisiniz.</p>",
+    coverImage: "/guides/buying-guide.jpg",
+    category: "Satın Alma Rehberleri",
+    tags: ["rehber", "satın-alma", "ipuçları"],
+    publishedAt: "2026-08-15",
+    readingTime: 6,
+    author: "EnUcuzTelefon Editörü",
+    relatedPhones: [],
+  },
+  {
+    id: "4",
+    slug: "samsung-galaxy-s25-ultra-inceleme",
+    title: "Samsung Galaxy S25 Ultra İncelemesi",
+    excerpt: "Galaxy S25 Ultra, 200 MP kamerası ve Galaxy AI özellikleriyle zirvede mi? İşte detaylı test sonuçları.",
+    content:
+      "<p>Samsung Galaxy S25 Ultra ile gelen titanyum kasa, yansıma önleyici Gorilla Armor ekran ve gelişmiş periskop telefoto kamera deneyimi onu Android dünyasının lideri yapıyor.</p>",
+    coverImage: "/guides/s25-ultra.jpg",
+    category: "İncelemeler",
+    tags: ["samsung", "galaxy", "s25"],
+    publishedAt: "2026-10-15",
+    readingTime: 15,
+    author: "EnUcuzTelefon Editörü",
+    relatedPhones: ["samsung-galaxy-s25-ultra"],
+  },
+  {
+    id: "5",
+    slug: "batarya-omrunu-uzatma-ipuclari",
+    title: "Telefon Batarya Ömrünü Uzatmanın 10 Yolu",
+    excerpt: "Basit ayar değişiklikleriyle telefonunuzun pil sağlığını ve ekran süresini koruyun.",
+    content:
+      "<p>Şarj döngüsünü %20 ile %80 arasında tutmak, aşırı sıcak ortamlarda hızlı şarjdan kaçınmak ve arka plan etkinliklerini sınırlandırmak lityum-iyon batarya ömrünü iki katına çıkarır.</p>",
+    coverImage: "/guides/battery.jpg",
+    category: "Teknoloji Rehberi",
+    tags: ["batarya", "ipuçları", "koruma"],
+    publishedAt: "2026-07-10",
+    readingTime: 5,
+    author: "EnUcuzTelefon Editörü",
+    relatedPhones: [],
+  },
+  {
+    id: "6",
+    slug: "butceye-gore",
+    title: "Bütçeye Göre En İyi Telefon Önerileri (Giriş, Orta ve Üst Segment)",
+    excerpt: "15.000 TL altı, 15.000-30.000 TL arası ve 50.000 TL üzeri her bütçe diliminde parasının hakkını veren modeller.",
+    content:
+      "<p>Türkiye'de telefon fiyatları vergi dilimlerine ve döviz kuruna göre geniş bir aralığa yayılıyor. Bu rehberde her bütçe basamağında en uzun ömürlü ve en yüksek donanımlı modelleri karşılaştırdık.</p>",
+    category: "Bütçe Önerileri",
+    tags: ["bütçe", "fiyat-performans", "tavsiye"],
+    publishedAt: "2026-10-20",
+    readingTime: 9,
+    author: "EnUcuzTelefon Editörü",
+    relatedPhones: ["samsung-galaxy-a55", "poco-x6-pro", "iphone-16-pro-max"],
+  },
+  {
+    id: "7",
+    slug: "en-iyi-kamerali",
+    title: "En İyi Kameralı Telefonlar: Gece Çekimi, Portre ve 4K Video Liderleri",
+    excerpt: "1 inç kamera sensörü, OIS ve periskop optik zoom özellikleriyle profesyonel fotoğraf çeken telefonlar.",
+    content:
+      "<p>Mobil fotoğrafçılıkta sensör boyutu, diyafram açıklığı ve OIS donanımı megapiksel sayısından çok daha önemlidir. iPhone 16 Pro Max, Samsung Galaxy S25 Ultra ve Huawei Pura 70 Ultra kamera testlerimizin zirvesinde yer alıyor.</p>",
+    category: "Kamera & Fotoğraf",
+    tags: ["kamera", "fotoğraf", "ois", "dxomark"],
+    publishedAt: "2026-10-22",
+    readingTime: 10,
+    author: "EnUcuzTelefon Editörü",
+    relatedPhones: ["huawei-pura-70-ultra", "iphone-16-pro-max", "samsung-galaxy-s25-ultra"],
+  },
+  {
+    id: "8",
+    slug: "en-iyi-bataryali",
+    title: "En İyi Bataryalı ve En Hızlı Şarj Olan Telefonlar",
+    excerpt: "5000-6000 mAh silikon-karbon bataryalı ve 67W-120W ultra hızlı şarj destekli modeller.",
+    content:
+      "<p>Yoğun kullanımda bile 2 güne varan ekran süresi sunan yeni nesil batarya teknolojilerini ve 30 dakikada tam şarj olan telefonları inceledik.</p>",
+    category: "Satın Alma Rehberleri",
+    tags: ["batarya", "hızlı-şarj", "pil-ömrü"],
+    publishedAt: "2026-10-25",
+    readingTime: 7,
+    author: "EnUcuzTelefon Editörü",
+    relatedPhones: ["honor-magic-6-pro", "oneplus-12", "samsung-galaxy-s24-ultra"],
+  },
+  {
+    id: "9",
+    slug: "oyun-telefonlari",
+    title: "En İyi Oyun Telefonları: 120Hz Ekran ve Yüksek AnTuTu Performansı",
+    excerpt: "PUBG Mobile, Genshin Impact ve CoD Mobile'da 120 FPS akıcı deneyim sunan soğutmalı telefonlar.",
+    content:
+      "<p>Mobil oyunculuk için güçlü bir GPU, yüksek dokunmatik örnekleme hızı ve buhar odalı (Vapor Chamber) soğutma sistemi şarttır. POCO X6 Pro, POCO F6 Pro ve ASUS ROG Phone 8 Pro bu alanda öne çıkıyor.</p>",
+    category: "Oyun & Performans",
+    tags: ["oyun", "gaming", "antutu", "120hz"],
+    publishedAt: "2026-10-28",
+    readingTime: 8,
+    author: "EnUcuzTelefon Editörü",
+    relatedPhones: ["poco-x6-pro", "poco-f6-pro", "asus-rog-phone-8-pro"],
+  },
+  {
+    id: "10",
+    slug: "ogrenciler-icin",
+    title: "Öğrenciler İçin En Uygun Fiyat/Performans Telefonlar",
+    excerpt: "Uzun pil ömrü, kaliteli ön/arka kamera ve uygun fiyatıyla öğrenciler için en mantıklı modeller.",
+    content:
+      "<p>Öğrenciler için hem ders ve döküman takibinde hızlı çalışacak hem de sosyal medya ve oyunlarda üzmeyecek bütçe dostu modelleri derledik.</p>",
+    category: "Öğrenci & İş",
+    tags: ["öğrenci", "uygun-fiyat", "tavsiye"],
+    publishedAt: "2026-10-30",
+    readingTime: 6,
+    author: "EnUcuzTelefon Editörü",
+    relatedPhones: ["samsung-galaxy-a35", "redmi-note-13", "poco-m6-pro"],
+  },
+  {
+    id: "11",
+    slug: "sifir-vs-yenilenmis",
+    title: "Sıfır Telefon vs Yenilenmiş (Refurbished) Telefon: Hangisi Alınmalı?",
+    excerpt: "Bakanlık onaylı yenilenmiş telefon nedir, garantisi nasıl işler ve sıfır cihazla arasındaki farklar nelerdir?",
+    content:
+      "<p>Yenilenmiş telefonlar taksit avantajı sunsa da değişen parçalar ve batarya kapasitesi nedeniyle dikkatle incelenmelidir. EnUcuzTelefon.com ana kataloğunda yalnızca sıfır ve kapalı kutu resmi garantili teklifler karşılaştırılır.</p>",
+    category: "Satın Alma Rehberleri",
+    tags: ["sıfır", "yenilenmiş", "garanti"],
+    publishedAt: "2026-11-01",
+    readingTime: 7,
+    author: "EnUcuzTelefon Editörü",
+    relatedPhones: ["iphone-13", "iphone-15"],
+  },
+];
+
+export const getGuideBySlug = (slug: string): Guide | undefined =>
+  guides.find((g) => g.slug === slug);
+
+export const getGuidesByCategory = (category: string): Guide[] =>
+  guides.filter((g) => g.category === category);

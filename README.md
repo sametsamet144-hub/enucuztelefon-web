@@ -1,6 +1,6 @@
-# EnUcuzTelefon — Frontend Web Uygulaması
+# EnUcuzTelefon Web (`enucuztelefon-web`)
 
-Türkiye'nin en kapsamlı akıllı telefon fiyat karşılaştırma, teknik özellik inceleme ve canlı mağaza teklif platformu.
+Türkiye'nin en kapsamlı akıllı telefon fiyat karşılaştırma, teknik özellik inceleme ve canlı mağaza teklif web uygulaması.
 
 ## 🚀 Teknolojiler
 - **Framework**: Next.js 16 (App Router & Turbopack)

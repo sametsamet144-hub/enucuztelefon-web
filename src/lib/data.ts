@@ -1,6 +1,20 @@
 import { backendApi } from "@/lib/api";
 import { resolvePhoneSlug } from "@/lib/utils";
+import { brands as fallbackBrands } from "@/data/brands";
+import { guides as fallbackGuides } from "@/data/guides";
+import { stores as fallbackStores } from "@/data/stores";
+import { qaItems as fallbackQAItems } from "@/data/qaItems";
 import type { Phone, Brand, Guide, QAItem, FilterOptions, PriceHistory, StoreInfo } from "@/types";
+
+// Helper to lazily load the large phones dataset only if the API is offline
+async function getFallbackPhones(): Promise<Phone[]> {
+  try {
+    const { phones } = await import("@/data/phones");
+    return phones || [];
+  } catch {
+    return [];
+  }
+}
 
 export async function getPhones(filters?: Partial<FilterOptions>): Promise<Phone[]> {
   const params = new URLSearchParams();
@@ -15,7 +29,13 @@ export async function getPhones(filters?: Partial<FilterOptions>): Promise<Phone
   params.set("pageSize", "100");
 
   const apiResponse = await backendApi.getProducts(params.toString());
-  let result = apiResponse?.items ? [...apiResponse.items] : [];
+  let result = apiResponse?.items && apiResponse.items.length > 0 ? [...apiResponse.items] : [];
+
+  // Fallback to local dataset if backend API is not available
+  if (result.length === 0) {
+    const fallback = await getFallbackPhones();
+    result = [...fallback];
+  }
 
   if (!filters || result.length === 0) return result;
 
@@ -62,32 +82,48 @@ export async function getPhone(slug: string): Promise<Phone | null> {
     (await backendApi.getProductBySlug(canonicalSlug)) ||
     (canonicalSlug !== slug ? await backendApi.getProductBySlug(slug) : null);
 
-  return apiPhone || null;
+  if (apiPhone) return apiPhone;
+
+  // Fallback to local catalog
+  const fallback = await getFallbackPhones();
+  return (
+    fallback.find((p) => p.slug === slug || p.slug === canonicalSlug) || null
+  );
 }
 
 export async function getBrands(): Promise<Brand[]> {
   const apiBrands = await backendApi.getBrands();
-  return apiBrands || [];
+  if (apiBrands && apiBrands.length > 0) return apiBrands;
+  return fallbackBrands;
 }
 
 export async function getBrand(slug: string): Promise<Brand | null> {
   const apiBrand = await backendApi.getBrandBySlug(slug);
-  return apiBrand || null;
+  if (apiBrand) return apiBrand;
+  return fallbackBrands.find((b) => b.slug === slug) || null;
 }
 
 export async function getPhonesByBrand(brandSlug: string): Promise<Phone[]> {
   const apiResult = await backendApi.getBrandPhones(brandSlug);
-  return apiResult?.items || [];
+  if (apiResult?.items && apiResult.items.length > 0) return apiResult.items;
+
+  const fallback = await getFallbackPhones();
+  return fallback.filter(
+    (p) =>
+      p.brandSlug.toLowerCase() === brandSlug.toLowerCase() ||
+      p.brand.toLowerCase() === brandSlug.toLowerCase()
+  );
 }
 
 export async function getStores(): Promise<StoreInfo[]> {
   const apiStores = await backendApi.getStores();
-  return apiStores || [];
+  if (apiStores && apiStores.length > 0) return apiStores;
+  return fallbackStores;
 }
 
 export async function getGuides(category?: string): Promise<Guide[]> {
   const apiGuides = await backendApi.getArticles();
-  const source = apiGuides || [];
+  const source = apiGuides && apiGuides.length > 0 ? apiGuides : fallbackGuides;
 
   if (category) {
     return source.filter((g) =>
@@ -99,12 +135,13 @@ export async function getGuides(category?: string): Promise<Guide[]> {
 
 export async function getGuide(slug: string): Promise<Guide | null> {
   const apiGuide = await backendApi.getArticleBySlug(slug);
-  return apiGuide || null;
+  if (apiGuide) return apiGuide;
+  return fallbackGuides.find((g) => g.slug === slug) || null;
 }
 
 export async function getQAItems(category?: string): Promise<QAItem[]> {
   const apiQA = await backendApi.getQAItems();
-  const source = apiQA || [];
+  const source = apiQA && apiQA.length > 0 ? apiQA : fallbackQAItems;
 
   if (category) {
     return source.filter(
@@ -118,8 +155,7 @@ export async function getQAItems(category?: string): Promise<QAItem[]> {
 
 export async function getQAItem(slug: string): Promise<QAItem | null> {
   const items = await getQAItems();
-  const item = items.find((q) => q.slug === slug);
-  return item || null;
+  return items.find((q) => q.slug === slug) || null;
 }
 
 export async function searchPhones(query: string): Promise<Phone[]> {
@@ -127,13 +163,28 @@ export async function searchPhones(query: string): Promise<Phone[]> {
   if (!q) return [];
 
   const apiResults = await backendApi.searchPhones(q);
-  return apiResults || [];
+  if (apiResults && apiResults.length > 0) return apiResults;
+
+  const fallback = await getFallbackPhones();
+  return fallback.filter(
+    (p) =>
+      p.name.toLowerCase().includes(q) ||
+      p.brand.toLowerCase().includes(q) ||
+      p.tags?.some((t) => t.toLowerCase().includes(q))
+  );
 }
 
 export async function getRelatedPhones(phoneId: string, limit = 4): Promise<Phone[]> {
   const apiRelated = await backendApi.getProductAlternatives(phoneId);
   if (apiRelated && apiRelated.length > 0) return apiRelated.slice(0, limit);
-  return [];
+
+  const fallback = await getFallbackPhones();
+  const current = fallback.find((p) => p.id === phoneId || p.slug === phoneId);
+  if (!current) return fallback.slice(0, limit);
+
+  return fallback
+    .filter((p) => p.id !== current.id && p.brandSlug === current.brandSlug)
+    .slice(0, limit);
 }
 
 export async function getPriceHistory(phoneId: string): Promise<PriceHistory[]> {
@@ -143,15 +194,26 @@ export async function getPriceHistory(phoneId: string): Promise<PriceHistory[]> 
 
 export async function getCheapestPhones(limit = 6): Promise<Phone[]> {
   const apiCheapest = await backendApi.getCheapest(limit);
-  return apiCheapest || [];
+  if (apiCheapest && apiCheapest.length > 0) return apiCheapest;
+
+  const fallback = await getFallbackPhones();
+  return [...fallback]
+    .sort((a, b) => a.lowestPrice - b.lowestPrice)
+    .slice(0, limit);
 }
 
 export async function getPriceDroppedPhones(limit = 6): Promise<Phone[]> {
   const apiDeals = await backendApi.getDeals(limit);
-  return apiDeals || [];
+  if (apiDeals && apiDeals.length > 0) return apiDeals;
+
+  const fallback = await getFallbackPhones();
+  return fallback.filter((p) => p.isPriceDropped).slice(0, limit);
 }
 
 export async function getNewPhones(limit = 6): Promise<Phone[]> {
   const apiNew = await backendApi.getNewReleases(limit);
-  return apiNew || [];
+  if (apiNew && apiNew.length > 0) return apiNew;
+
+  const fallback = await getFallbackPhones();
+  return fallback.filter((p) => p.isNew).slice(0, limit);
 }

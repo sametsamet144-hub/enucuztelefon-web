@@ -1,9 +1,14 @@
 import type { Phone, Brand, Guide, QAItem, PriceHistory, StoreInfo } from "@/types";
 
+const DEFAULT_API_URL =
+  process.env.NODE_ENV === "production"
+    ? "https://enucuztelefon-backend.onrender.com/api/v1"
+    : "http://localhost:5000/api/v1";
+
 export const API_BASE_URL =
-  typeof window === "undefined"
-    ? process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api/v1"
-    : process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api/v1";
+  (typeof window === "undefined"
+    ? process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL
+    : process.env.NEXT_PUBLIC_API_URL) || DEFAULT_API_URL;
 
 export interface AdminDashboardStatsDto {
   totalPhones: number;
@@ -46,7 +51,7 @@ export interface PriceAlertResponse {
 
 async function fetchApi<T>(path: string, init?: RequestInit): Promise<T | null> {
   const controller = new AbortController();
-  // Set reasonable 15-second timeout instead of aggressive 2.5s
+  // Set reasonable 15-second timeout
   const timeout = setTimeout(() => controller.abort(), 15000);
 
   try {
@@ -69,8 +74,10 @@ async function fetchApi<T>(path: string, init?: RequestInit): Promise<T | null> 
   } catch (err: any) {
     if (err.name === "AbortError") {
       console.warn(`[API] Request to ${path} timed out after 15s`);
+    } else if (err.code === "ECONNREFUSED" || err?.cause?.code === "ECONNREFUSED") {
+      console.warn(`[API] Backend service offline or unreachable at ${API_BASE_URL} (${path}).`);
     } else {
-      console.error(`[API] Request failed for ${path}:`, err);
+      console.warn(`[API] Request failed for ${path}:`, err?.message || err);
     }
     return null;
   } finally {

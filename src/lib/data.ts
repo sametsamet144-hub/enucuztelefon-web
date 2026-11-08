@@ -85,10 +85,7 @@ export async function getPhones(
   const apiResponse = await backendApi.getProducts(params);
   let result = apiResponse?.items && Array.isArray(apiResponse.items) ? [...apiResponse.items] : [];
 
-  // Filter out unreleased dummy concept models
-  result = result.filter((p) => !DUMMY_CONCEPT_SLUGS.has(p.slug));
-
-  // Sort Stitch showcase flagship items to the top for default popular view
+  // Sort Stitch showcase flagship items to the top and concept items to the bottom for default popular view
   if (
     (!filters?.sortBy || filters.sortBy === "popular") &&
     !filters?.brand &&
@@ -96,7 +93,8 @@ export async function getPhones(
     !filters?.search
   ) {
     const topItems: Phone[] = [];
-    const remainingItems: Phone[] = [];
+    const middleItems: Phone[] = [];
+    const bottomItems: Phone[] = [];
 
     for (const slug of SHOWCASE_TOP_SLUGS) {
       const found = result.find((p) => p.slug === slug);
@@ -105,11 +103,15 @@ export async function getPhones(
 
     for (const p of result) {
       if (!SHOWCASE_TOP_SLUGS.includes(p.slug)) {
-        remainingItems.push(p);
+        if (DUMMY_CONCEPT_SLUGS.has(p.slug)) {
+          bottomItems.push(p);
+        } else {
+          middleItems.push(p);
+        }
       }
     }
 
-    result = [...topItems, ...remainingItems];
+    result = [...topItems, ...middleItems, ...bottomItems];
   }
 
   if (!filters || result.length === 0) return result;

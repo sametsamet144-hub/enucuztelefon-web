@@ -740,3 +740,53 @@
   animation: radarPing 2.2s cubic-bezier(0, 0, 0.2, 1) infinite;
   pointer-events: none;
 }
+
+/* Stage plasma, outer ring and card backdrop aurora */
+.stage-plasma-disk {
+  position: absolute;
+  width: 130px;
+  height: 130px;
+  border-radius: 9999px;
+  background: radial-gradient(circle, rgba(41, 151, 255, 0.14) 0%, rgba(56, 189, 248, 0.06) 50%, transparent 75%);
+  filter: blur(14px);
+  pointer-events: none;
+}
+.stage-ring-outer {
+  position: absolute;
+  width: 155px;
+  height: 155px;
+  border-radius: 9999px;
+  border: 1px dashed rgba(255, 255, 255, 0.08);
+  pointer-events: none;
+  animation: rotateConicBeam 28s linear infinite;
+}
+.card-backdrop-aurora {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(circle at var(--card-mouse-x, 50%) var(--card-mouse-y, 50%), rgba(41, 151, 255, 0.08) 0%, transparent 65%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+.phone-card:hover .card-backdrop-aurora {
+  opacity: 1;
+}
+
+/* Explicit Grid & Responsive Layout Guarantees for Stitch Catalog */
+@media (min-width: 1024px) {
+  .lg\:col-span-3 { grid-column: span 3 / span 3 !important; }
+  .lg\:col-span-9 { grid-column: span 9 / span 9 !important; }
+  .lg\:grid-cols-12 { grid-template-columns: repeat(12, minmax(0, 1fr)) !important; }
+}
+@media (min-width: 1280px) {
+  .xl\:col-span-2 { grid-column: span 2 / span 2 !important; }
+  .xl\:col-span-10 { grid-column: span 10 / span 10 !important; }
+  .xl\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)) !important; }
+}
+.max-w-\[1880px\] { max-width: 1880px !important; }
+@media (min-width: 768px) {
+  .md\:block { display: block !important; }
+  .md\:flex { display: flex !important; }
+}
+

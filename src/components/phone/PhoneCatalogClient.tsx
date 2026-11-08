@@ -1792,10 +1792,10 @@ export default function PhoneCatalogClient({
                 setSelectedBrands([]);
                 setCurrentPage(1);
               }}
-              className={`px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap flex items-center gap-1.5 filter-pill-neon transition-all shrink-0 ${
+              className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap flex items-center gap-1.5 filter-pill-neon transition-all shrink-0 ${
                 selectedBrands.length === 0
                   ? "bg-[#2997ff] text-white shadow-md shadow-[#2997ff]/30 filter-pill-active"
-                  : "bg-[#18181b]/90 hover:bg-[#201f22] text-zinc-300 hover:text-white border border-zinc-700/80"
+                  : "bg-[#18181b] hover:bg-[#201f22] text-zinc-300 hover:text-white border border-zinc-700/80"
               }`}
             >
               <span>Tüm Markalar</span>
@@ -1815,10 +1815,10 @@ export default function PhoneCatalogClient({
                   key={b.name}
                   type="button"
                   onClick={() => toggleBrand(b.name)}
-                  className={`px-3.5 py-1.5 rounded-full text-xs font-medium whitespace-nowrap flex items-center gap-1.5 filter-pill-neon transition-all shrink-0 ${
+                  className={`px-3 py-1.5 rounded-xl text-xs font-medium whitespace-nowrap flex items-center gap-1.5 filter-pill-neon transition-all shrink-0 ${
                     active
                       ? "bg-[#2997ff] text-white shadow-md shadow-[#2997ff]/30 filter-pill-active"
-                      : "bg-[#18181b]/90 hover:bg-[#201f22] text-zinc-300 hover:text-white border border-zinc-700/80"
+                      : "bg-[#18181b] hover:bg-[#201f22] text-zinc-300 hover:text-white border border-zinc-700/80"
                   }`}
                 >
                   <span>{b.name}</span>
@@ -1854,7 +1854,7 @@ export default function PhoneCatalogClient({
             </aside>
 
             {/* Ürün Bölümü */}
-            <section className="lg:col-span-9 xl:col-span-10">
+            <section className="lg:col-span-9 xl:col-span-10 space-y-4">
               {sortedPhones.length === 0 ? (
                 <div className="py-24 text-center text-zinc-500 bg-[#131315] rounded-2xl border border-zinc-800 p-8">
                   <span className="material-symbols-outlined text-5xl mb-3 text-zinc-600">
@@ -1873,7 +1873,7 @@ export default function PhoneCatalogClient({
                   </button>
                 </div>
               ) : viewMode === "grid" ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-5">
                   {paginatedDesktop.map((p) => (
                     <PhoneCard key={p.id} phone={p} />
                   ))}

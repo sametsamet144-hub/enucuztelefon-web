@@ -187,9 +187,8 @@ export default function PhoneCard({
       }}
     >
       <div className="card-backdrop-aurora" />
-      <div className="relative z-10 flex flex-col h-full justify-between">
-        <div>
-          {/* 1. Header Badges & Actions */}
+      <div className="relative z-10">
+        {/* 1. Header Badges & Actions */}
           <div className="flex items-center justify-between gap-1.5 w-full mb-3 min-w-0">
             <div className="flex items-center gap-1.5 min-w-0 flex-wrap">
               <span className="bg-[#18181b] text-zinc-300 font-semibold px-2 py-0.5 rounded-md text-[10px] border border-zinc-700 shrink-0">
@@ -344,7 +343,7 @@ export default function PhoneCard({
         <div className="flex items-center gap-2 pt-2 border-t border-zinc-700/80 mt-auto relative z-10">
           <Link
             href={`/telefon/${phone.slug}`}
-            className="flex-1 bg-[#2997ff] hover:bg-[#1d82ea] text-white font-semibold py-2 rounded-xl text-xs transition-colors shadow-md shadow-[#2997ff]/25 hover:shadow-lg hover:shadow-[#2997ff]/40 btn-sheen-beam text-center"
+            className="flex-1 bg-[#2997ff] hover:bg-[#1d82ea] text-white font-semibold py-2 rounded-xl text-xs transition-colors shadow-md shadow-[#2997ff]/25 hover:shadow-lg hover:shadow-[#2997ff]/40 btn-sheen-beam text-center block"
           >
             Fiyatları Gör & Karşılaştır
           </Link>
@@ -356,12 +355,11 @@ export default function PhoneCard({
                 ? "bg-[#2997ff]/20 text-[#2997ff] border-[#2997ff]/50"
                 : "bg-[#18181b] hover:bg-[#201f22] border-zinc-700 text-zinc-300 hover:text-white"
             }`}
-            title="Karşılaştırmaya Ekle"
+            title={isComp ? "Karşılaştırmadan Çıkar" : "Karşılaştırmaya Ekle"}
           >
             <span className="material-symbols-outlined text-[17px]">balance</span>
           </button>
         </div>
-      </div>
-    </article>
+      </article>
   );
 }

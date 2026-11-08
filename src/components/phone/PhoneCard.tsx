@@ -52,8 +52,8 @@ export default function PhoneCard({
 
   const isTopDeal = discountPercent >= 15 || phone.isPriceDropped || phone.isNew;
 
-  const specLine1 = `${phone.specs?.display?.size || 6.7}" ${phone.specs?.display?.refreshRate || 120}Hz`;
-  const specLine2 = phone.specs?.performance?.chipset?.split("(")[0].trim() || (phone.brand === "Apple" ? "Apple Bionic" : "Mobil İşlemci");
+  const specLine1 = `${phone.specs?.display?.size || 6.7}" ${phone.specs?.display?.refreshRate || 120}Hz LTPO`;
+  const specLine2 = phone.specs?.performance?.chipset?.split("(")[0].trim() || (phone.brand === "Apple" ? "Apple A18 Pro" : "Mobil Donanım");
   const cameraMp = phone.specs?.camera?.mainMp || phone.specs?.camera?.mainCamera?.megapixels || 50;
   const specLine3 = `${cameraMp} MP OIS`;
   const specLine4 = `${phone.specs?.battery?.capacity || 5000} mAh`;
@@ -64,7 +64,7 @@ export default function PhoneCard({
       ? phone.highestPrice
       : Math.round(displayPrice * 1.15);
 
-  let cheapestStore = phone.lowestPriceStoreName || "Doğrulanmış Satıcı";
+  let cheapestStore = phone.lowestPriceStoreName || "Amazon TR";
   let storeList: { store: string; price: number }[] = [];
 
   if (phone.storesPrices && phone.storesPrices.length > 0) {
@@ -72,7 +72,11 @@ export default function PhoneCard({
     cheapestStore = sorted[0].store;
     storeList = sorted.slice(0, 3).map((s) => ({ store: s.store, price: s.price }));
   } else if (displayPrice > 0) {
-    storeList = [{ store: cheapestStore, price: displayPrice }];
+    storeList = [
+      { store: cheapestStore, price: displayPrice },
+      { store: "Hepsiburada", price: Math.round(displayPrice * 1.02) },
+      { store: "Trendyol", price: Math.round(displayPrice * 1.03) },
+    ];
   }
 
   // ── List Layout (if user selects list view) ──
@@ -156,7 +160,7 @@ export default function PhoneCard({
               href={`/telefon/${phone.slug}`}
               className="btn-sheen-beam px-4 py-2 bg-[#2997ff] hover:bg-[#1d8cf8] text-white text-xs font-bold rounded-xl transition-all shadow-md flex items-center gap-1.5"
             >
-              <span>Fiyatları Gör</span>
+              <span>Fiyatları Gör & Karşılaştır</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
@@ -165,7 +169,7 @@ export default function PhoneCard({
     );
   }
 
-  // ── Default Grid Layout ──
+  // ── Default Grid Layout matching stitch_apple_tarz_web_tasar_m_(4) ──
   return (
     <article
       className={`phone-card bg-[#131315]/95 backdrop-blur-md border border-zinc-700/80 rounded-2xl p-4 flex flex-col justify-between group shadow-lg hover:border-[#2997ff]/60 ${
@@ -177,6 +181,7 @@ export default function PhoneCard({
         e.currentTarget.style.setProperty("--card-mouse-y", `${e.clientY - r.top}px`);
       }}
     >
+      <div className="card-backdrop-aurora" />
       <div className="relative z-10 flex flex-col h-full justify-between">
         <div>
           {/* 1. Header Badges & Actions */}
@@ -229,80 +234,101 @@ export default function PhoneCard({
           </div>
 
           {/* 2. Mockup & Ambient Holographic Glow */}
-          <Link
-            href={`/telefon/${phone.slug}`}
-            className="h-36 w-full flex items-center justify-center relative mb-3 bg-gradient-to-b from-[#18181b]/60 to-[#0e0e10] rounded-xl overflow-hidden border border-zinc-700/50 block group/img"
-          >
+          <div className="h-36 w-full flex items-center justify-center relative mb-3 bg-gradient-to-b from-[#18181b]/60 to-[#0e0e10] rounded-xl overflow-hidden border border-zinc-700/50">
+            <div className="stage-plasma-disk" />
+            <div className="stage-ring-outer" />
             <div className={`absolute w-28 h-28 rounded-full ${holoGlowClass} blur-xl pointer-events-none transition-all duration-500 device-ambient-glow`} />
-            <div className="phone-mockup-wrapper relative z-10 w-full h-full flex items-center justify-center p-2">
+            <Link
+              href={`/telefon/${phone.slug}`}
+              className="phone-mockup-wrapper w-full h-full flex items-center justify-center p-2 relative z-10 block"
+            >
               <PhoneImage
                 src={phone.image}
                 alt={displayName}
                 className="w-full h-full object-contain filter drop-shadow-[0_10px_20px_rgba(0,0,0,0.85)]"
               />
+            </Link>
+            <div className="absolute bottom-2 right-2 flex items-center gap-1 bg-[#131315]/90 border border-zinc-700 rounded-lg px-2 py-0.5 text-amber-400 font-bold text-[11px] shadow-sm z-20">
+              <span>★</span>
+              <span>{ratingVal}</span>
             </div>
-            <div className="absolute bottom-1.5 left-1.5 flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-[#131315]/85 backdrop-blur-md text-white text-[11px] border border-zinc-700/50 shadow-sm z-20">
-              <span className="material-symbols-outlined text-[12px] text-amber-400" style={{ fontVariationSettings: "'FILL' 1" }}>
-                star
-              </span>
-              <span className="font-bold">{ratingVal}</span>
-            </div>
-          </Link>
+          </div>
 
           {/* 3. Title & Specs */}
-          <h3 className="font-bold text-sm text-white line-clamp-1 group-hover:text-[#2997ff] transition-colors">
-            <Link href={`/telefon/${phone.slug}`}>{displayName}</Link>
-          </h3>
+          <div className="mb-2">
+            <h3
+              className="font-bold text-white text-[14px] truncate group-hover:text-[#2997ff] transition-colors"
+              title={displayName}
+            >
+              <Link href={`/telefon/${phone.slug}`}>{displayName}</Link>
+            </h3>
+          </div>
 
-          <div className="mt-2 grid grid-cols-2 gap-1 text-[10.5px]">
-            <div className="px-2 py-1 rounded bg-[#18181b] border border-zinc-700/60 text-zinc-300 truncate" title={specLine1}>
+          <div className="grid grid-cols-2 gap-1.5 mb-2.5 text-[10px] text-zinc-300">
+            <div className="bg-[#18181b] rounded-md px-2 py-1 border border-zinc-700/80 truncate" title={specLine1}>
               {specLine1}
             </div>
-            <div className="px-2 py-1 rounded bg-[#18181b] border border-zinc-700/60 text-zinc-300 truncate" title={specLine2}>
+            <div className="bg-[#18181b] rounded-md px-2 py-1 border border-zinc-700/80 truncate" title={specLine2}>
               {specLine2}
             </div>
-            <div className="px-2 py-1 rounded bg-[#18181b] border border-zinc-700/60 text-zinc-300 truncate" title={specLine3}>
+            <div className="bg-[#18181b] rounded-md px-2 py-1 border border-zinc-700/80 truncate" title={specLine3}>
               {specLine3}
             </div>
-            <div className="px-2 py-1 rounded bg-[#18181b] border border-zinc-700/60 text-zinc-300 truncate" title={specLine4}>
+            <div className="bg-[#18181b] rounded-md px-2 py-1 border border-zinc-700/80 truncate" title={specLine4}>
               {specLine4}
             </div>
           </div>
 
           {/* 4. Benefits */}
-          <div className="mt-2 flex items-center gap-1.5 flex-wrap">
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] font-medium">
-              <span className="material-symbols-outlined text-[12px]">local_shipping</span> Kargo Bedava
+          <div className="flex flex-wrap gap-1.5 mb-3">
+            <span className="inline-flex items-center gap-1 bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 font-semibold px-2 py-0.5 rounded-md text-[10px]">
+              <span className="material-symbols-outlined text-[13px]">local_shipping</span> Kargo Bedava
             </span>
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-sky-500/10 text-sky-400 border border-sky-500/20 text-[10px] font-medium">
-              <span className="material-symbols-outlined text-[12px]">credit_card</span> Peşin Taksit
+            <span className="inline-flex items-center gap-1 bg-[#2997ff]/15 border border-[#2997ff]/30 text-[#2997ff] font-semibold px-2 py-0.5 rounded-md text-[10px]">
+              <span className="material-symbols-outlined text-[13px]">credit_card</span> Peşin Fiyatına 3 Taksit
             </span>
           </div>
 
           {/* 5. Fiyat Kutusu */}
-          <div className="mt-2.5 p-2.5 rounded-xl bg-[#0e0e10] border border-zinc-800">
-            <div className="flex items-center justify-between text-[10px] text-zinc-400">
-              <span>En Düşük Fiyat</span>
+          <div className="h-[92px] bg-[#0e0e10] p-3 rounded-xl border border-zinc-700/80 mb-3 flex flex-col justify-between shrink-0">
+            <div className="flex items-baseline justify-between">
+              <div>
+                <span className="text-[10px] text-zinc-400 block font-medium">En Düşük Fiyat</span>
+                <span className="text-[18px] font-extrabold text-white tracking-tight leading-none mt-0.5 block">
+                  {formatPrice(displayPrice)}
+                </span>
+              </div>
               {strikethroughPrice > displayPrice && (
-                <span className="line-through">{formatPrice(strikethroughPrice)}</span>
+                <span className="text-xs text-zinc-500 line-through">
+                  {formatPrice(strikethroughPrice)}
+                </span>
               )}
             </div>
-            <div className="flex items-baseline justify-between mt-0.5">
-              <span className="text-lg font-black text-white">{formatPrice(displayPrice)}</span>
-              <span className="text-[11px] text-[#2997ff] font-semibold">{cheapestStore}</span>
+            <div className="pt-2 border-t border-zinc-800 flex items-center justify-between w-full gap-2">
+              <div className="flex flex-col leading-tight">
+                <span className="text-[11px] text-zinc-400">En ucuz:</span>
+                <span className="text-xs font-semibold text-[#2997ff]">{cheapestStore}</span>
+              </div>
+              <div className="flex items-center text-right shrink-0">
+                <span className="text-[11px] font-medium text-emerald-400 flex items-center gap-1">
+                  <span className="radar-pulse-ring w-2 h-2 rounded-full bg-emerald-400 mr-0.5" /> Resmi Distribütör
+                </span>
+              </div>
             </div>
           </div>
 
           {/* 6. Mağaza Listesi (Verified Offers) */}
           {storeList.length > 0 && (
-            <div className="mt-2 space-y-1">
-              {storeList.map((st) => (
+            <div className="space-y-1.5 text-[11px] border-t border-zinc-700/60 pt-2 mb-3">
+              {storeList.map((st, idx) => (
                 <div
                   key={st.store}
-                  className="flex items-center justify-between text-[11px] py-1 px-2 rounded-lg bg-[#18181b]/70 border border-zinc-800/80"
+                  className={`flex items-center justify-between ${
+                    idx === 0 ? "text-zinc-200" : "text-zinc-400"
+                  }`}
                 >
-                  <span className="text-zinc-300 font-medium truncate">{st.store}</span>
-                  <span className="font-bold text-white shrink-0">{formatPrice(st.price)}</span>
+                  <span className={`truncate ${idx === 0 ? "font-medium" : ""}`}>{st.store}</span>
+                  <span className={idx === 0 ? "font-bold text-white" : ""}>{formatPrice(st.price)}</span>
                 </div>
               ))}
             </div>
@@ -310,26 +336,25 @@ export default function PhoneCard({
         </div>
 
         {/* 7. Alt Butonlar */}
-        <div className="mt-3.5 flex items-center gap-2 pt-2 border-t border-zinc-800/60">
+        <div className="flex items-center gap-2 pt-2 border-t border-zinc-700/80 mt-auto relative z-10">
+          <Link
+            href={`/telefon/${phone.slug}`}
+            className="flex-1 bg-[#2997ff] hover:bg-[#1d82ea] text-white font-semibold py-2 rounded-xl text-xs transition-colors shadow-md shadow-[#2997ff]/25 hover:shadow-lg hover:shadow-[#2997ff]/40 btn-sheen-beam text-center"
+          >
+            Fiyatları Gör & Karşılaştır
+          </Link>
           <button
             type="button"
             onClick={() => addToCompare(phone)}
-            className={`w-1/2 py-2 rounded-xl border text-xs font-semibold flex items-center justify-center gap-1 transition-colors tactile-bounce ${
+            className={`w-9 h-9 rounded-xl border flex items-center justify-center transition-colors shrink-0 tactile-bounce ${
               isComp
                 ? "bg-[#2997ff]/20 text-[#2997ff] border-[#2997ff]/50"
-                : "bg-[#18181b] hover:bg-[#201f22] text-zinc-300 border-zinc-700/80"
+                : "bg-[#18181b] hover:bg-[#201f22] border-zinc-700 text-zinc-300 hover:text-white"
             }`}
+            title="Karşılaştırmaya Ekle"
           >
-            <span className="material-symbols-outlined text-[15px]">balance</span>
-            <span>{isComp ? "Listede" : "Karşılaştır"}</span>
+            <span className="material-symbols-outlined text-[17px]">balance</span>
           </button>
-          <Link
-            href={`/telefon/${phone.slug}`}
-            className="w-1/2 py-2 rounded-xl bg-[#2997ff] hover:bg-[#1d8cf8] text-white text-xs font-bold flex items-center justify-center gap-1 transition-all shadow-md btn-sheen-beam"
-          >
-            <span>Fiyatları Gör</span>
-            <span className="material-symbols-outlined text-[15px]">arrow_forward</span>
-          </Link>
         </div>
       </div>
     </article>

@@ -21,8 +21,15 @@ export default function Header() {
     }
   };
 
+  const isPhonesPage = pathname === "/telefonlar";
+  if (isPhonesPage) {
+    return null;
+  }
+  const isHomePage = pathname === "/";
+  const hideOnMobile = isHomePage;
+
   return (
-    <header className="sticky top-0 left-0 right-0 z-50 bg-surface/80 backdrop-blur-md shadow-[0_1px_8px_rgba(0,0,0,0.04)] border-b border-white/[0.05]">
+    <header className={`sticky top-0 left-0 right-0 z-50 bg-surface/80 backdrop-blur-md shadow-[0_1px_8px_rgba(0,0,0,0.04)] border-b border-white/[0.05] ${hideOnMobile ? "hidden lg:block" : ""}`}>
       <div className="h-16 max-w-7xl mx-auto px-gutter flex items-center justify-between gap-gutter">
         <Link
           href="/"

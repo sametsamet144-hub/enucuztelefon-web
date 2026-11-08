@@ -49,6 +49,11 @@ export default function PhoneCard({
   else if (brandLower.includes("honor")) holoGlowClass = "holo-glow-honor";
   else if (brandLower.includes("huawei")) holoGlowClass = "holo-glow-huawei";
   else if (brandLower.includes("poco")) holoGlowClass = "holo-glow-poco";
+  else if (brandLower.includes("vivo")) holoGlowClass = "holo-glow-vivo";
+  else if (brandLower.includes("oneplus")) holoGlowClass = "holo-glow-oneplus";
+  else if (brandLower.includes("google") || brandLower.includes("pixel")) holoGlowClass = "holo-glow-pixel";
+  else if (brandLower.includes("asus") || brandLower.includes("rog")) holoGlowClass = "holo-glow-rog";
+  else if (brandLower.includes("nothing")) holoGlowClass = "holo-glow-nothing";
 
   const isTopDeal = discountPercent >= 15 || phone.isPriceDropped || phone.isNew;
 

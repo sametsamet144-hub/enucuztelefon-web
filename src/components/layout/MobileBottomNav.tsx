@@ -2,13 +2,6 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  Home,
-  LayoutGrid,
-  Scale,
-  TrendingDown,
-  Bell,
-} from "lucide-react";
 import { useApp } from "@/context/AppContext";
 
 export default function MobileBottomNav() {
@@ -16,22 +9,50 @@ export default function MobileBottomNav() {
   const { openAlertModal } = useApp();
 
   const tabs = [
-    { label: "Ana Sayfa", href: "/", icon: Home, isAction: false },
-    { label: "Katalog", href: "/telefonlar", icon: LayoutGrid, isAction: false },
-    { label: "Karşılaştır", href: "/karsilastir", icon: Scale, isAction: false },
-    { label: "Düşenler", href: "/telefonlar/fiyati-dusen", icon: TrendingDown, isAction: false },
-    { label: "Alarmlarım", href: "/fiyat-takibi", icon: Bell, isAction: true },
+    {
+      label: "Ana Sayfa",
+      href: "/",
+      icon: "home",
+      isAction: false,
+    },
+    {
+      label: "Katalog",
+      href: "/telefonlar",
+      icon: "grid_view",
+      isAction: false,
+    },
+    {
+      label: "Karşılaştır",
+      href: "/karsilastir",
+      icon: "compare_arrows",
+      isAction: false,
+    },
+    {
+      label: "Düşenler",
+      href: "/telefonlar/fiyati-dusen",
+      icon: "trending_down",
+      isAction: false,
+    },
+    {
+      label: "Alarmlarım",
+      href: "/fiyat-takibi",
+      icon: "notification_important",
+      isAction: true,
+    },
   ];
 
   return (
-    <nav className="fixed bottom-0 inset-x-0 z-50 lg:hidden bg-[#090b0e]/95 backdrop-blur-md border-t border-[#181d27] py-1.5 px-3">
-      <div className="max-w-md mx-auto grid grid-cols-5 items-center">
+    <nav className="fixed bottom-0 w-full z-50 pb-safe bg-surface/85 backdrop-blur-2xl border-t border-white/[0.08] shadow-[0_-4px_24px_rgba(0,0,0,0.5)] lg:hidden">
+      <div className="h-16 px-gutter-mobile flex items-center justify-around">
         {tabs.map((tab) => {
           const isActive =
             tab.href === "/"
               ? pathname === "/"
+              : tab.href === "/telefonlar"
+              ? pathname === "/telefonlar" || pathname.startsWith("/telefon/")
+              : tab.href === "/telefonlar/fiyati-dusen"
+              ? pathname === "/telefonlar/fiyati-dusen"
               : pathname.startsWith(tab.href);
-          const Icon = tab.icon;
 
           if (tab.isAction) {
             return (
@@ -39,12 +60,20 @@ export default function MobileBottomNav() {
                 key={tab.label}
                 type="button"
                 onClick={() => openAlertModal()}
-                className={`flex flex-col items-center justify-center py-1 gap-1 text-[10px] font-medium transition-colors ${
-                  isActive ? "text-[#38bdf8] font-bold" : "text-slate-400 hover:text-slate-200"
+                className={`flex flex-col items-center justify-center min-w-[54px] min-h-[44px] gap-0.5 active:scale-80 transition-transform duration-200 cursor-pointer ${
+                  isActive
+                    ? "text-primary-container font-semibold"
+                    : "text-on-surface-variant hover:text-on-surface"
                 }`}
               >
-                <Icon className={`w-4 h-4 ${isActive ? "text-[#38bdf8]" : "text-slate-400"}`} />
-                <span>{tab.label}</span>
+                <span
+                  className={`material-symbols-outlined text-[22px] ${
+                    isActive ? "drop-shadow-[0_0_8px_rgba(41,151,255,0.5)]" : ""
+                  }`}
+                >
+                  {tab.icon}
+                </span>
+                <span className="font-label-sm text-[11px]">{tab.label}</span>
               </button>
             );
           }
@@ -53,12 +82,20 @@ export default function MobileBottomNav() {
             <Link
               key={tab.label}
               href={tab.href}
-              className={`flex flex-col items-center justify-center py-1 gap-1 text-[10px] font-medium transition-colors ${
-                isActive ? "text-[#38bdf8] font-bold" : "text-slate-400 hover:text-slate-200"
+              className={`flex flex-col items-center justify-center min-w-[54px] min-h-[44px] gap-0.5 active:scale-80 transition-transform duration-200 ${
+                isActive
+                  ? "text-primary-container font-semibold"
+                  : "text-on-surface-variant hover:text-on-surface"
               }`}
             >
-              <Icon className={`w-4 h-4 ${isActive ? "text-[#38bdf8]" : "text-slate-400"}`} />
-              <span>{tab.label}</span>
+              <span
+                className={`material-symbols-outlined text-[22px] ${
+                  isActive ? "drop-shadow-[0_0_8px_rgba(41,151,255,0.5)]" : ""
+                }`}
+              >
+                {tab.icon}
+              </span>
+              <span className="font-label-sm text-[11px]">{tab.label}</span>
             </Link>
           );
         })}
@@ -66,3 +103,4 @@ export default function MobileBottomNav() {
     </nav>
   );
 }
+

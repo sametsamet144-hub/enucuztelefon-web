@@ -14,8 +14,10 @@ interface SiteLayoutProps {
 }
 
 function SiteLayoutInner({ children }: SiteLayoutProps) {
+  const pathname = usePathname();
   const { theme } = useApp();
   const isDark = theme === "dark";
+  const isHomePage = pathname === "/";
 
   return (
     <div
@@ -25,7 +27,9 @@ function SiteLayoutInner({ children }: SiteLayoutProps) {
     >
       <Header />
       <main className="flex-1 w-full">{children}</main>
-      <Footer />
+      <div className={isHomePage ? "hidden lg:block" : ""}>
+        <Footer />
+      </div>
 
       {/* Global Interactive Tooling */}
       <MobileBottomNav />

@@ -18,15 +18,24 @@ export function isRealDirectStoreOffer(sp: any): boolean {
   if (
     lowerUrl.includes("/arama") ||
     lowerUrl.includes("/ara?") ||
+    lowerUrl.includes("/ara/") ||
     lowerUrl.includes("/sr?q=") ||
+    lowerUrl.includes("/sr?") ||
+    lowerUrl.includes("/sr/") ||
     lowerUrl.includes("/s?k=") ||
+    lowerUrl.includes("/s?") ||
     lowerUrl.includes("search_text=") ||
     lowerUrl.includes("?query=") ||
     lowerUrl.includes("&query=") ||
     lowerUrl.includes("?text=") ||
     lowerUrl.includes("&text=") ||
+    lowerUrl.includes("?q=") ||
+    lowerUrl.includes("&q=") ||
     lowerUrl.includes("search.html") ||
     lowerUrl.includes("/categories/") ||
+    lowerUrl.includes("/kategori/") ||
+    lowerUrl.includes("/katalog/") ||
+    lowerUrl.includes("/kampanyalar/") ||
     lowerUrl.includes("/cihazlar") ||
     lowerUrl.includes("/faturaya-ek") ||
     lowerUrl.includes("apple.com/tr/iphone") ||
@@ -41,14 +50,34 @@ export function isRealDirectStoreOffer(sp: any): boolean {
     lowerUrl.includes("enucuztelefon.com") ||
     lowerUrl.includes("placeholder") ||
     lowerUrl.includes("-10000000") ||
-    lowerUrl.includes("HBC0000100000")
+    lowerUrl.includes("hbc0000100000") ||
+    lowerUrl.includes("bim.com.tr") ||
+    lowerUrl.includes("a101.com.tr") ||
+    lowerUrl.includes("kurumsalsok.com.tr") ||
+    lowerUrl.includes("sokmarket.com.tr") ||
+    lowerUrl.includes("evkur.com.tr") ||
+    lowerUrl.includes("yonavm.com.tr") ||
+    lowerUrl.includes("mutluevim.com.tr") ||
+    lowerUrl.includes("arcelik.com.tr") ||
+    lowerUrl.includes("beko.com.tr") ||
+    lowerUrl.includes("vestel.com.tr")
   ) {
     return false;
   }
 
   // Supermarket/grocery or installment catalog chains without real live phone feeds:
   const storeSlug = (sp.storeSlug || sp.store || "").toLowerCase().trim();
-  const fakeStoreSlugs = ["bim", "a101", "sok", "evkur", "yonavm", "mutluevim"];
+  const fakeStoreSlugs = [
+    "bim",
+    "a101",
+    "sok",
+    "evkur",
+    "yonavm",
+    "mutluevim",
+    "arcelik",
+    "beko",
+    "vestel",
+  ];
   if (fakeStoreSlugs.includes(storeSlug)) {
     return false;
   }

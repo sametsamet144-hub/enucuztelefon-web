@@ -310,7 +310,7 @@ export default function PhoneCatalogClient({
         return false;
       }
 
-      if (features.ip68 && !phone.specs?.design?.waterResistance?.includes("IP68") && !phone.specs?.design?.ipRating?.includes("IP68")) {
+      if (features.ip68 && !phone.specs?.design?.waterResistance?.includes("IP68")) {
         return false;
       }
 
@@ -1773,6 +1773,7 @@ export default function PhoneCatalogClient({
             </section>
           </div>
         </main>
+        </div>
       </div>
     </div>
   );

@@ -190,31 +190,14 @@ export default function PhoneCatalogClient({
     setCurrentPage(1);
   };
 
-  // Fixed Stitch brand count badge numbers
-  const brandPills = [
-    { name: "Apple", count: 12 },
-    { name: "Samsung", count: 18 },
-    { name: "Xiaomi", count: 14 },
-    { name: "POCO", count: 7 },
-    { name: "HONOR", count: 5 },
-    { name: "Huawei", count: 3 },
-    { name: "vivo", count: 4 },
-    { name: "Google", count: 3 },
-    { name: "Motorola", count: 3 },
-    { name: "Nothing", count: 2 },
-    { name: "ASUS", count: 2 },
-    { name: "Infinix", count: 2 },
-  ];
+  const brandPills = useMemo(() => {
+    return brands.map((b) => ({
+      name: b.name,
+      count: b.phoneCount || initialPhones.filter((p) => p.brand.toLowerCase() === b.name.toLowerCase()).length,
+    }));
+  }, [brands, initialPhones]);
 
-  // Sidebar brand list with counts matching screenshot
-  const sidebarBrands = [
-    { name: "Apple", count: 12 },
-    { name: "Samsung", count: 18 },
-    { name: "Xiaomi", count: 14 },
-    { name: "Huawei", count: 3 },
-    { name: "HONOR", count: 5 },
-    { name: "POCO", count: 7 },
-  ];
+  const sidebarBrands = brandPills;
 
   const filteredSidebarBrands = useMemo(() => {
     if (!brandSearch.trim()) return sidebarBrands;
@@ -253,16 +236,7 @@ export default function PhoneCatalogClient({
   // Sort: When default "popular", make sure the 8 Stitch phones are in exact order
   const sortedPhones = useMemo(() => {
     const list = [...filteredPhones];
-    if (sort === "popular") {
-      return list.sort((a, b) => {
-        const idxA = STITCH_FEATURED_SLUGS.findIndex((s) => a.slug.includes(s));
-        const idxB = STITCH_FEATURED_SLUGS.findIndex((s) => b.slug.includes(s));
-        if (idxA !== -1 && idxB !== -1) return idxA - idxB;
-        if (idxA !== -1) return -1;
-        if (idxB !== -1) return 1;
-        return (b.rating ?? 0) - (a.rating ?? 0);
-      });
-    }
+    if (sort === "popular") return list.sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
     if (sort === "price-asc") return list.sort((a, b) => a.lowestPrice - b.lowestPrice);
     if (sort === "price-desc") return list.sort((a, b) => b.lowestPrice - a.lowestPrice);
     if (sort === "rating") return list.sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
@@ -276,7 +250,7 @@ export default function PhoneCatalogClient({
     return sortedPhones.slice(start, start + ITEMS_PER_PAGE);
   }, [sortedPhones, currentPage]);
 
-  const totalPages = 12; // matching Stitch pagination: 1 2 3 ... 12
+  const totalPages = Math.max(1, Math.ceil(sortedPhones.length / ITEMS_PER_PAGE));
 
   // ─── Sidebar Filter Controls ──────────────────────────────────────────────
   const FilterControls = (

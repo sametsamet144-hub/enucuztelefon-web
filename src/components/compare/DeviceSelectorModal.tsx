@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { formatPrice } from "@/lib/utils";
+import { getPhones, searchPhones } from "@/lib/data";
 import type { Phone } from "@/types";
 
 export interface CandidateDevice {
@@ -22,145 +23,28 @@ export interface CandidateDevice {
   hasRecordDiscount?: boolean;
 }
 
-export const CANDIDATE_FLAGSHIPS: CandidateDevice[] = [
-  {
-    slug: "vivo-x200-pro",
-    brand: "Vivo",
-    name: "Vivo X200 Pro",
-    score: "9.6",
-    chipset: "Dimensity 9400 (3nm)",
-    battery: "6.000 mAh · 90W Hızlı Şarj",
-    camera: "Zeiss APO 200MP · 135mm Periskop",
-    price: 49999,
-    store: "Hepsiburada",
-    icon: "phone_android",
-    isFlagship: true,
-    hasPeriscope: true,
-    hasRecordDiscount: true,
-  },
-  {
-    slug: "oneplus-13",
-    brand: "OnePlus",
-    name: "OnePlus 13",
-    score: "9.5",
-    chipset: "Snapdragon 8 Elite (3nm)",
-    battery: "6.000 mAh · 100W Şarj",
-    camera: "Hasselblad 50MP Üçlü · 2K 120Hz BOE",
-    price: 46999,
-    store: "Trendyol",
-    icon: "smartphone",
-    isFlagship: true,
-    hasPeriscope: false,
-    hasRecordDiscount: true,
-  },
-  {
-    slug: "honor-magic-7-pro",
-    brand: "Honor",
-    name: "Honor Magic 7 Pro",
-    score: "9.5",
-    chipset: "Snapdragon 8 Elite",
-    battery: "5.850 mAh · 100W Şarj",
-    camera: "200MP Telefoto AI · 3D Yüz Tanıma",
-    price: 52499,
-    store: "Amazon TR",
-    icon: "phone_android",
-    isFlagship: true,
-    hasPeriscope: true,
-    hasRecordDiscount: false,
-  },
-  {
-    slug: "huawei-pura-70-ultra",
-    brand: "Huawei",
-    name: "Huawei Pura 70 Ultra",
-    score: "9.7",
-    chipset: "Kirin 9010",
-    battery: "5.200 mAh · 100W Şarj",
-    camera: "DxOMark #1 · 1-inç Pop-up Sensör Mekanik",
-    price: 64999,
-    store: "Teknosa",
-    icon: "camera_enhance",
-    isFlagship: true,
-    hasPeriscope: true,
-    hasRecordDiscount: false,
-  },
-  {
-    slug: "asus-rog-phone-9-pro",
-    brand: "ASUS",
-    name: "ASUS ROG Phone 9 Pro",
-    score: "9.4",
-    chipset: "Snapdragon 8 Elite",
-    battery: "5.800 mAh · 65W Şarj",
-    camera: "185Hz Ekran · AniMe Matrix LED · Tetikler",
-    price: 58999,
-    store: "MediaMarkt",
-    icon: "sports_esports",
-    isFlagship: true,
-    hasPeriscope: false,
-    hasRecordDiscount: false,
-  },
-  {
-    slug: "iphone-16-pro-max",
-    brand: "Apple",
-    name: "iPhone 16 Pro Max",
-    score: "9.7",
-    chipset: "Apple A18 Pro (3nm)",
-    battery: "4.685 mAh · 25W MagSafe",
-    camera: "48MP Fusion · 5x Tetraprism · 4K 120fps Dolby",
-    price: 72499,
-    store: "Amazon TR",
-    image:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuD0Nkfo_33UonJR3ShYNWTHWvbeG0TjTSZ9osr82Vjr0LEKlrlzKDZtapXd99ML_cC2aic7ZK--aaEI3a8vIx6NU2PYoDbbN-Hzn6IeI4-niJ3iiyt7w7fpf94DRLpLzMKxgpAPNGzGz_dFZ6eP7hpsHITQafBwrliATKbUNIhkEW5Rjjy3YFnFgH6EZblEdt_pehdY5m3CRMo86g41ckbQ4eYcI91ZdkRZ-eTnaCo",
-    isFlagship: true,
-    hasPeriscope: true,
-    hasRecordDiscount: false,
-  },
-  {
-    slug: "samsung-galaxy-s25-ultra",
-    brand: "Samsung",
-    name: "Galaxy S25 Ultra",
-    score: "9.6",
-    chipset: "SD 8 Elite for Galaxy",
-    battery: "5.000 mAh · 45W PD 3.0",
-    camera: "200MP ISOCELL · 100x Space Zoom · S-Pen",
-    price: 68999,
-    store: "Hepsiburada",
-    image:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuAxnF5G87Snpmv0lRbnWUZlwLeI6clO4b5qO28xPUeakp8wVslU_RmS98bSZLoNwYxIaJCXOZSrctMnO1X7Lf_YwJvvBC2wnVUli5ZGI0m5WY4vt6TZy7s8uczO1oEoRfTaog8QhuiN8K28EL_xRMHmegKkvljxxH6txEyry8BSN3PTn7btH-qQQodY4r_QkYA1m3lxsaNe8vnMRq2pL3RrBY5GcyM_eYCiWdDopoE",
-    isFlagship: true,
-    hasPeriscope: true,
-    hasRecordDiscount: true,
-  },
-  {
-    slug: "xiaomi-15-pro",
-    brand: "Xiaomi",
-    name: "Xiaomi 15 Pro",
-    score: "9.5",
-    chipset: "Snapdragon 8 Elite (3nm)",
-    battery: "6.100 mAh · 90W Hızlı Şarj (32 dk)",
-    camera: "50MP Leica Summilux · 3.200 nit 2K LTPO",
-    price: 58499,
-    store: "Trendyol",
-    icon: "smartphone",
-    isFlagship: true,
-    hasPeriscope: true,
-    hasRecordDiscount: true,
-  },
-  {
-    slug: "pixel-9-pro-xl",
-    brand: "Google",
-    name: "Pixel 9 Pro XL",
-    score: "9.4",
-    chipset: "Google Tensor G4 (4nm)",
-    battery: "5.060 mAh · 37W Hızlı Şarj",
-    camera: "48MP 5x Periskop · Gemini Nano On-device AI",
-    price: 64999,
-    store: "Teknosa",
-    icon: "phone_android",
-    isFlagship: true,
-    hasPeriscope: true,
-    hasRecordDiscount: false,
-  },
-];
+
+export function phoneToCandidate(p: Phone): CandidateDevice {
+  const cameraMp = p.specs?.camera?.mainMp || p.specs?.camera?.mainCamera?.megapixels || 50;
+  return {
+    slug: p.slug,
+    brand: p.brand,
+    name: p.name,
+    score: (p.rating || 9.2).toFixed(1),
+    chipset: p.specs?.performance?.chipset || (p.brand === "Apple" ? "Apple A18 Pro" : "Snapdragon 8 Elite"),
+    battery: `${p.specs?.battery?.capacity || 5000} mAh`,
+    camera: `${cameraMp} MP Kamera`,
+    price: p.lowestPrice,
+    store: p.lowestPriceStoreName || p.storesPrices?.[0]?.store || "Doğrulanmış Satıcı",
+    image: p.image,
+    isFlagship: (p.specs?.performance?.ram ?? 0) >= 12 || p.lowestPrice > 35000,
+    hasPeriscope: Boolean(p.specs?.camera?.telephoto || p.specs?.camera?.telephotoMp),
+    hasRecordDiscount: Boolean(p.isPriceDropped),
+  };
+}
+
+export const CANDIDATE_FLAGSHIPS: CandidateDevice[] = [];
+
 
 interface DeviceSelectorModalProps {
   isOpen: boolean;
@@ -185,6 +69,24 @@ export default function DeviceSelectorModal({
   const [quickFilter, setQuickFilter] = useState<
     "all" | "flagship" | "periscope" | "discount"
   >("all");
+  const [backendDevices, setBackendDevices] = useState<CandidateDevice[]>([]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const q = searchQuery.trim();
+    if (q.length > 1) {
+      const timer = setTimeout(() => {
+        searchPhones(q, 20).then((res) => {
+          if (res) setBackendDevices(res.map(phoneToCandidate));
+        });
+      }, 200);
+      return () => clearTimeout(timer);
+    } else {
+      getPhones({ pageSize: 30 }).then((res) => {
+        if (res) setBackendDevices(res.map(phoneToCandidate));
+      });
+    }
+  }, [isOpen, searchQuery]);
 
   const modalRef = useRef<HTMLDivElement>(null);
 
@@ -256,21 +158,17 @@ export default function DeviceSelectorModal({
 
   // Brand chip list with counts
   const brands = useMemo(() => {
-    return [
-      { name: "Tümü", count: CANDIDATE_FLAGSHIPS.length },
-      { name: "Apple", count: 14 },
-      { name: "Samsung", count: 32 },
-      { name: "Xiaomi", count: 45 },
-      { name: "Vivo", count: 18 },
-      { name: "OnePlus", count: 12 },
-      { name: "Honor", count: 19 },
-      { name: "Huawei", count: 15 },
-    ];
-  }, []);
+    const brandMap: Record<string, number> = {};
+    backendDevices.forEach((d) => {
+      brandMap[d.brand] = (brandMap[d.brand] || 0) + 1;
+    });
+    const list = Object.entries(brandMap).map(([name, count]) => ({ name, count }));
+    return [{ name: "Tümü", count: backendDevices.length }, ...list];
+  }, [backendDevices]);
 
   // Filtered candidate devices
   const filteredCandidates = useMemo(() => {
-    return CANDIDATE_FLAGSHIPS.filter((dev) => {
+    return backendDevices.filter((dev) => {
       // Search
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase();

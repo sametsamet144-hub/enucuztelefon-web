@@ -6,22 +6,30 @@ import { useSearchParams } from "next/navigation";
 import { useApp } from "@/context/AppContext";
 import DeviceSelectorModal, {
   CandidateDevice,
-  CANDIDATE_FLAGSHIPS,
+  phoneToCandidate,
 } from "./DeviceSelectorModal";
+import { getPopularPhones } from "@/lib/data";
 import { formatPrice } from "@/lib/utils";
 import { backendApi } from "@/lib/api";
+
+const EMPTY_DEVICE: CandidateDevice = {
+  slug: "",
+  brand: "Karşılaştırma",
+  name: "Cihaz Seçin",
+  score: "0",
+  chipset: "İşlemci",
+  battery: "Batarya",
+  camera: "Kamera",
+  price: 0,
+  store: "Mağaza",
+};
 
 export default function ComparisonCockpit() {
   const searchParams = useSearchParams();
   const { openAlertModal, showToast } = useApp();
 
   // Active 4 devices state
-  const [activeDevices, setActiveDevices] = useState<CandidateDevice[]>([
-    CANDIDATE_FLAGSHIPS[5], // iPhone 16 Pro Max
-    CANDIDATE_FLAGSHIPS[6], // Galaxy S25 Ultra
-    CANDIDATE_FLAGSHIPS[7], // Xiaomi 15 Pro
-    CANDIDATE_FLAGSHIPS[8], // Pixel 9 Pro XL
-  ]);
+  const [activeDevices, setActiveDevices] = useState<CandidateDevice[]>([]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDiffHighlighted, setIsDiffHighlighted] = useState(false);
@@ -34,36 +42,16 @@ export default function ComparisonCockpit() {
       if (slugs.length > 0) {
         backendApi.comparePhones(slugs).then((apiPhones) => {
           if (apiPhones && apiPhones.length > 0) {
-            const mapped = apiPhones.map((p) => {
-              const matchedCandidate = CANDIDATE_FLAGSHIPS.find((c) => c.slug === p.slug);
-              return {
-                slug: p.slug,
-                brand: p.brand,
-                name: p.name,
-                score: (p.rating || 9.5).toFixed(1),
-                chipset: p.specs?.performance?.chipset || matchedCandidate?.chipset || "Sekiz Çekirdekli",
-                battery: `${p.specs?.battery?.capacity || 5000} mAh`,
-                camera: `${p.specs?.camera?.mainCamera?.megapixels || p.specs?.camera?.mainMp || 50}MP Kamera`,
-                price: p.lowestPrice,
-                store: p.lowestPriceStoreName || p.storesPrices?.[0]?.store || "Mağaza",
-                image: p.image || matchedCandidate?.image,
-                isFlagship: matchedCandidate?.isFlagship ?? true,
-                hasPeriscope: matchedCandidate?.hasPeriscope ?? false,
-                hasRecordDiscount: p.isPriceDropped ?? matchedCandidate?.hasRecordDiscount ?? false,
-              };
-            });
-            setActiveDevices(mapped.slice(0, 4));
-            return;
-          }
-
-          const resolved = slugs
-            .map((s) => CANDIDATE_FLAGSHIPS.find((d) => d.slug === s))
-            .filter((x): x is CandidateDevice => Boolean(x));
-          if (resolved.length > 0) {
-            setActiveDevices(resolved.slice(0, 4));
+            setActiveDevices(apiPhones.map(phoneToCandidate).slice(0, 4));
           }
         });
       }
+    } else {
+      getPopularPhones(4).then((popular) => {
+        if (popular && popular.length > 0) {
+          setActiveDevices(popular.map(phoneToCandidate));
+        }
+      });
     }
   }, [searchParams]);
 
@@ -96,21 +84,20 @@ export default function ComparisonCockpit() {
   };
 
   const handleReset = () => {
-    setActiveDevices([
-      CANDIDATE_FLAGSHIPS[5], // iPhone 16 Pro Max
-      CANDIDATE_FLAGSHIPS[6], // Galaxy S25 Ultra
-      CANDIDATE_FLAGSHIPS[7], // Xiaomi 15 Pro
-      CANDIDATE_FLAGSHIPS[8], // Pixel 9 Pro XL
-    ]);
+    getPopularPhones(4).then((popular) => {
+      if (popular && popular.length > 0) {
+        setActiveDevices(popular.map(phoneToCandidate));
+      }
+    });
     setIsDiffHighlighted(false);
-    showToast("Karşılaştırma varsayılan 4 amiral gemisine sıfırlandı.", "info");
+    showToast("Karşılaştırma güncel popüler modellere sıfırlandı.", "info");
   };
 
   // Safe device accessors
-  const dev1 = activeDevices[0] || CANDIDATE_FLAGSHIPS[5];
-  const dev2 = activeDevices[1] || CANDIDATE_FLAGSHIPS[6];
-  const dev3 = activeDevices[2] || CANDIDATE_FLAGSHIPS[7];
-  const dev4 = activeDevices[3] || CANDIDATE_FLAGSHIPS[8];
+  const dev1 = activeDevices[0] || EMPTY_DEVICE;
+  const dev2 = activeDevices[1] || EMPTY_DEVICE;
+  const dev3 = activeDevices[2] || EMPTY_DEVICE;
+  const dev4 = activeDevices[3] || EMPTY_DEVICE;
 
   const currentDate = new Date().toLocaleDateString("tr-TR", {
     day: "numeric",

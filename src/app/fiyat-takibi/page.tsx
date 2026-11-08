@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import Link from "next/link";
 import {
   Bell,
@@ -35,62 +35,26 @@ interface TrendingDeviceCard {
   image: string;
 }
 
-const DEFAULT_TRENDING_DEVICES: TrendingDeviceCard[] = [
-  {
-    slug: "iphone-16",
-    brand: "APPLE",
-    name: "iPhone 16 128GB",
-    specsLine: "A18 Çip • Kamera Denetimi • HDR",
-    price: 58999,
-    storeCount: 14,
-    badgeText: "-%10",
-    badgeType: "discount",
-    os: "ios",
-    image: "/images/phones/iphone-16.svg",
-  },
-  {
-    slug: "samsung-galaxy-s24-plus",
-    brand: "SAMSUNG",
-    name: "Galaxy S24+ 256GB",
-    specsLine: "Galaxy AI • QHD+ • 12GB RAM",
-    price: 41299,
-    storeCount: 16,
-    badgeText: "-%18",
-    badgeType: "discount",
-    os: "android",
-    image: "/images/phones/samsung-galaxy-s24-plus.svg",
-  },
-  {
-    slug: "honor-magic-6-pro",
-    brand: "HONOR",
-    name: "Magic 6 Pro 512GB",
-    specsLine: "180MP Periskop • 5600mAh Batarya",
-    price: 49999,
-    storeCount: 11,
-    badgeText: "Yeni",
-    badgeType: "new",
-    os: "android",
-    image: "/images/phones/honor-magic-6-pro.svg",
-  },
-  {
-    slug: "google-pixel-9-pro",
-    brand: "GOOGLE",
-    name: "Pixel 9 Pro 128GB",
-    specsLine: "Tensor G4 • Gemini Nano • Super Actua",
-    price: 47500,
-    storeCount: 6,
-    badgeText: "-%8",
-    badgeType: "discount",
-    os: "android",
-    image: "/images/phones/google-pixel-9-pro.svg",
-  },
-];
-
 export default function PriceTrackingPage() {
   const { alerts, removeAlert, favorites, toggleFavorite, createAlert } = useApp();
   const [phones, setPhones] = useState<Phone[]>([]);
   const [selectedSlug, setSelectedSlug] = useState<string>("iphone-16-pro");
   const [trendFilter, setTrendFilter] = useState<"all" | "ios" | "android">("all");
+
+  const trendingDevices = useMemo(() => {
+    return phones.slice(0, 10).map((p) => ({
+      slug: p.slug,
+      brand: p.brand.toUpperCase(),
+      name: p.name,
+      specsLine: `${p.specs?.display?.size || 6.7}" • ${p.specs?.performance?.chipset?.split("(")[0].trim() || p.brand}`,
+      price: p.lowestPrice,
+      storeCount: p.storesCount || p.storesPrices?.length || 1,
+      badgeText: p.priceDropPercent ? `-%${p.priceDropPercent}` : p.isNew ? "YENİ" : "DİP",
+      badgeType: (p.isNew ? "new" : "discount") as "discount" | "new",
+      os: (p.brand.toLowerCase() === "apple" ? "ios" : "android") as "ios" | "android",
+      image: p.image || "/images/phones/placeholder.webp",
+    }));
+  }, [phones]);
 
   // Quick Radar Card State (Middle Bento Card 2)
   const [radarTargetPrice, setRadarTargetPrice] = useState<number>(44000);
@@ -142,7 +106,7 @@ export default function PriceTrackingPage() {
     setTimeout(() => setRadarCreated(false), 3500);
   };
 
-  const filteredTrending = DEFAULT_TRENDING_DEVICES.filter((item) => {
+  const filteredTrending = trendingDevices.filter((item: TrendingDeviceCard) => {
     if (trendFilter === "all") return true;
     return item.os === trendFilter;
   });
@@ -383,7 +347,7 @@ export default function PriceTrackingPage() {
                     tagEmerald: false,
                     slug: "nothing-phone-2a",
                   },
-                ].map((item) => (
+                ].map((item: any) => (
                   <Link
                     key={item.rank}
                     href={`/telefon/${item.slug}`}
@@ -683,7 +647,7 @@ export default function PriceTrackingPage() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {filteredTrending.map((device) => {
+            {filteredTrending.map((device: TrendingDeviceCard) => {
               const isFav = favorites.includes(device.slug);
               return (
                 <div

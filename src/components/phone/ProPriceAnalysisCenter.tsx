@@ -259,69 +259,108 @@ export default function ProPriceAnalysisCenter({
 }: Props) {
   const { createAlert } = useApp();
 
-  // Determine whether we are showing the default flagship (iPhone 16 Pro 256GB) or a dynamically selected phone
-  const isDefaultShowcase =
-    !phone ||
-    phone.slug === "iphone-16-pro" ||
-    phone.name.toLowerCase().includes("iphone 16 pro");
+  const displayTitle = phone?.name || "Akıllı Telefon";
 
-  const displayTitle = isDefaultShowcase
-    ? "Apple iPhone 16 Pro 256GB"
-    : phone?.name || "Apple iPhone 16 Pro 256GB";
-
-  const displaySubtitle = isDefaultShowcase
-    ? "Doğal Titanyum (A18 Pro)"
-    : `${phone?.specs?.design?.colors?.[0] || "Titanyum"} (${
-        phone?.specs?.performance?.chipset?.split("(")[0].trim() || "Pro Çip"
-      })`;
+  const displaySubtitle = phone
+    ? `${phone.specs?.design?.colors?.[0] || phone.brand} (${
+        phone.specs?.performance?.chipset?.split("(")[0].trim() || "Mobil Donanım"
+      })`
+    : "";
 
   const storeItems: StoreTelemetryItem[] = useMemo(() => {
-    if (isDefaultShowcase) {
-      return DEFAULT_IPHONE_STORES;
+    if (phone?.storesPrices && phone.storesPrices.length > 0) {
+      const sorted = [...phone.storesPrices].sort((a, b) => a.price - b.price);
+      const lowestP = sorted[0].price;
+      const highestP = sorted[sorted.length - 1].price;
+
+      return sorted.map((sp, idx) => {
+        const diff = sp.price - lowestP;
+        return {
+          rank: idx + 1,
+          name: sp.store,
+          slug: sp.storeSlug,
+          badge: idx === 0 ? "En Dip Fiyat" : sp.isOfficial ? "Resmi Distribütör" : undefined,
+          badgeType: idx === 0 ? "emerald" : ("slate" as const),
+          subtitle: sp.sellerName || `Satıcı: ${sp.store}`,
+          price: sp.price,
+          diffText: idx === 0 ? "↘ En Düşük Fiyat" : `+${formatPrice(diff)} fark`,
+          isLowest: idx === 0,
+          stockStatus: sp.isAvailable ? "Hızlı Teslimat (Stokta)" : "Tükendi",
+          stockSub: "Doğrulanmış Stok",
+          shippingSpeed: sp.shippingText || "Ücretsiz Kargo",
+          shippingSub: "Kargo Güvencesi",
+          rating: sp.sellerRating ? String(sp.sellerRating) : "9.8",
+          reviewCount: "Doğrulanmış Satıcı",
+          range30d: formatPrice(sp.price),
+          rangeSub: "Canlı Fiyat",
+          peakPrice: highestP,
+          lastUpdated: "Canlı",
+          url: sp.url,
+        };
+      });
     }
-    const baseLow = phone?.lowestPrice || 59899;
-    const baseHigh = Math.max(phone?.highestPrice || baseLow + 9000, Math.round(baseLow * 1.16));
-    const spread = baseHigh - baseLow;
 
-    const templates = DEFAULT_IPHONE_STORES;
-    return templates.map((tpl, idx) => {
-      const ratio = idx === 0 ? 0 : idx === 9 ? 1 : (idx / 9) * 0.58;
-      const computedPrice =
-        idx === 0
-          ? baseLow
-          : idx === 9
-            ? baseHigh
-            : Math.round((baseLow + spread * ratio) / 10) * 10;
-      const diff = computedPrice - baseLow;
-      const dropPct = Math.max(8, Math.round(((baseHigh - baseLow) / baseHigh) * 100));
+    if (phone && phone.lowestPrice > 0) {
+      const stName = phone.lowestPriceStoreName || "Resmi Satıcı";
+      return [
+        {
+          rank: 1,
+          name: stName,
+          slug: (stName || "").toLowerCase().replace(/[^a-z0-9]/g, ""),
+          badge: "En Dip Fiyat",
+          badgeType: "emerald",
+          subtitle: "Doğrulanmış Mağaza",
+          price: phone.lowestPrice,
+          diffText: "↘ En Düşük Fiyat",
+          isLowest: true,
+          stockStatus: "Stokta",
+          stockSub: "Canlı Envanter",
+          shippingSpeed: "Hızlı Teslimat",
+          shippingSub: "Ücretsiz Kargo",
+          rating: "9.8",
+          reviewCount: "Resmi Mağaza",
+          range30d: formatPrice(phone.lowestPrice),
+          rangeSub: "Canlı Fiyat",
+          peakPrice: phone.highestPrice || phone.lowestPrice,
+          lastUpdated: "Canlı",
+          url: phone.lowestPriceUrl || undefined,
+        },
+      ];
+    }
 
-      return {
-        ...tpl,
-        price: computedPrice,
-        peakPrice: baseHigh,
-        diffText:
-          idx === 0
-            ? `↘ -%${dropPct} Rekor`
-            : idx === 9
-              ? "Liste Fiyatı"
-              : `+${formatPrice(diff)} fark`,
-        range30d: `${formatPrice(computedPrice)} - ${formatPrice(
-          Math.round(computedPrice * 1.075)
-        )}`,
-      };
-    });
-  }, [isDefaultShowcase, phone]);
+    return [];
+  }, [phone]);
 
   const [selectedRank, setSelectedRank] = useState<number>(1);
   const [timeRange, setTimeRange] = useState<TimeRangeKey>("6m");
   const [hoveredMonthIdx, setHoveredMonthIdx] = useState<number | null>(null);
   const [showModelPicker, setShowModelPicker] = useState(false);
 
-  const selectedStore =
-    storeItems.find((s) => s.rank === selectedRank) || storeItems[0];
+  const fallbackStore: StoreTelemetryItem = {
+    rank: 1,
+    name: phone?.lowestPriceStoreName || "Resmi Satıcı",
+    slug: "store",
+    subtitle: "Canlı Doğrulanmış Fiyat",
+    price: phone?.lowestPrice || 0,
+    diffText: "En Düşük Fiyat",
+    stockStatus: "Stokta",
+    stockSub: "",
+    shippingSpeed: "Hızlı Teslimat",
+    shippingSub: "Ücretsiz Kargo",
+    rating: "9.8",
+    reviewCount: "",
+    range30d: formatPrice(phone?.lowestPrice || 0),
+    rangeSub: "",
+    peakPrice: phone?.highestPrice || phone?.lowestPrice || 0,
+    lastUpdated: "Canlı",
+  };
 
-  const lowestMarketPrice = storeItems[0].price;
-  const highestMarketPrice = storeItems[storeItems.length - 1].peakPrice;
+  const selectedStore =
+    storeItems.find((s) => s.rank === selectedRank) || storeItems[0] || fallbackStore;
+
+  const lowestMarketPrice = storeItems[0]?.price || selectedStore.price;
+  const highestMarketPrice =
+    storeItems[storeItems.length - 1]?.peakPrice || selectedStore.peakPrice || selectedStore.price;
 
   // Smart Alert State
   const [alertPrice, setAlertPrice] = useState<number>(
@@ -335,10 +374,7 @@ export default function ProPriceAnalysisCenter({
 
   const preset5Price = Math.round((selectedStore.price * 0.95) / 100) * 100;
   const preset10Price = Math.round((selectedStore.price * 0.9) / 100) * 100;
-  const presetDipPrice =
-    isDefaultShowcase && selectedStore.rank === 1
-      ? 49999
-      : Math.round((lowestMarketPrice * 0.84) / 100) * 100;
+  const presetDipPrice = Math.round((lowestMarketPrice * 0.84) / 100) * 100;
 
   // 6-Month Telemetry Curve Data for Selected Store & Timeframe
   const chartData = useMemo(() => {

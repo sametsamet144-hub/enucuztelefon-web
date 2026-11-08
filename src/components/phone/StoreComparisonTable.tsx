@@ -202,84 +202,58 @@ export default function StoreComparisonTable({
   const [activePeriod, setActivePeriod] = useState<PeriodKey>("6A");
 
   const enrichedStores: EnrichedStoreOffer[] = useMemo(() => {
-    const base = rawBaseLowest;
-    const listPrice = Math.round(base * 1.2187); // e.g. 59.899 -> ~72.999
-
-    const rows: EnrichedStoreOffer[] = CANONICAL_STORES.map((template, idx) => {
-      // Check if storesPrices has a matching store
-      const matched = storesPrices?.find(
-        (sp) =>
-          sp.storeSlug?.toLowerCase().includes(template.storeSlug) ||
-          sp.store?.toLowerCase().includes(template.store.toLowerCase().split(" ")[0])
-      );
-
-      let computedPrice: number;
-      if (idx === 0) {
-        computedPrice = base;
-      } else if (idx === CANONICAL_STORES.length - 1) {
-        computedPrice = Math.round(base * (1 + template.spreadPct));
-      } else if (matched && matched.price + storageOffset > base) {
-        computedPrice = matched.price + storageOffset;
-      } else {
-        computedPrice = Math.round(base * (1 + template.spreadPct));
-      }
-
-      // Dynamic brand adaptation for store #3 and #6 and #10 if non-Apple
-      let storeTitle = template.store;
-      let badgeLabel = template.badge;
-      let subLabel = template.subtitle;
-
-      if (brandName !== "Apple") {
-        if (template.storeSlug === "trendyol") {
-          badgeLabel = `${brandName} Yetkili`;
-        }
-        if (template.storeSlug === "mediamarkt") {
-          subLabel = `Mağazadan Teslim • ${brandName} Care`;
-        }
-        if (template.storeSlug === "vatan") {
-          badgeLabel = "Yetkili Nokta";
-        }
-        if (template.storeSlug === "apple-store") {
-          storeTitle = `${brandName} Store TR`;
-        }
-      }
-
-      const discountPct = Math.max(
-        8,
-        Math.min(35, Math.round(((listPrice - computedPrice) / listPrice) * 100))
-      );
-
-      return {
+    // If backend provided real store offers, map directly from them
+    if (storesPrices && storesPrices.length > 0) {
+      const rows: EnrichedStoreOffer[] = storesPrices.map((sp, idx) => ({
         rank: idx + 1,
-        store: storeTitle,
-        storeSlug: template.storeSlug,
-        badge: badgeLabel,
-        badgeTone: idx === 0 ? "emerald" : template.badgeTone,
-        subtitle: subLabel,
-        price: computedPrice,
-        diff: Math.max(0, computedPrice - base),
-        discountPct,
-        rating: matched?.sellerRating ? String(matched.sellerRating) : template.rating,
-        stockStatus: template.stockStatus,
-        shippingLabel: matched?.shippingText || template.shippingLabel,
-        url: resolveStoreOfferUrl(template.storeSlug, phoneName, matched?.url),
-        isOfficial: true,
-      };
-    });
+        store: sp.store,
+        storeSlug: sp.storeSlug,
+        badge: idx === 0 ? "En Dip Fiyat" : sp.isOfficial ? "Resmi Satıcı" : "Yetkili Mağaza",
+        badgeTone: idx === 0 ? "emerald" : "blue",
+        subtitle: sp.sellerName || `${sp.store} Satıcısı`,
+        price: sp.price + (storageOffset || 0),
+        diff: 0,
+        discountPct: 0,
+        rating: sp.sellerRating ? String(sp.sellerRating) : "9.6",
+        stockStatus: sp.isAvailable ? "Stokta Var" : "Tükendi",
+        shippingLabel: sp.shippingText || "Ücretsiz Kargo",
+        url: resolveStoreOfferUrl(sp.storeSlug, phoneName, sp.url),
+        isOfficial: sp.isOfficial ?? false,
+      }));
 
-    // Ensure strict ascending price order for ranks 1..10
-    rows.sort((a, b) => a.price - b.price);
-    rows.forEach((r, i) => {
-      r.rank = i + 1;
-      r.diff = Math.max(0, r.price - rows[0].price);
-      if (i === 0) {
-        r.badge = "Dip";
-        r.badgeTone = "emerald";
-      }
-    });
+      rows.sort((a, b) => a.price - b.price);
+      rows.forEach((r, i) => {
+        r.rank = i + 1;
+        r.diff = Math.max(0, r.price - rows[0].price);
+      });
+      return sortAsc ? rows : [...rows].reverse();
+    }
 
-    return sortAsc ? rows : [...rows].reverse();
-  }, [rawBaseLowest, storesPrices, storageOffset, brandName, phoneName, sortAsc]);
+    // If only base price is present without individual store breakdown
+    if (rawBaseLowest > 0) {
+      const singleStore = phone?.lowestPriceStoreName || "Resmi Satıcı";
+      return [
+        {
+          rank: 1,
+          store: singleStore,
+          storeSlug: "store",
+          badge: "En Dip Fiyat",
+          badgeTone: "emerald",
+          subtitle: "Canlı Doğrulanmış En Düşük Fiyat",
+          price: rawBaseLowest + (storageOffset || 0),
+          diff: 0,
+          discountPct: phone?.priceDropPercent || 0,
+          rating: "9.8",
+          stockStatus: "Stokta Hazır",
+          shippingLabel: "Ücretsiz Kargo",
+          url: resolveStoreOfferUrl("store", phoneName, phone?.lowestPriceUrl || undefined),
+          isOfficial: true,
+        },
+      ];
+    }
+
+    return [];
+  }, [rawBaseLowest, storesPrices, storageOffset, phoneName, phone, sortAsc]);
 
   const lowestOffer = useMemo(() => {
     return [...enrichedStores].sort((a, b) => a.price - b.price)[0];

@@ -1,28 +1,25 @@
-import { getPhones, getBrands } from "@/lib/data";
-import PhoneCatalogClient from "@/components/phone/PhoneCatalogClient";
 import StitchMobileHome from "@/components/home/StitchMobileHome";
+import StitchDesktopHome from "@/components/home/StitchDesktopHome";
 
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "EnUcuzTelefon.com - Türkiye'nin Akıllı Telefon ve Canlı Fiyat Merkezi",
+  title: "EnUcuzTelefon.com - Türkiye'nin Akıllı Telefon ve Fiyat Rehberi",
   description:
-    "97+ akıllı telefon modelini 16 resmi mağazada karşılaştırın, fiyatı düşenleri yakalayın ve teknik özellikleriyle inceleyin.",
+    "488+ güncel model, 16 resmi yetkili satıcı ve anlık fiyat değişim telemetrisi. Karşılaştır, alarm kur, doğrulanmış en düşük fiyattan sahip ol.",
 };
 
-export default async function HomePage() {
-  const [phones, brands] = await Promise.all([getPhones(), getBrands()]);
-
+export default function HomePage() {
   return (
-    <div className="min-h-screen bg-[#080a0f] text-slate-100">
+    <div className="min-h-screen bg-[#08090c] text-slate-100">
       {/* Mobile Experience: Stitch Mobile Homepage (<lg) */}
       <div className="block lg:hidden">
         <StitchMobileHome />
       </div>
 
-      {/* Desktop Experience: Stitch Desktop Catalog (>=lg) */}
+      {/* Desktop Experience: Stitch Desktop Homepage (>=lg) */}
       <div className="hidden lg:block">
-        <PhoneCatalogClient initialPhones={phones} brands={brands} />
+        <StitchDesktopHome />
       </div>
     </div>
   );

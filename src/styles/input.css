@@ -8,5 +8,161 @@
   --primary-500: #0ea5e9;
   --primary-600: #0284c7;
   --secondary-500: #f97316;
-  --dark: #0f172a;
+  --dark: #08090c;
+}
+
+/* ─── STITCH LIVE & BENTO ANIMATIONS ──────────────────────────────────────── */
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes float-slow {
+  0%,
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-7px) rotate(-1.2deg);
+  }
+}
+
+@keyframes pulse-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.35),
+      0 0 22px rgba(16, 185, 129, 0.18);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(16, 185, 129, 0),
+      0 0 32px rgba(16, 185, 129, 0.38);
+  }
+}
+
+@keyframes pulse-blue-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(29, 140, 248, 0.35),
+      0 0 24px rgba(29, 140, 248, 0.22);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(29, 140, 248, 0),
+      0 0 36px rgba(29, 140, 248, 0.45);
+  }
+}
+
+@keyframes fade-up {
+  0% {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes sparkline-draw {
+  0% {
+    stroke-dashoffset: 320;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes bar-grow {
+  0% {
+    transform: scaleX(0);
+  }
+  100% {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes shimmer-sweep {
+  0% {
+    transform: translateX(-120%) skewX(-18deg);
+  }
+  100% {
+    transform: translateX(220%) skewX(-18deg);
+  }
+}
+
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee 32s linear infinite;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+.animate-float {
+  animation: float-slow 4.5s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2.6s ease-in-out infinite;
+}
+
+.animate-pulse-blue {
+  animation: pulse-blue-glow 2.8s ease-in-out infinite;
+}
+
+.animate-fade-up {
+  animation: fade-up 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.delay-75 {
+  animation-delay: 75ms;
+}
+.delay-150 {
+  animation-delay: 150ms;
+}
+.delay-225 {
+  animation-delay: 225ms;
+}
+.delay-300 {
+  animation-delay: 300ms;
+}
+.delay-400 {
+  animation-delay: 400ms;
+}
+
+.animate-sparkline {
+  stroke-dasharray: 320;
+  stroke-dashoffset: 320;
+  animation: sparkline-draw 2.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.animate-bar-grow {
+  transform-origin: left center;
+  animation: bar-grow 1.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.bento-card-hover {
+  transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.32s ease, box-shadow 0.32s ease;
+}
+
+.bento-card-hover:hover {
+  transform: translateY(-4px);
+  border-color: rgba(56, 189, 248, 0.35);
+  box-shadow: 0 20px 44px -15px rgba(0, 0, 0, 0.75),
+    0 0 28px -8px rgba(29, 140, 248, 0.18);
+}
+
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }

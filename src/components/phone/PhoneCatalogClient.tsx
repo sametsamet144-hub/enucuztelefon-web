@@ -415,12 +415,29 @@ export default function PhoneCatalogClient({
           "samsung-galaxy-s24-fe",
           "vivo-x200-pro",
         ];
+        const CONCEPT_BOTTOM = new Set([
+          "iphone-17-pro-max",
+          "iphone-17-pro",
+          "iphone-17-plus",
+          "iphone-17",
+          "iphone-17-air",
+          "iphone-air",
+          "samsung-galaxy-s26-ultra",
+          "samsung-galaxy-s26",
+          "samsung-galaxy-s25-phone-015",
+          "redmi-note-13-pro-5g-phone-038",
+          "iphone-se-4-nesil",
+        ]);
         return list.sort((a, b) => {
           const idxA = SHOWCASE_ORDER.indexOf(a.slug);
           const idxB = SHOWCASE_ORDER.indexOf(b.slug);
           if (idxA !== -1 && idxB !== -1) return idxA - idxB;
           if (idxA !== -1) return -1;
           if (idxB !== -1) return 1;
+          const isConceptA = CONCEPT_BOTTOM.has(a.slug);
+          const isConceptB = CONCEPT_BOTTOM.has(b.slug);
+          if (isConceptA && !isConceptB) return 1;
+          if (!isConceptA && isConceptB) return -1;
           return (b.rating ?? 0) - (a.rating ?? 0);
         });
       }

@@ -385,10 +385,106 @@
   animation: cursor-blink 0.85s step-start infinite;
 }
 
-.scrollbar-none::-webkit-scrollbar {
+/* ─── 4-WAY COMPARISON & 3D TILT DEVICE SELECTOR STYLES ───────────────── */
+@keyframes shimmer-sweep {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes modal-entrance {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.animate-modal-entrance {
+  animation: modal-entrance 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.shimmer-button {
+  position: relative;
+  overflow: hidden;
+}
+.shimmer-button::after {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    60deg,
+    transparent 40%,
+    rgba(255, 255, 255, 0.18) 50%,
+    transparent 60%
+  );
+  background-size: 200% 100%;
+  animation: shimmer-sweep 3.5s infinite linear;
+  pointer-events: none;
+}
+
+/* 3D Tilt Card Styles */
+.tilt-card {
+  position: relative;
+  transform-style: preserve-3d;
+  will-change: transform;
+  transition: transform 0.12s ease-out, box-shadow 0.2s ease, border-color 0.2s ease;
+  transform: perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1);
+}
+.tilt-card-glare {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease-out;
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(255, 255, 255, 0.16) 0%,
+    rgba(255, 255, 255, 0.03) 50%,
+    transparent 75%
+  );
+  mix-blend-mode: overlay;
+  z-index: 20;
+}
+@media (prefers-reduced-motion: reduce) {
+  .tilt-card {
+    transform: none !important;
+    transition: none !important;
+  }
+  .tilt-card-glare {
+    display: none !important;
+  }
+}
+
+/* Comparison matrix difference highlights */
+.highlight-active .win-spec {
+  box-shadow: 0 0 16px -2px rgba(16, 185, 129, 0.35);
+  border-color: rgba(52, 211, 153, 0.6) !important;
+  background-color: rgba(16, 185, 129, 0.08) !important;
+}
+
+.glass-card {
+  background: rgba(15, 15, 19, 0.78);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.scrollbar-none::-webkit-scrollbar,
+.no-scrollbar::-webkit-scrollbar {
   display: none;
 }
-.scrollbar-none {
+.scrollbar-none,
+.no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }

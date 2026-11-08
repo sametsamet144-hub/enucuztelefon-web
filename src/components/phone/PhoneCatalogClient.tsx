@@ -206,19 +206,67 @@ export default function PhoneCatalogClient({
   };
 
   const brandPills = useMemo(() => {
-    const list = brands.map((b) => ({
-      name: b.name,
-      count:
-        b.phoneCount ||
-        initialPhones.filter(
-          (p) => p.brand.toLowerCase() === b.name.toLowerCase()
-        ).length,
-    }));
+    const knownBrands = [
+      "Apple",
+      "Samsung",
+      "Xiaomi",
+      "POCO",
+      "HONOR",
+      "vivo",
+      "Huawei",
+      "Google",
+      "Nothing",
+      "Realme",
+      "OnePlus",
+      "Motorola",
+      "Oppo",
+      "Tecno",
+      "Infinix",
+    ];
 
-    const priorityBrands = ["Apple", "Samsung", "Xiaomi", "POCO", "HONOR"];
+    const uniqueBrandNames = Array.from(
+      new Set([
+        ...initialPhones.map((p) => p.brand),
+        ...brands.map((b) => b.name),
+        ...knownBrands,
+      ])
+    ).filter(Boolean);
+
+    const list = uniqueBrandNames
+      .map((brandName) => {
+        const bObj = brands.find(
+          (b) => b.name.toLowerCase() === brandName.toLowerCase()
+        );
+        const count =
+          bObj?.phoneCount ||
+          initialPhones.filter(
+            (p) => p.brand.toLowerCase() === brandName.toLowerCase()
+          ).length;
+        return {
+          name: brandName,
+          count,
+        };
+      })
+      .filter((b) => b.count > 0 || initialPhones.length === 0);
+
+    const priorityBrands = [
+      "Apple",
+      "Samsung",
+      "Xiaomi",
+      "POCO",
+      "HONOR",
+      "vivo",
+      "Huawei",
+      "Google",
+      "Nothing",
+    ];
     return list.sort((a, b) => {
-      const idxA = priorityBrands.findIndex((p) => p.toLowerCase() === a.name.toLowerCase());
-      const idxB = priorityBrands.findIndex((p) => p.toLowerCase() === b.name.toLowerCase());
+      const idxA = priorityBrands.findIndex(
+        (p) => p.toLowerCase() === a.name.toLowerCase()
+      );
+      const idxB = priorityBrands.findIndex(
+        (p) => p.toLowerCase() === b.name.toLowerCase()
+      );
       if (idxA !== -1 && idxB !== -1) return idxA - idxB;
       if (idxA !== -1) return -1;
       if (idxB !== -1) return 1;

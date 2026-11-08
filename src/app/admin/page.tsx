@@ -533,10 +533,11 @@ export default function AdminDashboardPage() {
                           ★ {store.reliabilityScore} / 10
                         </span>
                       </td>
-                      <td className="py-3 px-4 text-slate-400 text-[11px]">
+                      <td className="py-3 px-4 text-slate-400 text-[11px]" suppressHydrationWarning>
                         {new Date(store.lastSyncTime || Date.now()).toLocaleTimeString("tr-TR", {
                           hour: "2-digit",
                           minute: "2-digit",
+                          timeZone: "Europe/Istanbul",
                         })}
                       </td>
                       <td className="py-3 px-4 text-right">

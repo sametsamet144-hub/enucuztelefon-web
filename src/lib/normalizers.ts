@@ -14,53 +14,12 @@ export function isRealDirectStoreOffer(sp: any): boolean {
 
   const lowerUrl = url.toLowerCase();
 
-  // Search or generic category fallback URLs are strictly fake:
+  // Synthetic placeholders:
   if (
-    lowerUrl.includes("/arama") ||
-    lowerUrl.includes("/ara?") ||
-    lowerUrl.includes("/ara/") ||
-    lowerUrl.includes("/sr?q=") ||
-    lowerUrl.includes("/sr?") ||
-    lowerUrl.includes("/sr/") ||
-    lowerUrl.includes("/s?k=") ||
-    lowerUrl.includes("/s?") ||
-    lowerUrl.includes("search_text=") ||
-    lowerUrl.includes("?query=") ||
-    lowerUrl.includes("&query=") ||
-    lowerUrl.includes("?text=") ||
-    lowerUrl.includes("&text=") ||
-    lowerUrl.includes("?q=") ||
-    lowerUrl.includes("&q=") ||
-    lowerUrl.includes("search.html") ||
-    lowerUrl.includes("/categories/") ||
-    lowerUrl.includes("/kategori/") ||
-    lowerUrl.includes("/katalog/") ||
-    lowerUrl.includes("/kampanyalar/") ||
-    lowerUrl.includes("/cihazlar") ||
-    lowerUrl.includes("/faturaya-ek") ||
-    lowerUrl.includes("apple.com/tr/iphone") ||
-    lowerUrl.includes("shop.samsung.com") ||
-    lowerUrl.includes("/mobil/cep-telefonu") ||
-    lowerUrl.includes("mi.com/tr") ||
-    lowerUrl.includes("honor.com/tr") ||
-    lowerUrl.includes("consumer.huawei.com") ||
-    lowerUrl.includes("tecno-mobile.com") ||
-    lowerUrl.includes("infinixmobility.com") ||
-    lowerUrl.includes("myepoint.com") ||
-    lowerUrl.includes("enucuztelefon.com") ||
     lowerUrl.includes("placeholder") ||
     lowerUrl.includes("-10000000") ||
     lowerUrl.includes("hbc0000100000") ||
-    lowerUrl.includes("bim.com.tr") ||
-    lowerUrl.includes("a101.com.tr") ||
-    lowerUrl.includes("kurumsalsok.com.tr") ||
-    lowerUrl.includes("sokmarket.com.tr") ||
-    lowerUrl.includes("evkur.com.tr") ||
-    lowerUrl.includes("yonavm.com.tr") ||
-    lowerUrl.includes("mutluevim.com.tr") ||
-    lowerUrl.includes("arcelik.com.tr") ||
-    lowerUrl.includes("beko.com.tr") ||
-    lowerUrl.includes("vestel.com.tr")
+    lowerUrl.includes("enucuztelefon.com")
   ) {
     return false;
   }
@@ -79,6 +38,20 @@ export function isRealDirectStoreOffer(sp: any): boolean {
     "vestel",
   ];
   if (fakeStoreSlugs.includes(storeSlug)) {
+    return false;
+  }
+
+  // Bare brand category landing pages that aren't direct product pages
+  if (
+    lowerUrl.endsWith("apple.com/tr/iphone") ||
+    lowerUrl.endsWith("apple.com/tr/iphone/") ||
+    lowerUrl.endsWith("shop.samsung.com/tr") ||
+    lowerUrl.endsWith("shop.samsung.com/tr/") ||
+    lowerUrl.endsWith("mi.com/tr/phone") ||
+    lowerUrl.endsWith("mi.com/tr/phone/") ||
+    lowerUrl.endsWith("consumer.huawei.com/tr/phones") ||
+    lowerUrl.endsWith("consumer.huawei.com/tr/phones/")
+  ) {
     return false;
   }
 
@@ -229,12 +202,18 @@ export function normalizePhone(raw: any): Phone {
     .map((sp: any) => ({
       store: sp.store || "Mağaza",
       storeSlug: sp.storeSlug || (sp.store || "").toLowerCase().replace(/[^a-z0-9]/g, ""),
+      storeLogoUrl: sp.storeLogoUrl || null,
       sellerName: sp.sellerName || sp.store,
-      sellerRating: sp.sellerRating || 9.5,
+      sellerRating: sp.sellerRating ?? 9.5,
       price: Number(sp.price) || 0,
+      originalPrice: sp.originalPrice ? Number(sp.originalPrice) : null,
       url: sp.url || "",
       isAvailable: sp.isAvailable ?? true,
-      lastUpdated: sp.lastUpdated || new Date().toISOString(),
+      variant: sp.variant || null,
+      storageGb: sp.storageGb !== undefined ? sp.storageGb : null,
+      color: sp.color || null,
+      lastUpdated: sp.lastCheckedAt || sp.lastUpdated || new Date().toISOString(),
+      lastCheckedAt: sp.lastCheckedAt || sp.lastUpdated,
       shippingText: sp.shippingText || "Ücretsiz Kargo",
       guaranteeText: sp.guaranteeText || "Resmi Distribütör Garantili",
       installmentText: sp.installmentText || "Peşin Fiyatına Taksit",

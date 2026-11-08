@@ -103,6 +103,7 @@ export default function ComparisonCockpit() {
     day: "numeric",
     month: "long",
     year: "numeric",
+    timeZone: "Europe/Istanbul",
   });
 
   return (
@@ -120,7 +121,7 @@ export default function ComparisonCockpit() {
               <span className="px-2.5 py-0.5 rounded-full bg-blue-500/10 text-blue-400 text-[11px] font-medium tracking-wide uppercase border border-blue-500/20">
                 4 Model Yan Yana
               </span>
-              <span className="text-slate-500 text-[12px]">
+              <span className="text-slate-500 text-[12px]" suppressHydrationWarning>
                 {currentDate} Güncellemesi
               </span>
             </div>

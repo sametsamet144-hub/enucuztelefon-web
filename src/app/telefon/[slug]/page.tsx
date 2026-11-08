@@ -15,7 +15,7 @@ import {
   XCircle,
   ArrowRight,
 } from "lucide-react";
-import { getPhone, getRelatedPhones } from "@/lib/data";
+import { getPhone, getRelatedPhones, getPhonePrices } from "@/lib/data";
 import ProPriceAnalysisCenter from "@/components/phone/ProPriceAnalysisCenter";
 import PhoneInteractiveShowcase from "@/components/phone/PhoneInteractiveShowcase";
 import PhoneCard from "@/components/phone/PhoneCard";
@@ -47,6 +47,21 @@ export default async function PhoneDetailPage({ params }: Props) {
 
   if (!phone) {
     notFound();
+  }
+
+  // Telefon sayfasına girildiğinde mağaza fiyatlarını GET /api/v1/products/{id}/prices ile çek
+  const pricesData = await getPhonePrices(phone.id);
+  if (pricesData && pricesData.storePrices && pricesData.storePrices.length > 0) {
+    phone.storesPrices = pricesData.storePrices;
+    phone.storesCount = pricesData.totalStores || pricesData.storePrices.length;
+    if (pricesData.lowestPrice > 0) phone.lowestPrice = pricesData.lowestPrice;
+    if (pricesData.highestPrice > 0) phone.highestPrice = pricesData.highestPrice;
+    if (pricesData.storePrices[0]) {
+      phone.lowestPriceStoreName = pricesData.storePrices[0].store;
+      phone.lowestPriceUrl = pricesData.storePrices[0].url;
+      phone.priceStore = pricesData.storePrices[0].store;
+      phone.priceUrl = pricesData.storePrices[0].url;
+    }
   }
 
   const relatedPhones = await getRelatedPhones(phone.id, 4);

@@ -29,6 +29,7 @@ export interface StoreTelemetryItem {
   badgeType?: "emerald" | "sky" | "slate";
   subtitle: string;
   price: number;
+  originalPrice?: number | null;
   diffText: string;
   isLowest?: boolean;
   isListPrice?: boolean;
@@ -36,6 +37,9 @@ export interface StoreTelemetryItem {
   stockSub: string;
   shippingSpeed: string;
   shippingSub: string;
+  guaranteeText?: string;
+  installmentText?: string;
+  variant?: string;
   rating: string;
   reviewCount: string;
   range30d: string;
@@ -77,26 +81,40 @@ export default function ProPriceAnalysisCenter({
 
       return sorted.map((sp, idx) => {
         const diff = sp.price - lowestP;
+        const subtitle = sp.variant
+          ? `${sp.sellerName || sp.store} • ${sp.variant}`
+          : (sp.sellerName || `Satıcı: ${sp.store}`);
+
         return {
           rank: idx + 1,
           name: sp.store,
           slug: sp.storeSlug,
           badge: idx === 0 ? "En Dip Fiyat" : sp.isOfficial ? "Resmi Distribütör" : undefined,
           badgeType: idx === 0 ? "emerald" : ("slate" as const),
-          subtitle: sp.sellerName || `Satıcı: ${sp.store}`,
+          subtitle,
           price: sp.price,
+          originalPrice: sp.originalPrice,
           diffText: idx === 0 ? "↘ En Düşük Fiyat" : `+${formatPrice(diff)} fark`,
           isLowest: idx === 0,
           stockStatus: sp.isAvailable ? "Hızlı Teslimat (Stokta)" : "Tükendi",
-          stockSub: "Doğrulanmış Stok",
+          stockSub: sp.storageGb ? `${sp.storageGb} GB Dahili Hafıza` : "Doğrulanmış Stok",
           shippingSpeed: sp.shippingText || "Ücretsiz Kargo",
-          shippingSub: "Kargo Güvencesi",
+          shippingSub: sp.installmentText || "Peşin Fiyatına 3 Taksit",
+          guaranteeText: sp.guaranteeText || (phone ? `2 Yıl ${phone.brand} Türkiye Garantili` : undefined),
+          installmentText: sp.installmentText || undefined,
+          variant: sp.variant || undefined,
           rating: sp.sellerRating ? String(sp.sellerRating) : "9.8",
           reviewCount: "Doğrulanmış Satıcı",
           range30d: formatPrice(sp.price),
           rangeSub: "Canlı Fiyat",
           peakPrice: highestP,
-          lastUpdated: "Canlı",
+          lastUpdated: sp.lastCheckedAt
+            ? new Date(sp.lastCheckedAt).toLocaleTimeString("tr-TR", {
+                hour: "2-digit",
+                minute: "2-digit",
+                timeZone: "Europe/Istanbul",
+              })
+            : "Canlı",
           url: sp.url,
         };
       });
@@ -591,7 +609,7 @@ export default function ProPriceAnalysisCenter({
                   {formatPrice(selectedStore.peakPrice)}
                 </strong>{" "}
                 • Son Güncelleme:{" "}
-                <strong className="text-white font-extrabold">
+                <strong className="text-white font-extrabold" suppressHydrationWarning>
                   {selectedStore.lastUpdated}
                 </strong>
               </div>
@@ -740,11 +758,12 @@ export default function ProPriceAnalysisCenter({
               <div>
                 <div className="flex items-center gap-1.5 text-xs font-extrabold text-white">
                   <span>
-                    2 Yıl {phone?.brand || "Apple"} Türkiye Garantili
+                    {selectedStore.guaranteeText || `2 Yıl ${phone?.brand || "Apple"} Türkiye Garantili`}
                   </span>
                   <CheckCircle2 className="w-3.5 h-3.5 text-sky-400" />
                 </div>
                 <div className="text-[11px] text-slate-400">
+                  {selectedStore.installmentText ? `${selectedStore.installmentText} • ` : ""}
                   BTK Kayıtlı, Orijinal Ambalajında ve Adınıza Faturalı
                 </div>
               </div>

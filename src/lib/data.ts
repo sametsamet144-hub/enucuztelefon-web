@@ -10,6 +10,7 @@ import type {
   StoreInfo,
   StorePrice,
   ProductFilterParams,
+  ProductPricesResponse,
 } from "@/types";
 
 /**
@@ -98,6 +99,8 @@ export async function getPhones(
 
 /**
  * Fetch a single phone's full details and specs by slug from backend REST API.
+ * Telefona ait mağaza fiyatları ve teklifleri doğrudan GET /api/v1/products/{id}/prices
+ * üzerinden çekilerek zenginleştirilir.
  */
 export async function getPhone(slug: string): Promise<Phone | null> {
   const canonicalSlug = resolvePhoneSlug(slug);
@@ -105,7 +108,48 @@ export async function getPhone(slug: string): Promise<Phone | null> {
     (await backendApi.getProductBySlug(canonicalSlug)) ||
     (canonicalSlug !== slug ? await backendApi.getProductBySlug(slug) : null);
 
-  return apiPhone || null;
+  if (!apiPhone) return null;
+
+  // Yeni endpoint ile güncel mağaza fiyatlarını ve tekliflerini getir:
+  // GET /api/v1/products/{id}/prices
+  try {
+    const isGuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(apiPhone.id);
+    const targetId = isGuid ? apiPhone.id : canonicalSlug;
+    const pricesResult = await backendApi.getProductPrices(targetId);
+
+    if (pricesResult && pricesResult.storePrices && pricesResult.storePrices.length > 0) {
+      apiPhone.storesPrices = pricesResult.storePrices;
+      apiPhone.storesCount = pricesResult.totalStores || pricesResult.storePrices.length;
+      if (pricesResult.lowestPrice > 0) {
+        apiPhone.lowestPrice = pricesResult.lowestPrice;
+      }
+      if (pricesResult.highestPrice > 0) {
+        apiPhone.highestPrice = pricesResult.highestPrice;
+      }
+      const lowestOffer = pricesResult.storePrices[0];
+      if (lowestOffer) {
+        apiPhone.lowestPriceStoreName = lowestOffer.store;
+        apiPhone.lowestPriceUrl = lowestOffer.url;
+        apiPhone.priceStore = lowestOffer.store;
+        apiPhone.priceUrl = lowestOffer.url;
+      }
+    }
+  } catch (err) {
+    console.warn(`[getPhone] Failed to load store prices for ${apiPhone.id}:`, err);
+  }
+
+  return apiPhone;
+}
+
+/**
+ * Belirtilen telefon ID'sine (veya slug'ına) göre tüm mağaza fiyat ve linklerini getirir.
+ * GET /api/v1/products/{id}/prices
+ */
+export async function getPhonePrices(
+  idOrSlug: string,
+  options?: { useQueryParam?: boolean; useAlias?: boolean }
+): Promise<ProductPricesResponse | null> {
+  return backendApi.getProductPrices(idOrSlug, options);
 }
 
 /**
@@ -113,6 +157,13 @@ export async function getPhone(slug: string): Promise<Phone | null> {
  */
 export async function getPhoneOffers(slug: string): Promise<StorePrice[]> {
   const canonicalSlug = resolvePhoneSlug(slug);
+
+  // Önce doğrudan GET /api/v1/products/{id}/prices endpoint'ini dene
+  const pricesResult = await backendApi.getProductPrices(canonicalSlug);
+  if (pricesResult && pricesResult.storePrices && pricesResult.storePrices.length > 0) {
+    return pricesResult.storePrices;
+  }
+
   const apiOffers = await backendApi.getProductOffers(canonicalSlug);
   if (apiOffers && apiOffers.length > 0) return apiOffers;
 

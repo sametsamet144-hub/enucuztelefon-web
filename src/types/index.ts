@@ -128,16 +128,37 @@ export interface PhoneSpecs {
 export interface StorePrice {
   store: string; // e.g. "Trendyol"
   storeSlug: string; // e.g. "trendyol"
+  storeLogoUrl?: string | null;
   sellerName?: string; // e.g. "Apple Türkiye Resmi Satıcı", "Amazon.com.tr"
   sellerRating?: number; // e.g. 9.8
   price: number; // TRY
+  originalPrice?: number | null;
   url: string;
   isAvailable?: boolean;
+  variant?: string | null;
+  storageGb?: number | null;
+  color?: string | null;
   lastUpdated?: string; // ISO date
+  lastCheckedAt?: string; // ISO date
   shippingText?: string; // e.g. "Ücretsiz Kargo • Aynı Gün"
   guaranteeText?: string; // e.g. "2 Yıl Resmi Distribütör Garantili"
   installmentText?: string; // e.g. "Peşin Fiyatına 3 Taksit"
   isOfficial?: boolean;
+}
+
+// ─── ProductPricesResponse ───────────────────────────────────
+export interface ProductPricesResponse {
+  phoneId: string;
+  phoneName: string;
+  slug: string;
+  brand: string;
+  brandSlug: string;
+  imageUrl?: string;
+  lowestPrice: number;
+  highestPrice: number;
+  totalStores: number;
+  totalOffers: number;
+  storePrices: StorePrice[];
 }
 
 // ─── PriceHistory ────────────────────────────────────────────

@@ -12,6 +12,7 @@ import type {
   PriceAlertResponse,
   StoreRedirectParams,
   StoreRedirectResponse,
+  ProductPricesResponse,
 } from "@/types";
 import { normalizePhone, normalizePriceHistory, isRealDirectStoreOffer } from "./normalizers";
 
@@ -139,6 +140,84 @@ export const backendApi = {
     const raw = await fetchApi<StorePrice[]>(`/products/${encodeURIComponent(slug)}/offers`);
     if (!raw || !Array.isArray(raw)) return null;
     return raw.filter(isRealDirectStoreOffer);
+  },
+
+  /**
+   * GET /api/v1/products/{id}/prices
+   * Route alias: GET /api/v1/phones/{id}/prices
+   * Query param: GET /api/v1/products/prices?phoneId={id}
+   * URL yolundaki (route) telefon ID'sine göre tüm mağaza fiyat ve linklerini getirir.
+   */
+  getProductPrices: async (
+    idOrSlug: string,
+    options?: { useQueryParam?: boolean; useAlias?: boolean }
+  ): Promise<ProductPricesResponse | null> => {
+    if (!idOrSlug) return null;
+
+    const isGuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(idOrSlug);
+    let targetId = idOrSlug;
+
+    if (!isGuid) {
+      // Slug gönderilmişse ilgili telefonun verisinden asıl GUID ID'yi al
+      const phone = await backendApi.getProductBySlug(idOrSlug);
+      if (phone?.id && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(phone.id)) {
+        targetId = phone.id;
+      }
+    }
+
+    let path = `/products/${encodeURIComponent(targetId)}/prices`;
+    if (options?.useQueryParam) {
+      path = `/products/prices?phoneId=${encodeURIComponent(targetId)}`;
+    } else if (options?.useAlias) {
+      path = `/phones/${encodeURIComponent(targetId)}/prices`;
+    }
+
+    const raw = await fetchApi<ProductPricesResponse>(path);
+    if (!raw || !Array.isArray(raw.storePrices)) return null;
+
+    const mappedOffers: StorePrice[] = raw.storePrices
+      .filter(isRealDirectStoreOffer)
+      .map((sp: any) => ({
+        store: sp.store || "Mağaza",
+        storeSlug: sp.storeSlug || (sp.store || "").toLowerCase().replace(/[^a-z0-9]/g, ""),
+        storeLogoUrl: sp.storeLogoUrl || null,
+        sellerName: sp.sellerName || sp.store,
+        sellerRating: sp.sellerRating ?? 9.5,
+        price: Number(sp.price) || 0,
+        originalPrice: sp.originalPrice ? Number(sp.originalPrice) : null,
+        url: sp.url || "",
+        isAvailable: sp.isAvailable ?? true,
+        variant: sp.variant || null,
+        storageGb: sp.storageGb !== undefined ? sp.storageGb : null,
+        color: sp.color || null,
+        shippingText: sp.shippingText || "Ücretsiz Kargo",
+        guaranteeText: sp.guaranteeText || "2 Yıl Resmi Distribütör Garantili",
+        installmentText: sp.installmentText || "Peşin Fiyatına 3 Taksit",
+        isOfficial: sp.isOfficial ?? false,
+        lastUpdated: sp.lastCheckedAt || sp.lastUpdated || new Date().toISOString(),
+        lastCheckedAt: sp.lastCheckedAt || sp.lastUpdated,
+      }))
+      .sort((a, b) => a.price - b.price);
+
+    const lowest = mappedOffers.length > 0 ? mappedOffers[0].price : Number(raw.lowestPrice) || 0;
+    const highest =
+      mappedOffers.length > 0
+        ? mappedOffers[mappedOffers.length - 1].price
+        : Number(raw.highestPrice) || lowest;
+
+    return {
+      phoneId: raw.phoneId || targetId,
+      phoneName: raw.phoneName,
+      slug: raw.slug,
+      brand: raw.brand,
+      brandSlug: raw.brandSlug,
+      imageUrl: raw.imageUrl,
+      lowestPrice: lowest,
+      highestPrice: highest,
+      totalStores: raw.totalStores || mappedOffers.length,
+      totalOffers: raw.totalOffers || mappedOffers.length,
+      storePrices: mappedOffers,
+    };
   },
 
   /**

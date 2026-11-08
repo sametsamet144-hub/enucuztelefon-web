@@ -88,7 +88,9 @@ export default function StoreComparisonTable({
         storeSlug: sp.storeSlug,
         badge: idx === 0 ? "En Dip Fiyat" : sp.isOfficial ? "Resmi Satıcı" : "Yetkili Mağaza",
         badgeTone: idx === 0 ? "emerald" : "blue",
-        subtitle: sp.sellerName || `${sp.store} Satıcısı`,
+        subtitle: sp.variant
+          ? `${sp.sellerName || sp.store} • ${sp.variant}`
+          : (sp.sellerName || `${sp.store} Satıcısı`),
         price: sp.price + (storageOffset || 0),
         diff: 0,
         discountPct: 0,

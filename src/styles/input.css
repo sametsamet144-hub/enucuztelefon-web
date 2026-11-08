@@ -488,3 +488,237 @@
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+
+/* ========================================================================= */
+/* OBSIDIAN PRECISION - STITCH TELEFONLAR, MOBIL & ANALIZ ANIMATIONS & UTILS */
+/* ========================================================================= */
+
+@keyframes border-beam-rotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes rotateConicBeam {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes float-phone {
+  0%, 100% { transform: translateY(0px) scale(1); }
+  50% { transform: translateY(-4px) scale(1.02); }
+}
+
+@keyframes sheen-sweep {
+  0% { transform: translateX(-150%) skewX(-20deg); }
+  30%, 100% { transform: translateX(250%) skewX(-20deg); }
+}
+
+@keyframes periodicSheen {
+  0%, 70% { transform: translateX(-140%) skewX(-20deg); }
+  100% { transform: translateX(180%) skewX(-20deg); }
+}
+
+@keyframes badge-breathe {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 180, 171, 0.4); }
+  50% { transform: scale(1.05); box-shadow: 0 0 8px 2px rgba(255, 180, 171, 0.3); }
+}
+
+@keyframes subtlePulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.88; transform: scale(1.03); }
+}
+
+@keyframes radar-wave {
+  0% { transform: scale(0.9); opacity: 0.9; }
+  70% { transform: scale(2.2); opacity: 0; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+
+@keyframes radarPing {
+  0% { transform: scale(1); opacity: 0.8; }
+  100% { transform: scale(2.4); opacity: 0; }
+}
+
+/* Rotating Conic Border Gradient Beams */
+.anim-border-beam {
+  position: relative;
+  overflow: hidden;
+}
+.anim-border-beam::before {
+  content: '';
+  position: absolute;
+  inset: -50%;
+  background: conic-gradient(from 0deg, transparent 0deg, #2997ff 60deg, transparent 120deg, #47e266 220deg, transparent 280deg);
+  animation: border-beam-rotate 4s linear infinite;
+  z-index: 0;
+}
+.anim-border-beam-amber::before {
+  background: conic-gradient(from 0deg, transparent 0deg, #ff9500 70deg, transparent 140deg, #ff2d55 240deg, transparent 300deg);
+}
+.anim-card-inner {
+  position: relative;
+  z-index: 1;
+  border-radius: calc(1rem - 1.5px);
+}
+
+.border-beam-container {
+  position: relative;
+}
+.border-beam-container::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: conic-gradient(from 0deg at 50% 50%, transparent 0deg, #2997ff 60deg, #38bdf8 120deg, transparent 180deg);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  z-index: 30;
+  animation: rotateConicBeam 4.5s linear infinite;
+}
+
+/* 3D Device Float Animation */
+.anim-float-3d {
+  animation: float-phone 4.5s ease-in-out infinite;
+  will-change: transform;
+}
+
+/* Sheen Sweeper on Action Buttons */
+.anim-sheen-btn,
+.btn-sheen-beam {
+  position: relative;
+  overflow: hidden;
+}
+.anim-sheen-btn::after,
+.btn-sheen-beam::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.45), transparent);
+  animation: sheen-sweep 3.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  pointer-events: none;
+}
+
+/* Badge Pulse */
+.anim-badge-pulse,
+.badge-pulse {
+  animation: badge-breathe 2.4s ease-in-out infinite;
+  will-change: transform;
+}
+
+/* Radar Ping Beacon */
+.anim-radar-ping,
+.radar-ping-dot {
+  position: relative;
+}
+.anim-radar-ping::after,
+.radar-ping-dot::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: inherit;
+  animation: radar-wave 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* Ambient Dot Grid */
+.ambient-dot-grid {
+  background-image: radial-gradient(rgba(41, 151, 255, 0.08) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+/* Hardware Accelerated Phone Cards with Dynamic Mouse Spotlight */
+.phone-card {
+  position: relative;
+  border-width: 1px !important;
+  will-change: transform, box-shadow;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.28s ease, border-color 0.28s ease;
+  z-index: 1;
+  overflow: hidden;
+}
+.phone-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(350px circle at var(--card-mouse-x, -200px) var(--card-mouse-y, -200px), rgba(41, 151, 255, 0.16), transparent 70%);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+  z-index: 1;
+}
+.phone-card:hover::before {
+  opacity: 1;
+}
+.phone-card:hover {
+  transform: translateY(-4px) translateZ(0);
+  border-color: rgba(41, 151, 255, 0.55) !important;
+  box-shadow: 0 16px 36px -8px rgba(41, 151, 255, 0.22), 0 0 20px 0 rgba(41, 151, 255, 0.1);
+  z-index: 20;
+}
+.phone-card:hover .device-ambient-glow {
+  opacity: 0.95;
+  transform: scale(1.22) translateZ(0);
+}
+.device-ambient-glow {
+  transition: opacity 0.45s ease, transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, opacity;
+}
+
+/* 3D Phone Mockup Wrapper */
+.phone-mockup-wrapper {
+  will-change: transform, filter;
+  transform: translateZ(0);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), filter 0.4s ease;
+}
+.phone-card:hover .phone-mockup-wrapper {
+  transform: translateY(-6px) scale(1.03) translateZ(0);
+  filter: drop-shadow(0 14px 22px rgba(41, 151, 255, 0.35));
+}
+
+/* Brand Holographic Glows */
+.holo-glow-apple { background: radial-gradient(circle, rgba(41, 151, 255, 0.45) 0%, rgba(99, 102, 241, 0.25) 50%, transparent 75%); }
+.holo-glow-samsung { background: radial-gradient(circle, rgba(56, 189, 248, 0.45) 0%, rgba(217, 119, 6, 0.3) 50%, transparent 75%); }
+.holo-glow-xiaomi { background: radial-gradient(circle, rgba(239, 68, 68, 0.45) 0%, rgba(249, 115, 22, 0.25) 50%, transparent 75%); }
+.holo-glow-honor { background: radial-gradient(circle, rgba(99, 102, 241, 0.45) 0%, rgba(168, 85, 247, 0.25) 50%, transparent 75%); }
+.holo-glow-huawei { background: radial-gradient(circle, rgba(16, 185, 129, 0.45) 0%, rgba(20, 184, 166, 0.25) 50%, transparent 75%); }
+.holo-glow-poco { background: radial-gradient(circle, rgba(234, 179, 8, 0.45) 0%, rgba(245, 158, 11, 0.3) 50%, transparent 75%); }
+.holo-glow-default { background: radial-gradient(circle, rgba(41, 151, 255, 0.4) 0%, rgba(99, 102, 241, 0.2) 50%, transparent 75%); }
+
+/* Filter Pill Neon Glow */
+.filter-pill-neon {
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease, border-color 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+}
+.filter-pill-neon:hover {
+  transform: translateY(-1px) scale(1.03);
+  box-shadow: 0 0 14px rgba(41, 151, 255, 0.38), 0 0 2px rgba(41, 151, 255, 0.8);
+  border-color: rgba(41, 151, 255, 0.65);
+}
+.filter-pill-neon:active {
+  transform: scale(0.97);
+}
+.filter-pill-active {
+  box-shadow: 0 0 16px rgba(41, 151, 255, 0.45), 0 0 4px rgba(41, 151, 255, 0.6) !important;
+}
+
+/* Tactile Micro-bounce */
+.tactile-bounce {
+  transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), color 0.15s ease, background-color 0.15s ease;
+}
+.tactile-bounce:active {
+  transform: scale(0.92);
+}

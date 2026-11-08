@@ -12,10 +12,14 @@ import {
   Columns2,
   Square,
   Check,
+  Bell,
+  ArrowRight,
+  TrendingDown,
 } from "lucide-react";
 import type { Phone } from "@/types";
 import { formatPrice } from "@/lib/utils";
 import { useApp } from "@/context/AppContext";
+import PhoneImage from "./PhoneImage";
 
 interface PhoneCardProps {
   phone: Phone;
@@ -23,381 +27,311 @@ interface PhoneCardProps {
   showCompareBadge?: boolean;
 }
 
-// ─── Minimalist Phone Silhouette Visual ───────────────────────────────────
-function StitchPhoneVisual({ phone }: { phone: Phone }) {
-  const slug = (phone.slug || "").toLowerCase();
-  const brand = (phone.brand || "").toLowerCase();
-
-  const isFoldable =
-    slug.includes("fold") ||
-    slug.includes("flip") ||
-    slug.includes("magic-v") ||
-    slug.includes("mate-xt");
-
-  const isSamsungUltra = slug.includes("s25-ultra") || slug.includes("s24-ultra");
-  const isXiaomiUltra = brand === "xiaomi" && slug.includes("ultra");
-  const isHuaweiPura = slug.includes("pura-70");
-  const isPoco = brand === "poco";
-  const isApple = brand === "apple";
-
-  // Phone body shape & styling
-  let outerBorder = "border-[#252c3d]";
-  let innerBg = "from-[#0e121a] via-[#121622] to-[#0a0d14]";
-  let iconBadge = "border-white/10 bg-white/5 text-slate-300";
-  let iconType: "camera" | "orange-camera" | "red-ring" | "purple-fold" | "green-cam" | "lightning" | "blue-rect" = "camera";
-
-  if (isFoldable) {
-    outerBorder = "border-[#3b2d5c]";
-    innerBg = "from-[#141022] via-[#1a142c] to-[#0e0b17]";
-    iconBadge = "border-[#8b5cf6]/40 bg-[#8b5cf6]/15 text-[#c084fc]";
-    iconType = "purple-fold";
-  } else if (isSamsungUltra) {
-    outerBorder = "border-[#3d2e24]";
-    innerBg = "from-[#191310] via-[#241a14] to-[#120d0a]";
-    iconBadge = "border-[#f97316]/40 bg-[#f97316]/15 text-[#fb923c]";
-    iconType = "orange-camera";
-  } else if (isXiaomiUltra) {
-    outerBorder = "border-[#402228]";
-    innerBg = "from-[#190e11] via-[#241317] to-[#120a0d]";
-    iconBadge = "border-[#ef4444]/40 bg-[#ef4444]/15 text-[#f87171]";
-    iconType = "red-ring";
-  } else if (isHuaweiPura) {
-    outerBorder = "border-[#1b3d2f]";
-    innerBg = "from-[#0e1c16] via-[#122820] to-[#0a1410]";
-    iconBadge = "border-[#10b981]/40 bg-[#10b981]/15 text-[#34d399]";
-    iconType = "green-cam";
-  } else if (isPoco) {
-    outerBorder = "border-[#3d2f1b]";
-    innerBg = "from-[#19140e] via-[#241c12] to-[#120e0a]";
-    iconBadge = "border-[#f59e0b]/40 bg-[#f59e0b]/15 text-[#fbbf24]";
-    iconType = "lightning";
-  } else if (isApple) {
-    outerBorder = "border-[#2c3242]";
-    innerBg = "from-[#10141d] via-[#151a26] to-[#0c0f16]";
-    iconBadge = "border-white/15 bg-white/5 text-slate-300";
-    iconType = slug.includes("pro") ? "camera" : "blue-rect";
-  } else {
-    outerBorder = "border-[#222c3d]";
-    innerBg = "from-[#0e131d] via-[#121927] to-[#0a0e16]";
-    iconBadge = "border-[#3b82f6]/40 bg-[#3b82f6]/15 text-[#60a5fa]";
-    iconType = "blue-rect";
-  }
-
-  return (
-    <div
-      className={`relative ${
-        isFoldable ? "w-[68px] h-[106px]" : isSamsungUltra ? "w-[62px] h-[108px] rounded-[10px]" : "w-[60px] h-[108px] rounded-[15px]"
-      } border-2 ${outerBorder} bg-gradient-to-b ${innerBg} shadow-inner flex flex-col items-center justify-between py-2.5 px-1.5 select-none transition-transform duration-300 group-hover:scale-105`}
-    >
-      <div className="w-4 h-1 rounded-full bg-black/60 shadow-xs" />
-
-      {isFoldable && (
-        <div className="absolute inset-y-1.5 left-1/2 -translate-x-1/2 w-px bg-white/10" />
-      )}
-
-      <span className="text-[8.5px] font-semibold text-white/30 font-mono tracking-wider -mt-1">
-        14:15
-      </span>
-
-      <div
-        className={`w-6 h-6 rounded-lg border flex items-center justify-center shadow-sm ${iconBadge}`}
-      >
-        {iconType === "camera" && <Camera className="w-3.5 h-3.5 stroke-[2]" />}
-        {iconType === "orange-camera" && (
-          <Camera className="w-3.5 h-3.5 stroke-[2]" />
-        )}
-        {iconType === "red-ring" && (
-          <div className="w-3.5 h-3.5 rounded-full border-2 border-current flex items-center justify-center">
-            <div className="w-1 h-1 rounded-full bg-current" />
-          </div>
-        )}
-        {iconType === "purple-fold" && (
-          <Columns2 className="w-3.5 h-3.5 stroke-[2]" />
-        )}
-        {iconType === "green-cam" && (
-          <Camera className="w-3.5 h-3.5 stroke-[2]" />
-        )}
-        {iconType === "lightning" && <Zap className="w-3.5 h-3.5 fill-current" />}
-        {iconType === "blue-rect" && (
-          <Square className="w-3.5 h-3.5 stroke-[2]" />
-        )}
-      </div>
-
-      <div className="w-5 h-0.5 rounded-full bg-white/20" />
-    </div>
-  );
-}
-
 export default function PhoneCard({
   phone,
   variant = "default",
   showCompareBadge = true,
 }: PhoneCardProps) {
-  const { isFavorite, toggleFavorite, isInCompare, addToCompare } = useApp();
+  const { isFavorite, toggleFavorite, isInCompare, addToCompare, openAlertModal } = useApp();
   const isFav = isFavorite(phone.slug);
   const isComp = isInCompare(phone.slug);
 
-  // Purely dynamic values from backend data
   const brandName = phone.brand;
   const displayName = phone.name;
-  const ratingVal = (phone.rating || 9.0).toFixed(1);
-  const discountPercent = phone.priceDropPercent || (phone.isPriceDropped ? 12 : 0);
+  const ratingVal = (phone.rating || 9.2).toFixed(1);
+  const discountPercent = phone.priceDropPercent || (phone.isPriceDropped ? 18 : 0);
 
-  let statusBadge: { label: string; bg: string; text: string; border: string } | null = null;
-  if (phone.isNew) {
-    statusBadge = { label: "YENİ", bg: "bg-[#0d3326]", text: "text-[#10b981]", border: "border-[#15553e]" };
-  } else if (phone.isPriceDropped) {
-    statusBadge = { label: "İNDİRİM", bg: "bg-[#331420]", text: "text-[#f43f5e]", border: "border-[#54192f]" };
-  }
+  const brandLower = (phone.brand || "").toLowerCase();
+  let holoGlowClass = "holo-glow-default";
+  if (brandLower.includes("apple")) holoGlowClass = "holo-glow-apple";
+  else if (brandLower.includes("samsung")) holoGlowClass = "holo-glow-samsung";
+  else if (brandLower.includes("xiaomi")) holoGlowClass = "holo-glow-xiaomi";
+  else if (brandLower.includes("honor")) holoGlowClass = "holo-glow-honor";
+  else if (brandLower.includes("huawei")) holoGlowClass = "holo-glow-huawei";
+  else if (brandLower.includes("poco")) holoGlowClass = "holo-glow-poco";
 
-  const specLine1 = `${phone.specs?.display?.size || 6.7}" ${phone.specs?.display?.refreshRate || 120}Hz ${phone.specs?.display?.technology || "OLED"}`;
-  const specLine2 = phone.specs?.performance?.chipset?.split("(")[0].trim() || (phone.brand === "Apple" ? "Apple Bionic" : "Yüksek Hızlı İşlemci");
+  const isTopDeal = discountPercent >= 15 || phone.isPriceDropped || phone.isNew;
+
+  const specLine1 = `${phone.specs?.display?.size || 6.7}" ${phone.specs?.display?.refreshRate || 120}Hz`;
+  const specLine2 = phone.specs?.performance?.chipset?.split("(")[0].trim() || (phone.brand === "Apple" ? "Apple Bionic" : "Mobil İşlemci");
   const cameraMp = phone.specs?.camera?.mainMp || phone.specs?.camera?.mainCamera?.megapixels || 50;
-  const specLine3 = `${cameraMp} MP Kamera`;
+  const specLine3 = `${cameraMp} MP OIS`;
   const specLine4 = `${phone.specs?.battery?.capacity || 5000} mAh`;
-
-  const shippingBadge = "Kargo Bedava";
-  const installmentBadge = "Peşin Fiyatına Taksit";
 
   const displayPrice = phone.lowestPrice || 0;
   const strikethroughPrice =
     phone.highestPrice && phone.highestPrice > displayPrice
       ? phone.highestPrice
-      : Math.round(displayPrice * 1.1);
+      : Math.round(displayPrice * 1.15);
 
-  // Derive store comparison strictly from backend data
-  let cheapestStore = phone.lowestPriceStoreName || "Resmi Satıcı";
-  let perkText = "Doğrulanmış Fiyat";
+  let cheapestStore = phone.lowestPriceStoreName || "Doğrulanmış Satıcı";
   let storeList: { store: string; price: number }[] = [];
 
   if (phone.storesPrices && phone.storesPrices.length > 0) {
     const sorted = [...phone.storesPrices].sort((a, b) => a.price - b.price);
     cheapestStore = sorted[0].store;
-    perkText = sorted[0].shippingText || "Aynı Gün Kargo";
     storeList = sorted.slice(0, 3).map((s) => ({ store: s.store, price: s.price }));
   } else if (displayPrice > 0) {
     storeList = [{ store: cheapestStore, price: displayPrice }];
   }
 
-  // ─── List Layout (if user selects list view) ──────────────────────────────
+  // ── List Layout (if user selects list view) ──
   if (variant === "list") {
     return (
-      <div className="group rounded-2xl border border-[#1e2433] bg-[#11141b] hover:border-[#2e3a52] p-4 flex flex-col sm:flex-row gap-4 items-center justify-between transition-all">
-        <div className="flex items-center gap-4">
-          <div className="w-24 h-32 rounded-xl bg-[#161922] border border-[#202636] flex items-center justify-center p-2 shrink-0">
-            <StitchPhoneVisual phone={phone} />
+      <article
+        className={`phone-card group rounded-2xl border border-zinc-700/80 bg-[#131315]/95 hover:border-[#2997ff]/60 p-4 flex flex-col sm:flex-row gap-4 items-center justify-between transition-all duration-300 shadow-lg ${
+          isTopDeal ? "border-beam-container" : ""
+        }`}
+        onMouseMove={(e) => {
+          const r = e.currentTarget.getBoundingClientRect();
+          e.currentTarget.style.setProperty("--card-mouse-x", `${e.clientX - r.left}px`);
+          e.currentTarget.style.setProperty("--card-mouse-y", `${e.clientY - r.top}px`);
+        }}
+      >
+        <div className="flex items-center gap-4 min-w-0 flex-1">
+          <div className="w-24 h-32 rounded-xl bg-gradient-to-b from-[#18181b] to-[#0e0e10] border border-zinc-700/60 flex items-center justify-center p-2 shrink-0 relative overflow-hidden">
+            <div className={`absolute w-20 h-20 rounded-full ${holoGlowClass} blur-xl pointer-events-none opacity-60`} />
+            <div className="relative z-10 w-full h-full flex items-center justify-center">
+              <PhoneImage src={phone.image} alt={displayName} className="w-full h-full object-contain filter drop-shadow-[0_8px_16px_rgba(0,0,0,0.8)]" />
+            </div>
           </div>
-          <div>
-            <div className="flex items-center gap-2 mb-1">
-              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-[#1e2330] text-slate-300 border border-[#2a3245]">
+
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-2 mb-1.5 flex-wrap">
+              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-[#18181b] text-zinc-300 border border-zinc-700">
                 {brandName}
               </span>
               {discountPercent > 0 && (
-                <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-[#331420] text-[#f43f5e] border border-[#54192f]">
+                <span className="inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-400 border border-rose-500/30">
+                  <TrendingDown className="w-3 h-3" />
                   -%{discountPercent}
                 </span>
               )}
-              {statusBadge && (
-                <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md ${statusBadge.bg} ${statusBadge.text} border ${statusBadge.border}`}>
-                  {statusBadge.label}
+              {phone.isNew && (
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#2a2a2c] text-[#2997ff] border border-white/10">
+                  YENİ
                 </span>
               )}
             </div>
-            <h3 className="font-bold text-sm text-white group-hover:text-[#38bdf8] transition-colors">
+
+            <h3 className="font-bold text-base text-white group-hover:text-[#2997ff] transition-colors truncate">
               <Link href={`/telefon/${phone.slug}`}>{displayName}</Link>
             </h3>
-            <div className="mt-1 flex flex-wrap gap-1.5 text-[11px] text-slate-400">
-              <span>{specLine1}</span>
-              <span>•</span>
-              <span>{specLine2}</span>
-              <span>•</span>
-              <span>{specLine3}</span>
+
+            <div className="mt-1.5 flex flex-wrap gap-2 text-xs text-zinc-400">
+              <span className="px-2 py-0.5 rounded bg-[#18181b] border border-zinc-800">{specLine1}</span>
+              <span className="px-2 py-0.5 rounded bg-[#18181b] border border-zinc-800">{specLine2}</span>
+              <span className="px-2 py-0.5 rounded bg-[#18181b] border border-zinc-800">{specLine3}</span>
+              <span className="px-2 py-0.5 rounded bg-[#18181b] border border-zinc-800">{specLine4}</span>
             </div>
           </div>
         </div>
 
-        <div className="flex sm:flex-col items-center sm:items-end justify-between w-full sm:w-auto gap-3">
+        <div className="flex sm:flex-col items-center sm:items-end justify-between w-full sm:w-auto gap-3 shrink-0">
           <div className="text-right">
-            <div className="text-xs text-slate-500 line-through">
-              {formatPrice(strikethroughPrice)}
-            </div>
-            <div className="text-xl font-black text-white">
+            {strikethroughPrice > displayPrice && (
+              <div className="text-xs text-zinc-500 line-through">
+                {formatPrice(strikethroughPrice)}
+              </div>
+            )}
+            <div className="text-2xl font-black text-white">
               {formatPrice(displayPrice)}
             </div>
-            <div className="text-[11px] text-[#38bdf8] font-medium">
+            <div className="text-xs text-[#2997ff] font-semibold">
               En ucuz: {cheapestStore}
             </div>
           </div>
-          <Link
-            href={`/telefon/${phone.slug}`}
-            className="px-4 py-2 bg-[#1d8cf8] hover:bg-[#1577d6] text-white text-xs font-bold rounded-xl transition-all"
-          >
-            Fiyatları Gör
-          </Link>
+
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => addToCompare(phone)}
+              className="px-3 py-2 rounded-xl bg-[#18181b] hover:bg-[#201f22] border border-zinc-700/80 text-zinc-300 text-xs font-semibold flex items-center gap-1 transition-colors tactile-bounce"
+            >
+              <Scale className="w-3.5 h-3.5" />
+              <span>{isComp ? "Eklendi" : "Karşılaştır"}</span>
+            </button>
+
+            <Link
+              href={`/telefon/${phone.slug}`}
+              className="btn-sheen-beam px-4 py-2 bg-[#2997ff] hover:bg-[#1d8cf8] text-white text-xs font-bold rounded-xl transition-all shadow-md flex items-center gap-1.5"
+            >
+              <span>Fiyatları Gör</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
         </div>
-      </div>
+      </article>
     );
   }
 
-  // ─── Default Card Layout ──────────────────────────────────────────────────
+  // ── Default Grid Layout ──
   return (
-    <div className="group relative rounded-2xl border border-[#1e2433] bg-[#11141b] hover:border-[#2e3a52] transition-all duration-300 p-3 sm:p-3.5 flex flex-col justify-between shadow-lg">
-      <div>
-        {/* 1. Header Badges & Silhouette Visual Frame */}
-        <div className="rounded-xl bg-[#161922] border border-[#202636] p-2 sm:p-2.5 relative flex flex-col min-h-[170px] justify-between">
-          <div className="flex items-center justify-between gap-1 z-10">
-            <div className="flex items-center gap-1 flex-wrap">
-              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-[#1e2330] text-slate-300 border border-[#2a3245]">
+    <article
+      className={`phone-card bg-[#131315]/95 backdrop-blur-md border border-zinc-700/80 rounded-2xl p-4 flex flex-col justify-between group shadow-lg hover:border-[#2997ff]/60 ${
+        isTopDeal ? "border-beam-container" : ""
+      }`}
+      onMouseMove={(e) => {
+        const r = e.currentTarget.getBoundingClientRect();
+        e.currentTarget.style.setProperty("--card-mouse-x", `${e.clientX - r.left}px`);
+        e.currentTarget.style.setProperty("--card-mouse-y", `${e.clientY - r.top}px`);
+      }}
+    >
+      <div className="relative z-10 flex flex-col h-full justify-between">
+        <div>
+          {/* 1. Header Badges & Actions */}
+          <div className="flex items-center justify-between gap-1.5 w-full mb-3 min-w-0">
+            <div className="flex items-center gap-1.5 min-w-0 flex-wrap">
+              <span className="bg-[#18181b] text-zinc-300 font-semibold px-2 py-0.5 rounded-md text-[10px] border border-zinc-700 shrink-0">
                 {brandName}
               </span>
               {discountPercent > 0 && (
-                <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-[#331420] text-[#f43f5e] border border-[#54192f]">
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[11px] font-semibold rounded-full bg-rose-500/20 text-rose-400 border border-rose-500/30 whitespace-nowrap badge-pulse shrink-0">
+                  <span className="material-symbols-outlined text-[13px]">trending_down</span>
                   -%{discountPercent}
                 </span>
               )}
-              {statusBadge && (
-                <span
-                  className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md ${statusBadge.bg} ${statusBadge.text} border ${statusBadge.border}`}
-                >
-                  {statusBadge.label}
+              {phone.isNew && (
+                <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-[#2a2a2c] text-[#2997ff] border border-white/10 shrink-0">
+                  YENİ
                 </span>
               )}
             </div>
 
-            <div className="flex items-center gap-1 text-slate-400">
+            <div className="flex items-center gap-1 shrink-0 ml-auto">
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  openAlertModal(phone);
+                }}
+                className="w-7 h-7 rounded-lg bg-[#18181b] hover:bg-[#201f22] border border-zinc-700/80 text-zinc-400 hover:text-amber-400 flex items-center justify-center transition-colors shrink-0 tactile-bounce"
+                title="Fiyat Alarmı"
+              >
+                <span className="material-symbols-outlined text-[15px]">notifications</span>
+              </button>
               <button
                 type="button"
                 onClick={(e) => {
                   e.preventDefault();
                   toggleFavorite(phone);
                 }}
-                className={`p-1 rounded transition-colors ${
-                  isFav ? "text-rose-500" : "hover:text-rose-400"
+                className={`w-7 h-7 rounded-lg bg-[#18181b] hover:bg-[#201f22] border border-zinc-700/80 flex items-center justify-center transition-colors shrink-0 tactile-bounce ${
+                  isFav ? "text-rose-500" : "text-zinc-400 hover:text-rose-400"
                 }`}
                 title="Favorilere Ekle"
               >
-                <Heart className={`w-3.5 h-3.5 ${isFav ? "fill-rose-500 text-rose-500" : ""}`} />
+                <span className="material-symbols-outlined text-[15px]" style={{ fontVariationSettings: isFav ? "'FILL' 1" : "'FILL' 0" }}>
+                  favorite
+                </span>
               </button>
             </div>
           </div>
 
+          {/* 2. Mockup & Ambient Holographic Glow */}
           <Link
             href={`/telefon/${phone.slug}`}
-            className="flex-1 flex items-center justify-center py-1"
+            className="h-36 w-full flex items-center justify-center relative mb-3 bg-gradient-to-b from-[#18181b]/60 to-[#0e0e10] rounded-xl overflow-hidden border border-zinc-700/50 block group/img"
           >
-            <StitchPhoneVisual phone={phone} />
+            <div className={`absolute w-28 h-28 rounded-full ${holoGlowClass} blur-xl pointer-events-none transition-all duration-500 device-ambient-glow`} />
+            <div className="phone-mockup-wrapper relative z-10 w-full h-full flex items-center justify-center p-2">
+              <PhoneImage
+                src={phone.image}
+                alt={displayName}
+                className="w-full h-full object-contain filter drop-shadow-[0_10px_20px_rgba(0,0,0,0.85)]"
+              />
+            </div>
+            <div className="absolute bottom-1.5 left-1.5 flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-[#131315]/85 backdrop-blur-md text-white text-[11px] border border-zinc-700/50 shadow-sm z-20">
+              <span className="material-symbols-outlined text-[12px] text-amber-400" style={{ fontVariationSettings: "'FILL' 1" }}>
+                star
+              </span>
+              <span className="font-bold">{ratingVal}</span>
+            </div>
           </Link>
-        </div>
 
-        {/* 2. Phone Title & Star Rating */}
-        <div className="mt-2.5 flex items-center justify-between gap-2">
-          <h3
-            className="font-bold text-[13px] text-white truncate group-hover:text-[#38bdf8] transition-colors"
-            title={displayName}
-          >
+          {/* 3. Title & Specs */}
+          <h3 className="font-bold text-sm text-white line-clamp-1 group-hover:text-[#2997ff] transition-colors">
             <Link href={`/telefon/${phone.slug}`}>{displayName}</Link>
           </h3>
 
-          <div className="flex items-center gap-1 text-[11px] font-bold text-amber-400 shrink-0">
-            <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
-            <span>{ratingVal}</span>
-          </div>
-        </div>
-
-        {/* 3. Specs Pills */}
-        <div className="mt-2 grid grid-cols-2 gap-1 text-[10.5px]">
-          <div className="px-2 py-1 rounded bg-[#161922] border border-[#202636] text-slate-300 truncate" title={specLine1}>
-            {specLine1}
-          </div>
-          <div className="px-2 py-1 rounded bg-[#161922] border border-[#202636] text-slate-300 truncate" title={specLine2}>
-            {specLine2}
-          </div>
-          <div className="px-2 py-1 rounded bg-[#161922] border border-[#202636] text-slate-300 truncate" title={specLine3}>
-            {specLine3}
-          </div>
-          <div className="px-2 py-1 rounded bg-[#161922] border border-[#202636] text-slate-300 truncate" title={specLine4}>
-            {specLine4}
-          </div>
-        </div>
-
-        {/* 4. Benefits */}
-        <div className="mt-2 flex flex-col gap-1">
-          <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-[#0d2821] border border-[#134e3a] text-[#10b981] text-[10px] font-medium w-fit">
-            <Box className="w-3 h-3" />
-            <span>{shippingBadge}</span>
-          </div>
-          <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-[#11223d] border border-[#1e3a68] text-[#3b82f6] text-[10px] font-medium w-fit">
-            <CreditCard className="w-3 h-3" />
-            <span>{installmentBadge}</span>
-          </div>
-        </div>
-
-        {/* 5. Price Box */}
-        <div className="mt-2.5 rounded-xl border border-[#1a1f2c] bg-[#0c0e14] p-2.5">
-          <div className="flex items-center justify-between text-[10px]">
-            <span className="text-slate-400 font-medium">En Düşük Fiyat</span>
-            {strikethroughPrice > displayPrice && (
-              <span className="text-slate-500 line-through font-medium">
-                {formatPrice(strikethroughPrice)}
-              </span>
-            )}
+          <div className="mt-2 grid grid-cols-2 gap-1 text-[10.5px]">
+            <div className="px-2 py-1 rounded bg-[#18181b] border border-zinc-700/60 text-zinc-300 truncate" title={specLine1}>
+              {specLine1}
+            </div>
+            <div className="px-2 py-1 rounded bg-[#18181b] border border-zinc-700/60 text-zinc-300 truncate" title={specLine2}>
+              {specLine2}
+            </div>
+            <div className="px-2 py-1 rounded bg-[#18181b] border border-zinc-700/60 text-zinc-300 truncate" title={specLine3}>
+              {specLine3}
+            </div>
+            <div className="px-2 py-1 rounded bg-[#18181b] border border-zinc-700/60 text-zinc-300 truncate" title={specLine4}>
+              {specLine4}
+            </div>
           </div>
 
-          <div className="text-lg font-black text-white tracking-tight my-0.5 price-display">
-            {formatPrice(displayPrice)}
-          </div>
-
-          <div className="flex items-center justify-between text-[10px] mt-0.5">
-            <span className="text-slate-400 truncate">
-              En ucuz: <strong className="text-[#38bdf8] font-bold">{cheapestStore}</strong>
+          {/* 4. Benefits */}
+          <div className="mt-2 flex items-center gap-1.5 flex-wrap">
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] font-medium">
+              <span className="material-symbols-outlined text-[12px]">local_shipping</span> Kargo Bedava
             </span>
-            <span className="text-[#10b981] font-semibold shrink-0">
-              {perkText}
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-sky-500/10 text-sky-400 border border-sky-500/20 text-[10px] font-medium">
+              <span className="material-symbols-outlined text-[12px]">credit_card</span> Peşin Taksit
             </span>
           </div>
+
+          {/* 5. Fiyat Kutusu */}
+          <div className="mt-2.5 p-2.5 rounded-xl bg-[#0e0e10] border border-zinc-800">
+            <div className="flex items-center justify-between text-[10px] text-zinc-400">
+              <span>En Düşük Fiyat</span>
+              {strikethroughPrice > displayPrice && (
+                <span className="line-through">{formatPrice(strikethroughPrice)}</span>
+              )}
+            </div>
+            <div className="flex items-baseline justify-between mt-0.5">
+              <span className="text-lg font-black text-white">{formatPrice(displayPrice)}</span>
+              <span className="text-[11px] text-[#2997ff] font-semibold">{cheapestStore}</span>
+            </div>
+          </div>
+
+          {/* 6. Mağaza Listesi (Verified Offers) */}
+          {storeList.length > 0 && (
+            <div className="mt-2 space-y-1">
+              {storeList.map((st) => (
+                <div
+                  key={st.store}
+                  className="flex items-center justify-between text-[11px] py-1 px-2 rounded-lg bg-[#18181b]/70 border border-zinc-800/80"
+                >
+                  <span className="text-zinc-300 font-medium truncate">{st.store}</span>
+                  <span className="font-bold text-white shrink-0">{formatPrice(st.price)}</span>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
-        {/* 6. Top Store Comparison List */}
-        {storeList.length > 0 && (
-          <div className="mt-2.5 space-y-1.5 px-0.5">
-            {storeList.map((st, i) => (
-              <div key={i} className="flex items-center justify-between text-[11px] leading-tight">
-                <span className={`truncate max-w-[120px] ${i === 0 ? "text-slate-300 font-medium" : "text-slate-500"}`}>
-                  {st.store}
-                </span>
-                <span className={i === 0 ? "text-white font-extrabold" : "text-slate-400 font-medium"}>
-                  {formatPrice(st.price)}
-                </span>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* 7. Action Button Row */}
-      <div className="mt-3 flex items-center gap-1.5 pt-2 border-t border-[#1a1f2c]">
-        <Link
-          href={`/telefon/${phone.slug}`}
-          className="flex-1 py-2 text-center bg-[#1d8cf8] hover:bg-[#1577d6] active:scale-98 text-white font-bold text-xs rounded-xl shadow-sm transition-all"
-        >
-          Fiyatları Gör
-        </Link>
-
-        {showCompareBadge && (
+        {/* 7. Alt Butonlar */}
+        <div className="mt-3.5 flex items-center gap-2 pt-2 border-t border-zinc-800/60">
           <button
             type="button"
             onClick={() => addToCompare(phone)}
-            className={`p-2 rounded-xl border transition-all ${
+            className={`w-1/2 py-2 rounded-xl border text-xs font-semibold flex items-center justify-center gap-1 transition-colors tactile-bounce ${
               isComp
-                ? "bg-[#1d8cf8] text-white border-[#1d8cf8]"
-                : "bg-[#161922] hover:bg-[#202636] border-[#202636] text-slate-300 hover:text-white"
+                ? "bg-[#2997ff]/20 text-[#2997ff] border-[#2997ff]/50"
+                : "bg-[#18181b] hover:bg-[#201f22] text-zinc-300 border-zinc-700/80"
             }`}
-            title="Karşılaştır"
           >
-            {isComp ? <Check className="w-3.5 h-3.5" /> : <Scale className="w-3.5 h-3.5" />}
+            <span className="material-symbols-outlined text-[15px]">balance</span>
+            <span>{isComp ? "Listede" : "Karşılaştır"}</span>
           </button>
-        )}
+          <Link
+            href={`/telefon/${phone.slug}`}
+            className="w-1/2 py-2 rounded-xl bg-[#2997ff] hover:bg-[#1d8cf8] text-white text-xs font-bold flex items-center justify-center gap-1 transition-all shadow-md btn-sheen-beam"
+          >
+            <span>Fiyatları Gör</span>
+            <span className="material-symbols-outlined text-[15px]">arrow_forward</span>
+          </Link>
+        </div>
       </div>
-    </div>
+    </article>
   );
 }

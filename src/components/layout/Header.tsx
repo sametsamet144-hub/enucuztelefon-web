@@ -1,137 +1,139 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Smartphone, Search, Bell, User, X } from "lucide-react";
 import { useApp } from "@/context/AppContext";
 
 export default function Header() {
   const pathname = usePathname();
   const router = useRouter();
-  const { openAlertModal } = useApp();
+  const { toggleTheme, openAlertModal } = useApp();
 
-  const [headerSearch, setHeaderSearch] = useState("");
-
-  const handleSearchSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (headerSearch.trim()) {
-      router.push(`/telefonlar?q=${encodeURIComponent(headerSearch.trim())}`);
+  const handleQuickSearchClick = () => {
+    const heroSearch = document.getElementById(
+      "hero-device-search"
+    ) as HTMLInputElement | null;
+    if (heroSearch) {
+      heroSearch.focus();
+      heroSearch.scrollIntoView({ behavior: "smooth", block: "center" });
     } else {
       router.push("/telefonlar");
     }
   };
 
-  const navLinks = [
-    { label: "Tüm Modeller", href: "/telefonlar", matchPath: ["/telefonlar"] },
-    { label: "Karşılaştır", href: "/karsilastir", matchPath: ["/karsilastir"] },
-    {
-      label: "Fiyatı Düşenler",
-      href: "/telefonlar/fiyati-dusen",
-      matchPath: ["/telefonlar/fiyati-dusen"],
-    },
-    { label: "Fiyat Alarmı", href: "/fiyat-takibi", matchPath: ["/fiyat-takibi"] },
-    {
-      label: "Rehber",
-      href: "/telefon-rehberi",
-      matchPath: ["/telefon-rehberi", "/rehber"],
-    },
-  ];
-
   return (
-    <header className="sticky top-0 z-40 bg-[#08090c]/95 backdrop-blur-md border-b border-[#141923] text-slate-100">
-      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
-        {/* Left: Brand Logo + Navigation */}
-        <div className="flex items-center gap-6">
+    <header className="sticky top-0 left-0 right-0 z-50 bg-surface/80 backdrop-blur-md shadow-[0_1px_8px_rgba(0,0,0,0.04)] border-b border-white/[0.05]">
+      <div className="h-16 max-w-7xl mx-auto px-gutter flex items-center justify-between gap-gutter">
+        <Link
+          href="/"
+          className="flex items-center gap-space-sm shrink-0 group"
+        >
+          <img
+            alt="EnUcuzTelefon Logo"
+            className="h-8 w-auto object-contain"
+            src="https://lh3.googleusercontent.com/aida/ALJJyrAhj_u0wlotCePixGC8Yd9f-jJJAE6wfLjBZNT7KwBqhIySHTgJrhHxmiK_ZaEJHt8dphvmTy44zWvpBqa8m84Y8eg5SBNCnRlP5kxEuxqJ7xTnGiruqkqq11BqoyUEfdmMEvABcRLqE5ee8g9FCnSmBEamWlSTpxVGjZWItapeTOWAVtCRF_2ivjKIKfyA5FaRSwlRKyUmWpgnuKUrvgxYbor5c5UrPkIkgXKrn34"
+          />
+          <span className="font-title-sm text-title-sm tracking-tight text-on-surface font-semibold">
+            EnUcuzTelefon
+          </span>
+        </Link>
+
+        <nav className="hidden xl:flex items-center gap-space-lg">
           <Link
-            href="/"
-            className="flex items-center gap-2.5 shrink-0 group"
-            aria-label="EnUcuzTelefon Ana Sayfa"
+            className={`font-label-md text-label-md transition-colors ${
+              pathname === "/telefonlar"
+                ? "text-on-surface font-semibold"
+                : "text-on-surface-variant hover:text-on-surface"
+            }`}
+            href="/telefonlar"
           >
-            <div className="w-8 h-8 rounded-lg bg-[#1d8cf8] flex items-center justify-center text-white shadow-sm shadow-blue-500/20 group-hover:scale-105 transition-transform">
-              <Smartphone className="w-4 h-4 stroke-[2.2]" />
-            </div>
-            <span className="font-extrabold text-base tracking-tight text-white group-hover:text-[#38bdf8] transition-colors">
-              EnUcuzTelefon
-            </span>
+            Tüm Modeller
           </Link>
-
-          {/* Desktop Navigation Links */}
-          <nav className="hidden lg:flex items-center gap-1">
-            {navLinks.map((link) => {
-              const isActive = link.matchPath.includes(pathname);
-              return (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
-                    isActive
-                      ? "text-white bg-white/8 font-bold"
-                      : "text-slate-400 hover:text-white hover:bg-white/5"
-                  }`}
-                >
-                  {link.label}
-                </Link>
-              );
-            })}
-          </nav>
-        </div>
-
-        {/* Right: Compact Search + Bell + Blue "Fiyat Alarmı Kur" + Avatar */}
-        <div className="flex items-center gap-2.5 shrink-0">
-          <form
-            onSubmit={handleSearchSubmit}
-            className="hidden sm:flex items-center bg-[#10141d] border border-[#1d2433] focus-within:border-[#1d8cf8] rounded-full px-3.5 py-1.5 w-48 xl:w-56 transition-colors relative"
+          <Link
+            className={`font-label-md text-label-md transition-colors ${
+              pathname === "/karsilastir"
+                ? "text-on-surface font-semibold"
+                : "text-on-surface-variant hover:text-on-surface"
+            }`}
+            href="/karsilastir"
           >
-            <Search className="w-3.5 h-3.5 text-slate-400 shrink-0 mr-2" />
-            <input
-              type="text"
-              placeholder="Hızlı ara..."
-              value={headerSearch}
-              onChange={(e) => setHeaderSearch(e.target.value)}
-              className="w-full bg-transparent text-xs text-slate-100 placeholder-slate-500 focus:outline-none"
-            />
-            {headerSearch ? (
-              <button
-                type="button"
-                onClick={() => setHeaderSearch("")}
-                className="text-slate-400 hover:text-white ml-1"
-              >
-                <X className="w-3 h-3" />
-              </button>
-            ) : (
-              <span className="text-[10px] font-mono text-slate-500 px-1.5 py-0.2 rounded bg-[#161c28] border border-[#222a3a]">
-                ⌘K
-              </span>
-            )}
-          </form>
+            Karşılaştır
+          </Link>
+          <Link
+            className={`font-label-md text-label-md transition-colors ${
+              pathname === "/telefonlar/fiyati-dusen"
+                ? "text-on-surface font-semibold"
+                : "text-on-surface-variant hover:text-on-surface"
+            }`}
+            href="/telefonlar/fiyati-dusen"
+          >
+            Fiyatı Düşenler
+          </Link>
+          <Link
+            className={`font-label-md text-label-md transition-colors ${
+              pathname === "/fiyat-takibi"
+                ? "text-on-surface font-semibold"
+                : "text-on-surface-variant hover:text-on-surface"
+            }`}
+            href="/fiyat-takibi"
+          >
+            Fiyat Alarmı
+          </Link>
+          <Link
+            className={`font-label-md text-label-md transition-colors ${
+              pathname === "/telefon-rehberi"
+                ? "text-on-surface font-semibold"
+                : "text-on-surface-variant hover:text-on-surface"
+            }`}
+            href="/telefon-rehberi"
+          >
+            Rehber
+          </Link>
+        </nav>
 
-          {/* Bell Icon Circle */}
+        <div className="flex items-center gap-space-sm shrink-0">
+          <button
+            className="flex items-center gap-space-sm h-9 px-space-sm rounded-full bg-surface-container text-on-surface-variant hover:text-on-surface transition-colors cursor-pointer"
+            onClick={handleQuickSearchClick}
+            type="button"
+          >
+            <span className="material-symbols-outlined text-[18px]">
+              search
+            </span>
+            <span className="font-label-sm text-label-sm hidden sm:inline text-outline">
+              Hızlı Ara...
+            </span>
+            <kbd className="hidden md:inline px-space-xs py-0.5 rounded bg-surface-container-high text-on-surface font-label-sm text-label-sm">
+              ⌘K
+            </kbd>
+          </button>
+
+          <button
+            aria-label="Tema Değiştir"
+            onClick={toggleTheme}
+            className="w-9 h-9 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant hover:text-on-surface transition-colors cursor-pointer"
+            type="button"
+          >
+            <span className="material-symbols-outlined text-[18px]">
+              dark_mode
+            </span>
+          </button>
+
           <button
             type="button"
             onClick={() => openAlertModal()}
-            className="w-9 h-9 rounded-full border border-[#1d2433] bg-[#10141d] flex items-center justify-center text-slate-300 hover:text-white hover:border-[#1d8cf8] transition-colors cursor-pointer"
-            title="Bildirimler & Fiyat Alarmları"
+            className="hidden sm:inline-flex items-center justify-center h-9 px-space-md rounded-full bg-primary-container text-on-primary-container font-label-md text-label-md shadow-[0_0_20px_rgba(41,151,255,0.25)] hover:bg-primary hover:text-on-primary transition-all cursor-pointer"
           >
-            <Bell className="w-4 h-4" />
+            Fiyat Alarmı Kur
           </button>
 
-          {/* Blue "Fiyat Alarmı Kur" Pill Button (Desktop) */}
-          <button
-            type="button"
-            onClick={() => openAlertModal()}
-            className="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#1d8cf8] hover:bg-[#1577d6] text-white text-xs font-bold shadow-md shadow-blue-500/20 transition-all cursor-pointer"
-          >
-            <span>Fiyat Alarmı Kur</span>
-          </button>
-
-          {/* User Avatar Circle */}
           <Link
             href="/admin"
-            className="w-9 h-9 rounded-full border border-[#1d2433] bg-[#10141d] flex items-center justify-center text-slate-300 hover:text-white hover:border-[#1d8cf8] transition-colors"
-            title="Kullanıcı / Yönetim Paneli"
+            className="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0"
           >
-            <User className="w-4 h-4" />
+            <span className="material-symbols-outlined text-on-primary text-[18px]">
+              person
+            </span>
           </Link>
         </div>
       </div>

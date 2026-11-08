@@ -1,226 +1,199 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import {
-  Search,
-  Shield,
-  TrendingDown,
-  Bell,
-  ArrowRight,
-  Sparkles,
-  Heart,
-  CheckCircle2,
-  Scale,
-  Award,
-  Store,
-  ChevronRight,
-  Zap,
-  Plus,
-  Minus,
-} from "lucide-react";
-import PhoneImage from "@/components/phone/PhoneImage";
-import { formatPrice } from "@/lib/utils";
 import { useApp } from "@/context/AppContext";
 
-interface TrendingItem {
-  slug: string;
-  brand: string;
-  name: string;
-  specs: string;
-  price: number;
-  storeCount: number;
-  badge: string;
-  badgeType: "discount" | "new";
-  os: "iOS" | "Android";
-  image: string;
-}
-
-const TRENDING_DEVICES: TrendingItem[] = [
-  {
-    slug: "iphone-16",
-    brand: "APPLE",
-    name: "iPhone 16 128GB",
-    specs: "A18 Çip • Kamera Denetimi • HDR",
-    price: 58999,
-    storeCount: 14,
-    badge: "-%10",
-    badgeType: "discount",
-    os: "iOS",
-    image: "/images/phones/iphone-16.webp",
-  },
-  {
-    slug: "samsung-galaxy-s24-plus",
-    brand: "SAMSUNG",
-    name: "Galaxy S24+ 256GB",
-    specs: "Galaxy AI • QHD+ • 12GB RAM",
-    price: 41299,
-    storeCount: 16,
-    badge: "-%18",
-    badgeType: "discount",
-    os: "Android",
-    image: "/images/phones/samsung-galaxy-s24-plus.webp",
-  },
-  {
-    slug: "honor-magic-6-pro",
-    brand: "HONOR",
-    name: "Magic 6 Pro 512GB",
-    specs: "180MP Periskop • 5600mAh Batarya",
-    price: 49999,
-    storeCount: 11,
-    badge: "Yeni",
-    badgeType: "new",
-    os: "Android",
-    image: "/images/phones/honor-magic-v3.svg",
-  },
-  {
-    slug: "google-pixel-9-pro",
-    brand: "GOOGLE",
-    name: "Pixel 9 Pro 128GB",
-    specs: "Tensor G4 • Gemini Nano • Super Actua",
-    price: 47500,
-    storeCount: 8,
-    badge: "-%8",
-    badgeType: "discount",
-    os: "Android",
-    image: "/images/phones/iphone-15.svg",
-  },
-  {
-    slug: "iphone-16-pro-max",
-    brand: "APPLE",
-    name: "iPhone 16 Pro Max 256GB",
-    specs: "A18 Pro • 6.9\" ProMotion • 5x Zoom",
-    price: 84999,
-    storeCount: 16,
-    badge: "-%15",
-    badgeType: "discount",
-    os: "iOS",
-    image: "/images/phones/iphone-16-pro-max.webp",
-  },
-  {
-    slug: "iphone-15",
-    brand: "APPLE",
-    name: "iPhone 15 128GB",
-    specs: "A16 Bionic • Dynamic Island • 48MP",
-    price: 48999,
-    storeCount: 16,
-    badge: "-%11",
-    badgeType: "discount",
-    os: "iOS",
-    image: "/images/phones/iphone-15.svg",
-  },
-  {
-    slug: "iphone-16-pro",
-    brand: "APPLE",
-    name: "iPhone 16 Pro 256GB",
-    specs: "A18 Pro • Doğal Titanyum • 120Hz",
-    price: 59899,
-    storeCount: 15,
-    badge: "-%18",
-    badgeType: "discount",
-    os: "iOS",
-    image: "/images/phones/iphone-16-pro.svg",
-  },
-  {
-    slug: "xiaomi-15-ultra",
-    brand: "XIAOMI",
-    name: "Xiaomi 15 Ultra 512GB",
-    specs: "Snapdragon 8 Elite • Leica 200MP",
-    price: 64999,
-    storeCount: 12,
-    badge: "-%22",
-    badgeType: "discount",
-    os: "Android",
-    image: "/images/phones/xiaomi-15-ultra.svg",
-  },
-];
-
-const LIVE_TICKER_ITEMS = [
-  {
-    icon: "📱",
-    model: "Galaxy S24 Ultra",
-    store: "Hepsiburada'da",
-    highlight: "4.200 ₺ düştü",
-    tag: "Son 6 Ayın Dibi",
-    href: "/telefon/samsung-galaxy-s24-ultra",
-  },
-  {
-    icon: "🔥",
-    model: "iPhone 16 Pro 256GB",
-    store: "Amazon TR'de",
-    highlight: "59.899 ₺",
-    tag: "-%18 İndirim",
-    href: "/telefon/iphone-16-pro",
-  },
-  {
-    icon: "⚡",
-    model: "Xiaomi 15 Ultra",
-    store: "Trendyol'da",
-    highlight: "64.999 ₺",
-    tag: "Peşin Fiyatına 3 Taksit",
-    href: "/telefon/xiaomi-15-ultra",
-  },
-  {
-    icon: "📉",
-    model: "POCO F6 Pro 512GB",
-    store: "Trendyol'da",
-    highlight: "23.499 ₺",
-    tag: "F/P Kralı",
-    href: "/telefon/poco-f6-pro",
-  },
-  {
-    icon: "💎",
-    model: "Galaxy S25 Ultra 512GB",
-    store: "Amazon TR'de",
-    highlight: "68.790 ₺",
-    tag: "Hızlı Teslimat",
-    href: "/telefon/samsung-galaxy-s25-ultra",
-  },
+const TYPEWRITER_PHRASES = [
+  "Model, marka veya özellik ara (örn: iPhone 16 Pro Max 256GB...)",
+  "Model, marka veya özellik ara (örn: Snapdragon 8 Elite telefonlar...)",
+  "Model, marka veya özellik ara (örn: 50.000 TL altı en iyi kameralı telefon...)",
+  "Model, marka veya özellik ara (örn: Galaxy S25 Ultra 120Hz...)",
 ];
 
 export default function StitchDesktopHome() {
   const router = useRouter();
-  const { openAlertModal, favorites, showToast } = useApp();
-  const [localFavs, setLocalFavs] = useState<string[]>([]);
+  const { openAlertModal, showToast } = useApp();
 
-  const handleToggleFav = (slug: string, name: string) => {
-    if (localFavs.includes(slug) || favorites.includes(slug)) {
-      setLocalFavs((prev) => prev.filter((s) => s !== slug));
-      showToast(`${name} favorilerden çıkarıldı.`, "info");
-    } else {
-      setLocalFavs((prev) => [...prev, slug]);
-      showToast(`${name} favorilerinize eklendi! ❤️`, "success");
-    }
-  };
+  const ambientWrapperRef = useRef<HTMLDivElement>(null);
+  const ambientTrackerRef = useRef<HTMLDivElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedBrand, setSelectedBrand] = useState("Tümü");
-  const [trendFilter, setTrendFilter] = useState<"Tümü" | "iOS" | "Android">("Tümü");
-  const [targetAlertPrice, setTargetAlertPrice] = useState(44000);
-  const [telegramEnabled, setTelegramEnabled] = useState(true);
-  const [scannedCount, setScannedCount] = useState(1442890);
-  const [secondsAgo, setSecondsAgo] = useState(14);
+  const [searchValue, setSearchValue] = useState("");
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const [typewriterText, setTypewriterText] = useState(TYPEWRITER_PHRASES[0]);
+  const [alarmToggle, setAlarmToggle] = useState(true);
+  const [activeBrand, setActiveBrand] = useState("Tümü");
+  const [activeTrendTab, setActiveTrendTab] = useState<"Tümü" | "iOS" | "Android">("Tümü");
 
-  // Live telemetry subtle counter animation
+  // 1. Hero & Bento Container Radial Cursor Glow Tracker + Bento Border-Beam Mouse Spotlight
   useEffect(() => {
-    const interval = setInterval(() => {
-      setScannedCount((prev) => prev + Math.floor(Math.random() * 4) + 1);
-      setSecondsAgo((prev) => (prev >= 29 ? 2 : prev + 1));
-    }, 3000);
-    return () => clearInterval(interval);
+    const wrapper = ambientWrapperRef.current;
+    const tracker = ambientTrackerRef.current;
+
+    const handleAmbientMove = (e: MouseEvent) => {
+      if (!wrapper || !tracker) return;
+      const rect = wrapper.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      tracker.style.setProperty("--global-mouse-x", `${x}px`);
+      tracker.style.setProperty("--global-mouse-y", `${y}px`);
+    };
+
+    if (wrapper) {
+      wrapper.addEventListener("mousemove", handleAmbientMove);
+    }
+
+    const cards = document.querySelectorAll<HTMLElement>(".border-beam-card");
+    const cardHandlers = new Map<HTMLElement, (e: MouseEvent) => void>();
+
+    cards.forEach((card) => {
+      const handler = (e: MouseEvent) => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        card.style.setProperty("--mouse-x", `${x}px`);
+        card.style.setProperty("--mouse-y", `${y}px`);
+      };
+      cardHandlers.set(card, handler);
+      card.addEventListener("mousemove", handler);
+    });
+
+    return () => {
+      if (wrapper) {
+        wrapper.removeEventListener("mousemove", handleAmbientMove);
+      }
+      cardHandlers.forEach((handler, card) => {
+        card.removeEventListener("mousemove", handler);
+      });
+    };
   }, []);
 
-  const handleSearchSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      router.push(`/telefonlar?q=${encodeURIComponent(searchQuery.trim())}`);
+  // 3. Search Bar Dynamic Typewriter Looping Effect
+  useEffect(() => {
+    let phraseIndex = 0;
+    let charIndex = 0;
+    let isDeleting = false;
+    let timerId: ReturnType<typeof setTimeout>;
+
+    const tick = () => {
+      const currentPhrase = TYPEWRITER_PHRASES[phraseIndex];
+
+      if (isDeleting) {
+        charIndex = Math.max(0, charIndex - 1);
+        setTypewriterText(currentPhrase.substring(0, charIndex));
+      } else {
+        charIndex = Math.min(currentPhrase.length, charIndex + 1);
+        setTypewriterText(currentPhrase.substring(0, charIndex));
+      }
+
+      let typeSpeed = isDeleting ? 28 : 55;
+
+      if (!isDeleting && charIndex === currentPhrase.length) {
+        typeSpeed = 2200;
+        isDeleting = true;
+      } else if (isDeleting && charIndex === 0) {
+        isDeleting = false;
+        phraseIndex = (phraseIndex + 1) % TYPEWRITER_PHRASES.length;
+        typeSpeed = 450;
+      }
+
+      timerId = setTimeout(tick, typeSpeed);
+    };
+
+    timerId = setTimeout(tick, 500);
+    return () => clearTimeout(timerId);
+  }, []);
+
+  // 6. Dynamic Counter Animation for Telemetry & Metrics + ⌘K Shortcut
+  useEffect(() => {
+    function animateValue(
+      obj: Element,
+      start: number,
+      end: number,
+      duration: number,
+      formatThousands: boolean,
+      prefix = "",
+      suffix = ""
+    ) {
+      let startTimestamp: number | null = null;
+      const step = (timestamp: number) => {
+        if (!startTimestamp) startTimestamp = timestamp;
+        const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+        const easeProgress = 1 - Math.pow(1 - progress, 3);
+        const currentVal = Math.floor(easeProgress * (end - start) + start);
+
+        let formatted = currentVal.toString();
+        if (formatThousands) {
+          formatted = currentVal.toLocaleString("tr-TR");
+        }
+
+        obj.innerHTML = `${prefix}${formatted}${suffix}`;
+        if (progress < 1) {
+          window.requestAnimationFrame(step);
+        } else {
+          let finalStr = end.toString();
+          if (formatThousands) finalStr = end.toLocaleString("tr-TR");
+          obj.innerHTML = `${prefix}${finalStr}${suffix}`;
+        }
+      };
+      window.requestAnimationFrame(step);
+    }
+
+    const countElements = document.querySelectorAll(".count-metric");
+    let observer: IntersectionObserver | null = null;
+
+    if ("IntersectionObserver" in window) {
+      observer = new IntersectionObserver(
+        (entries, obs) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              const el = entry.target;
+              const target = parseInt(el.getAttribute("data-target") || "0", 10);
+              const isFormatted = el.getAttribute("data-formatted") === "true";
+              const prefix = el.getAttribute("data-prefix") || "";
+              const suffix = el.getAttribute("data-suffix") || "";
+              if (!isNaN(target) && target > 0) {
+                animateValue(el, 0, target, 1600, isFormatted, prefix, suffix);
+              }
+              obs.unobserve(el);
+            }
+          });
+        },
+        { threshold: 0.2 }
+      );
+
+      countElements.forEach((el) => observer?.observe(el));
+    }
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        if (searchInputRef.current) {
+          searchInputRef.current.focus();
+          searchInputRef.current.select();
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      observer?.disconnect();
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
+
+  const handleSearchSubmit = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (searchValue.trim()) {
+      router.push(`/telefonlar?q=${encodeURIComponent(searchValue.trim())}`);
     } else {
       router.push("/telefonlar");
     }
   };
 
-  const brandPills = [
+  const brands = [
     "Tümü",
     "Apple",
     "Samsung",
@@ -232,853 +205,1054 @@ export default function StitchDesktopHome() {
     "Vivo",
   ];
 
-  const filteredTrends =
-    trendFilter === "Tümü"
-      ? TRENDING_DEVICES.slice(0, 4)
-      : TRENDING_DEVICES.filter((d) => d.os === trendFilter).slice(0, 4);
+  const trendCards = [
+    {
+      slug: "iphone-16",
+      brand: "Apple",
+      name: "iPhone 16 128GB",
+      specs: "A18 Çip • Kamera Denetimi • HDR",
+      price: "₺58.999",
+      stores: "14 Mağaza",
+      badge: "-%12",
+      isDiscount: true,
+      os: "iOS",
+      img: "https://lh3.googleusercontent.com/aida-public/AB6AXuDaUIrBxBw_wRHBE6dWd3wP9kiJbZwEx9868os19xKLeQd2ytUxz3_sZLBkF0W0Z5M0T1LZo9LRJ10oXeopf7d6ajL0YJrg8uoj-TkJ4CVWEaWxJgtYBQhjRaQwkh1nOSLtjNmpdSLsov4nIEENfFDlGxYNYYJB15zKtkza1RBrU_H7X_HXmM6PnHJs_2j46Syr346SAOtmleHJMVC3BdHITUwkHv1hPtxlrykrj24",
+      alt: "Apple iPhone 16 Plus Ultramarine premium studio product photography on minimalist clean pedestal",
+    },
+    {
+      slug: "samsung-galaxy-s24-plus",
+      brand: "Samsung",
+      name: "Galaxy S24+ 256GB",
+      specs: "Galaxy AI • QHD+ • 12GB RAM",
+      price: "₺41.299",
+      stores: "19 Mağaza",
+      badge: "-%15",
+      isDiscount: true,
+      os: "Android",
+      img: "https://lh3.googleusercontent.com/aida-public/AB6AXuCpInXkXOXGBE1EHavHpsUF3cXkimDXWCO23Lwl0lGI8vJA9Pv6eEBVyOCdFobvZGztgvBcbMddRZe2o-JKqFprg3qQfCh1lnXxbqdZbF-Tk0JV6bZ-vbPonrStkekMfY9mvcYB0Pyfvu9Q9rx2ZGvwADQYzbJqd_UFuWwRlBcE1tXIvgD0gG3WaiDqlQfSTbqCesH6LpKtWZy38GuSSKGZuXxXVKZl7VBC4Xnil4s",
+      alt: "Samsung Galaxy S24 Plus in Titanium Gray elegant pro studio render centered",
+    },
+    {
+      slug: "honor-magic-v3",
+      brand: "Honor",
+      name: "Magic 6 Pro 512GB",
+      specs: "180MP Periskop • 5600mAh Batarya",
+      price: "₺49.999",
+      stores: "11 Mağaza",
+      badge: "Yeni",
+      isDiscount: false,
+      os: "Android",
+      img: "https://lh3.googleusercontent.com/aida-public/AB6AXuCxaJAOIZt-VMc70XFEH2ehSSp1m4KZfGRNKBA9NHXjsT6EAZ5tdJfOv99eSSYQXTO8ys6wDvOTXbKubj4Qc_YEAWwNz0m9hlaxNeUqvEBSXehWmHpOcTLXA1aUueU1e6XN7o_5ADVuN1i6-B4nSVveiZWcGFeaoL9T8zfgghsIaA8Bjr5xvsn7ILi4FiAlh4VMaIbJ5mJ005ygwkxC58oo6eO4k2gl-j--CsR4Ezw",
+      alt: "Honor Magic 6 Pro Epi Green vegan leather texture back studio camera focus high tech render",
+    },
+    {
+      slug: "iphone-15",
+      brand: "Google",
+      name: "Pixel 9 Pro 128GB",
+      specs: "Tensor G4 • Gemini Nano • Super Actua",
+      price: "₺47.500",
+      stores: "8 Mağaza",
+      badge: "-%8",
+      isDiscount: true,
+      os: "Android",
+      img: "https://lh3.googleusercontent.com/aida-public/AB6AXuA8DIkQLUOx3J2LX2QM4leU6SESQEvYgC9nkM55LVyzvTsIQnYUmX4X3GrIB6Z_nD1J3UzWLy-mZHzuIGor7PbFdYa519LDQEwMdRAfz0kdwOnw48M5zuA3cS6im1G19eai7Jqy9AQGbVRuEm9iMwD39SsBtalCCyrzOXVaOPhsknPVZkH1Bj5pFjNFPr-hWAhQ9wi338JFEsaf6W8qtuT3cle4toVc2x4OcO0Mlfs",
+      alt: "Google Pixel 9 Pro Obsidian dark studio lighting showing iconic camera bar",
+    },
+  ];
+
+  const displayedTrends =
+    activeTrendTab === "Tümü"
+      ? trendCards
+      : trendCards.filter((c) => c.os === activeTrendTab);
 
   return (
-    <div className="min-h-screen bg-[#08090c] text-slate-100 selection:bg-[#1d8cf8] selection:text-white">
-      {/* ─── 1. LIVE SCROLLING PRICE TICKER BAR ────────────────────────────── */}
-      <div className="w-full bg-[#06080b] border-b border-[#131822] overflow-hidden py-2 px-4 flex items-center">
-        <div className="shrink-0 flex items-center gap-2 pr-4 mr-4 border-r border-[#1a202e] z-10 bg-[#06080b]">
-          <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
-          </span>
-          <span className="text-[10.5px] font-extrabold uppercase tracking-wider text-emerald-400">
-            CANLI FİYAT AKIŞI
-          </span>
-        </div>
-
-        <div className="overflow-hidden flex-1 relative">
-          <div className="animate-marquee flex items-center gap-8 text-xs">
-            {[...LIVE_TICKER_ITEMS, ...LIVE_TICKER_ITEMS].map((item, idx) => (
-              <Link
-                key={idx}
-                href={item.href}
-                className="inline-flex items-center gap-2 text-slate-300 hover:text-white transition-colors shrink-0 group"
-              >
-                <span>{item.icon}</span>
-                <strong className="font-bold text-white group-hover:text-[#38bdf8] transition-colors">
-                  {item.model}
-                </strong>
-                <span className="text-slate-400">{item.store}</span>
-                <span className="font-extrabold text-emerald-400">
-                  {item.highlight}
-                </span>
-                <span className="px-2 py-0.5 rounded-md bg-emerald-500/10 border border-emerald-500/30 text-[10px] font-bold text-emerald-300">
-                  {item.tag}
-                </span>
-                <span className="text-slate-700 pl-4">•</span>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* ─── 2. HERO SECTION ───────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden pt-14 pb-12 px-6">
-        {/* Ambient Background Glows */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[780px] h-[340px] bg-gradient-to-b from-[#1d8cf8]/12 via-emerald-500/5 to-transparent blur-3xl pointer-events-none" />
-
-        <div className="max-w-[1100px] mx-auto text-center relative z-10 animate-fade-up">
-          {/* Top Shield Badge */}
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#0b1f1d] border border-[#153e38] text-[11px] font-extrabold text-emerald-400 tracking-wider uppercase mb-6 shadow-sm">
-            <Shield className="w-3.5 h-3.5 text-emerald-400" />
-            <span>TÜRKİYE&apos;NİN AKILLI TELEFON VE FİYAT REHBERİ</span>
-          </div>
-
-          {/* Main 2-Line Headline */}
-          <h1 className="text-5xl xl:text-[64px] font-black tracking-tight leading-[1.08] mb-5">
-            <span className="block text-white">En doğru telefonu bul.</span>
-            <span className="block text-transparent bg-clip-text bg-gradient-to-b from-slate-200 via-slate-400 to-slate-600">
-              En dip fiyata al.
-            </span>
-          </h1>
-
-          {/* Subtitle */}
-          <p className="text-sm sm:text-base text-slate-400 max-w-2xl mx-auto leading-relaxed mb-8">
-            <strong className="text-white font-bold">488+ güncel model</strong>,{" "}
-            <strong className="text-white font-bold">
-              16 resmi yetkili satıcı
-            </strong>{" "}
-            ve anlık fiyat değişim telemetrisi. Karşılaştır, alarm kur,
-            doğrulanmış en düşük fiyattan sahip ol.
-          </p>
-
-          {/* Hero Search Bar */}
-          <form
-            onSubmit={handleSearchSubmit}
-            className="max-w-2xl mx-auto relative flex items-center bg-[#0f131b] border border-[#1e2636] hover:border-[#2c374f] focus-within:border-[#1d8cf8] rounded-full p-2 pl-5 shadow-2xl transition-all mb-6"
-          >
-            <Search className="w-4 h-4 text-slate-400 shrink-0 mr-3" />
-            <input
-              type="text"
-              placeholder="Model, marka veya özellik ara..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="flex-1 bg-transparent text-sm text-white placeholder-slate-500 focus:outline-none"
-            />
-            <span className="hidden sm:inline-flex items-center px-2 py-1 rounded-md bg-[#161b26] border border-[#232b3d] text-[10px] font-mono text-slate-400 mr-2.5">
-              ⌘K
-            </span>
-            <button
-              type="submit"
-              className="px-6 py-2.5 rounded-full bg-[#1d8cf8] hover:bg-[#1577d6] text-white font-bold text-xs sm:text-sm flex items-center gap-2 transition-all shadow-lg shadow-blue-500/25 cursor-pointer"
-            >
-              <span>Fiyatları Gör</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
-          </form>
-
-          {/* Brand Filter Pills */}
-          <div className="flex flex-wrap items-center justify-center gap-2 max-w-2xl mx-auto">
-            {brandPills.map((brand) => {
-              const isSelected = selectedBrand === brand;
-              return (
-                <button
-                  key={brand}
-                  type="button"
-                  onClick={() => {
-                    setSelectedBrand(brand);
-                    if (brand !== "Tümü") {
-                      const slug = brand.toLowerCase().split(" ")[0];
-                      router.push(`/telefonlar?brand=${slug}`);
-                    }
-                  }}
-                  className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer ${
-                    isSelected
-                      ? "bg-white text-slate-950 font-extrabold shadow-md scale-105"
-                      : "bg-[#0f131b] text-slate-300 border border-[#1d2433] hover:border-slate-500 hover:text-white"
-                  }`}
-                >
-                  {brand}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* ─── 3. LIVE TELEMETRY STRIP ───────────────────────────────────────── */}
-      <div className="border-y border-[#131822] bg-[#0a0d13]/90">
-        <div className="max-w-[1280px] mx-auto px-6 py-3.5 flex flex-wrap items-center justify-between gap-4 text-xs">
-          <div className="flex items-center gap-3">
-            <span className="inline-flex items-center gap-1.5 font-extrabold text-white tracking-wide">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span>CANLI TELEMETRİ</span>
-            </span>
-            <span className="text-slate-500">
-              Son güncelleme: {secondsAgo} saniye önce
-            </span>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-6 text-slate-400">
-            <div>
-              <strong className="text-white font-extrabold tabular-nums">
-                {scannedCount.toLocaleString("tr-TR")}
-              </strong>{" "}
-              günlük taranan fiyat verisi
-            </div>
-            <span className="text-slate-700">|</span>
-            <div>
-              <strong className="text-emerald-400 font-extrabold">%100</strong>{" "}
-              BTK Kayıtlı Türkiye Garantili
-            </div>
-            <span className="text-slate-700">|</span>
-            <div>
-              <strong className="text-[#38bdf8] font-extrabold">0 TL</strong>{" "}
-              aracı komisyonu
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* ─── 4. BENTO EKOSİSTEMİ SECTION ──────────────────────────────────── */}
-      <section className="max-w-[1280px] mx-auto px-6 pt-14 pb-10">
-        {/* Section Heading */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8 animate-fade-up delay-75">
-          <div>
-            <div className="text-[11px] font-extrabold uppercase tracking-widest text-[#38bdf8] mb-1.5">
-              BENTO EKOSİSTEMİ
-            </div>
-            <h2 className="text-3xl font-black text-white tracking-tight">
-              Akıllı Alışverişin Yeni Standardı
-            </h2>
-          </div>
-          <p className="text-xs sm:text-sm text-slate-400 max-w-md leading-relaxed">
-            Karmaşık reklam bannerları yok. Sadece saf veri, berrak fiyat
-            değişim analizleri ve onaylı satıcı rotaları.
-          </p>
-        </div>
-
-        {/* Row 1: 7 Cols Featured Deal + 5 Cols Flagship Duel */}
-        <div className="grid grid-cols-12 gap-5 mb-5">
-          {/* LEFT 7-COL CARD: Günün Rekor Düşüşü (iPhone 16 Pro 256GB) */}
-          <div className="col-span-12 lg:col-span-7 rounded-3xl bg-gradient-to-br from-[#10141d] via-[#0c1017] to-[#090c12] border border-[#1b2232] p-6 lg:p-7 flex flex-col justify-between relative overflow-hidden bento-card-hover animate-fade-up delay-150">
-            {/* Ambient radial glow */}
-            <div className="absolute -top-20 -right-20 w-72 h-72 bg-emerald-500/8 rounded-full blur-3xl pointer-events-none" />
-
-            {/* Top Badges */}
-            <div className="flex items-center justify-between gap-2 mb-6 relative z-10">
-              <div className="flex items-center gap-2">
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#0c261f] border border-[#15493a] text-[11px] font-bold text-emerald-400 animate-pulse-glow">
-                  <TrendingDown className="w-3.5 h-3.5" />
-                  <span>Günün Rekor Düşüşü</span>
-                </span>
-                <span className="inline-flex items-center px-3 py-1 rounded-full bg-[#151a24] border border-[#222a3a] text-[11px] font-semibold text-slate-300">
-                  Son 6 Ayın En Dibi
-                </span>
-              </div>
-              <span className="text-[11px] text-slate-500">
-                Güncelleme: 14:32
+    <div className="w-full min-h-[calc(100vh-16rem)] bg-background relative overflow-hidden font-body-md text-body-md text-on-surface antialiased selection:bg-primary-container selection:text-on-primary-container">
+      <div className="flex flex-col w-full text-on-surface">
+        {/* 2. CANLI FİYAT DÜŞÜŞ TICKER (LIVE MARQUEE TICKER) */}
+        <section
+          aria-label="Canlı Fiyat Değişim Akışı"
+          className="w-full bg-surface-container-lowest/90 border-b border-white/[0.06] backdrop-blur-md overflow-hidden select-none py-2 relative z-30"
+        >
+          <div className="flex items-center">
+            {/* Live Badge Anchor */}
+            <div className="shrink-0 flex items-center gap-1.5 px-4 bg-surface-container-lowest z-10 border-r border-white/10 shadow-[8px_0_12px_rgba(0,0,0,0.5)]">
+              <span className="w-2 h-2 rounded-full bg-tertiary animate-ping" />
+              <span className="font-label-sm text-label-sm text-tertiary font-semibold tracking-wider uppercase text-[11px] whitespace-nowrap">
+                Canlı Fiyat Akışı
               </span>
             </div>
 
-            {/* Center Content: Left Details + Right Framed Product Card */}
-            <div className="grid grid-cols-12 gap-6 items-center my-2 relative z-10">
-              <div className="col-span-7 space-y-2.5">
-                <div className="text-[11px] font-extrabold uppercase tracking-wider text-[#38bdf8]">
-                  APPLE FLAGSHIP
-                </div>
-                <h3 className="text-3xl font-black text-white tracking-tight">
-                  iPhone 16 Pro 256GB
-                </h3>
-                <p className="text-xs text-slate-400 leading-relaxed">
-                  Doğal Titanyum, A18 Pro Çip, 48MP Pro Kamera Sistemi, Resmi
-                  Türkiye Garantili Ürün.
-                </p>
-
-                <div className="flex items-baseline gap-3 pt-2">
-                  <span className="text-4xl font-black text-white tracking-tight">
-                    ₺59.899
+            {/* Infinite Running Track */}
+            <div className="overflow-hidden flex-1 relative">
+              <div className="animate-marquee-infinite items-center gap-8 text-[13px] font-label-md font-normal text-on-surface-variant">
+                {/* Set 1 */}
+                <Link
+                  href="/telefon/samsung-galaxy-s24-ultra"
+                  className="inline-flex items-center gap-1.5 whitespace-nowrap hover:text-on-surface transition-colors"
+                >
+                  <span className="text-tertiary">📉</span>{" "}
+                  <strong>Galaxy S24 Ultra</strong> Hepsiburada&apos;da{" "}
+                  <span className="text-tertiary font-semibold">4.200 ₺</span>{" "}
+                  düştü{" "}
+                  <span className="text-[11px] px-1.5 py-0.5 rounded bg-tertiary/10 text-tertiary font-medium">
+                    (Son 6 Ayın Dibi)
                   </span>
-                  <span className="text-sm text-slate-500 line-through">
-                    ₺72.999
-                  </span>
-                  <span className="px-2 py-0.5 rounded-md bg-emerald-500/15 border border-emerald-500/30 text-[11px] font-extrabold text-emerald-400">
-                    -%18 İndirim
-                  </span>
-                </div>
-
-                <div className="flex items-center gap-1.5 text-xs text-slate-300 pt-1">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                  <span>
-                    En düşük satıcı:{" "}
-                    <strong className="text-white font-bold">
-                      Amazon TR (Satıcı &amp; Gönderici Resmi Amazon)
-                    </strong>
-                  </span>
-                </div>
-              </div>
-
-              {/* Right Framed Product Image */}
-              <div className="col-span-5">
-                <div className="rounded-2xl bg-[#080a0f] border border-[#19202e] p-5 flex items-center justify-center h-52 relative overflow-hidden group">
-                  <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/5 via-transparent to-emerald-500/10 pointer-events-none" />
-                  <div className="w-36 h-40 animate-float flex items-center justify-center">
-                    <PhoneImage
-                      src="/images/phones/iphone-16-pro.svg"
-                      alt="iPhone 16 Pro 256GB"
-                      className="w-full h-full object-contain drop-shadow-2xl group-hover:scale-105 transition-transform duration-500"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Bottom Telemetry Bar */}
-            <div className="mt-6 rounded-2xl bg-[#0a0d13] border border-[#171d2b] p-4 flex flex-wrap items-center justify-between gap-4 relative z-10">
-              <div className="flex items-center gap-4">
-                <div>
-                  <div className="text-[10.5px] text-slate-400 mb-1">
-                    6 Aylık Fiyat Telemetrisi Grafiği
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <svg
-                       className="w-32 h-7 overflow-visible"
-                      viewBox="0 0 130 28"
-                      fill="none"
-                    >
-                      <path
-                        d="M2 8 C22 10, 35 6, 52 12 C70 18, 85 11, 104 17 C114 20, 120 23, 126 24"
-                        stroke="#10b981"
-                        strokeWidth="2.2"
-                        strokeLinecap="round"
-                        className="animate-sparkline"
-                      />
-                      <circle
-                        cx="126"
-                        cy="24"
-                        r="3.5"
-                        className="fill-emerald-400 animate-ping"
-                      />
-                      <circle
-                        cx="126"
-                        cy="24"
-                        r="3.5"
-                        className="fill-emerald-400"
-                      />
-                    </svg>
-                    <span className="px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/25 text-[10.5px] font-bold text-emerald-400">
-                      +₺13.100 Tasarruf
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2.5">
-                <div className="hidden sm:flex items-center gap-1">
-                  <span className="px-2 py-1 rounded-md bg-[#121722] border border-[#1e2636] text-[10px] font-semibold text-slate-300">
-                    Amazon
-                  </span>
-                  <span className="px-2 py-1 rounded-md bg-[#121722] border border-[#1e2636] text-[10px] font-semibold text-slate-400">
-                    HB
-                  </span>
-                  <span className="px-2 py-1 rounded-md bg-[#121722] border border-[#1e2636] text-[10px] font-semibold text-slate-400">
-                    Trendyol
-                  </span>
-                </div>
-
+                </Link>
+                <span className="text-outline/40">•</span>
                 <Link
                   href="/telefon/iphone-16-pro"
-                  className="px-4 py-2.5 rounded-xl bg-[#1d8cf8] hover:bg-[#1577d6] text-white font-bold text-xs flex items-center gap-1.5 shadow-lg shadow-blue-500/20 transition-all"
+                  className="inline-flex items-center gap-1.5 whitespace-nowrap hover:text-on-surface transition-colors"
                 >
-                  <span>Fırsatı İncele</span>
-                  <ChevronRight className="w-4 h-4" />
+                  <span className="text-error">🔥</span>{" "}
+                  <strong>iPhone 16 Pro 256GB</strong> Amazon TR&apos;de{" "}
+                  <span className="text-primary font-semibold">59.899 ₺</span>{" "}
+                  <span className="text-[11px] px-1.5 py-0.5 rounded bg-tertiary-container/30 text-tertiary font-medium">
+                    (-%18 İndirim)
+                  </span>
                 </Link>
+                <span className="text-outline/40">•</span>
+                <Link
+                  href="/telefon/xiaomi-15-ultra"
+                  className="inline-flex items-center gap-1.5 whitespace-nowrap hover:text-on-surface transition-colors"
+                >
+                  <span className="text-primary">⚡</span>{" "}
+                  <strong>Xiaomi 15 Ultra</strong> Trendyol&apos;da{" "}
+                  <span className="text-on-surface font-semibold">
+                    53.819 ₺
+                  </span>{" "}
+                  <span className="text-[11px] px-1.5 py-0.5 rounded bg-surface-container-highest text-outline font-medium">
+                    (Stok Sınırlı)
+                  </span>
+                </Link>
+                <span className="text-outline/40">•</span>
+                <Link
+                  href="/telefon/honor-magic-v3"
+                  className="inline-flex items-center gap-1.5 whitespace-nowrap hover:text-on-surface transition-colors"
+                >
+                  <span className="text-tertiary">📉</span>{" "}
+                  <strong>Honor Magic V3 512GB</strong>{" "}
+                  <span className="text-tertiary font-semibold">
+                    7.000 ₺ İndirimle
+                  </span>{" "}
+                  <span className="text-on-surface">62.999 ₺</span>
+                </Link>
+                <span className="text-outline/40">•</span>
+                <span className="inline-flex items-center gap-1.5 whitespace-nowrap">
+                  <span className="w-1.5 h-1.5 rounded-full bg-tertiary inline-block" />{" "}
+                  <span className="text-primary font-medium">
+                    Canlı Fiyat Telemetrisi:
+                  </span>{" "}
+                  16 yetkili satıcı taranıyor...
+                </span>
+                <span className="text-outline/40">•</span>
+
+                {/* Duplicated Set for Smooth Continuous Loop */}
+                <Link
+                  href="/telefon/samsung-galaxy-s24-ultra"
+                  className="inline-flex items-center gap-1.5 whitespace-nowrap hover:text-on-surface transition-colors"
+                >
+                  <span className="text-tertiary">📉</span>{" "}
+                  <strong>Galaxy S24 Ultra</strong> Hepsiburada&apos;da{" "}
+                  <span className="text-tertiary font-semibold">4.200 ₺</span>{" "}
+                  düştü{" "}
+                  <span className="text-[11px] px-1.5 py-0.5 rounded bg-tertiary/10 text-tertiary font-medium">
+                    (Son 6 Ayın Dibi)
+                  </span>
+                </Link>
+                <span className="text-outline/40">•</span>
+                <Link
+                  href="/telefon/iphone-16-pro"
+                  className="inline-flex items-center gap-1.5 whitespace-nowrap hover:text-on-surface transition-colors"
+                >
+                  <span className="text-error">🔥</span>{" "}
+                  <strong>iPhone 16 Pro 256GB</strong> Amazon TR&apos;de{" "}
+                  <span className="text-primary font-semibold">59.899 ₺</span>{" "}
+                  <span className="text-[11px] px-1.5 py-0.5 rounded bg-tertiary-container/30 text-tertiary font-medium">
+                    (-%18 İndirim)
+                  </span>
+                </Link>
+                <span className="text-outline/40">•</span>
+                <Link
+                  href="/telefon/xiaomi-15-ultra"
+                  className="inline-flex items-center gap-1.5 whitespace-nowrap hover:text-on-surface transition-colors"
+                >
+                  <span className="text-primary">⚡</span>{" "}
+                  <strong>Xiaomi 15 Ultra</strong> Trendyol&apos;da{" "}
+                  <span className="text-on-surface font-semibold">
+                    53.819 ₺
+                  </span>{" "}
+                  <span className="text-[11px] px-1.5 py-0.5 rounded bg-surface-container-highest text-outline font-medium">
+                    (Stok Sınırlı)
+                  </span>
+                </Link>
+                <span className="text-outline/40">•</span>
+                <Link
+                  href="/telefon/honor-magic-v3"
+                  className="inline-flex items-center gap-1.5 whitespace-nowrap hover:text-on-surface transition-colors"
+                >
+                  <span className="text-tertiary">📉</span>{" "}
+                  <strong>Honor Magic V3 512GB</strong>{" "}
+                  <span className="text-tertiary font-semibold">
+                    7.000 ₺ İndirimle
+                  </span>{" "}
+                  <span className="text-on-surface">62.999 ₺</span>
+                </Link>
+                <span className="text-outline/40">•</span>
+                <span className="inline-flex items-center gap-1.5 whitespace-nowrap">
+                  <span className="w-1.5 h-1.5 rounded-full bg-tertiary inline-block" />{" "}
+                  <span className="text-primary font-medium">
+                    Canlı Fiyat Telemetrisi:
+                  </span>{" "}
+                  16 yetkili satıcı taranıyor...
+                </span>
+                <span className="text-outline/40">•</span>
               </div>
             </div>
           </div>
+        </section>
 
-          {/* RIGHT 5-COL CARD: Kafa Kafaya Analiz (Amiral Gemisi Düellosu) */}
-          <div className="col-span-12 lg:col-span-5 rounded-3xl bg-[#0e121a] border border-[#1b2232] p-6 lg:p-7 flex flex-col justify-between bento-card-hover animate-fade-up delay-225">
-            <div>
-              <div className="flex items-center justify-between mb-3">
-                <span className="px-2.5 py-1 rounded-md bg-[#151b26] border border-[#232c3d] text-[10px] font-extrabold uppercase tracking-wider text-slate-300">
-                  KAFA KAFAYA ANALİZ
-                </span>
-                <Scale className="w-4 h-4 text-slate-400" />
-              </div>
+        {/* 1. Ambient Hero & Bento Container with Interactive Radial Pointer Glow */}
+        <div
+          ref={ambientWrapperRef}
+          className="relative w-full overflow-hidden"
+          id="ambient-glow-wrapper"
+        >
+          {/* Interactive Dynamic Mouse Pointer Radial Glow Tracker */}
+          <div
+            ref={ambientTrackerRef}
+            className="absolute inset-0 z-0 transition-opacity duration-700 pointer-events-none"
+            id="hero-ambient-tracker"
+          />
+          <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[850px] h-[450px] bg-primary-container/15 rounded-full blur-[140px] pointer-events-none -z-10" />
+          <div className="absolute top-72 left-1/4 w-[380px] h-[380px] bg-surface-tint/5 rounded-full blur-[110px] pointer-events-none -z-10" />
 
-              <h3 className="text-xl font-black text-white">
-                Amiral Gemisi Düellosu
-              </h3>
-              <p className="text-xs text-slate-400 mt-1">
-                Donanım verileri, AnTuTu performansı ve anlık piyasa fiyat
-                karşılaştırması.
-              </p>
-
-              {/* VS Arena Box */}
-              <div className="mt-5 rounded-2xl bg-[#090c12] border border-[#171d2b] p-4 grid grid-cols-11 items-center gap-2 text-center relative">
-                {/* Left Phone */}
-                <div className="col-span-5 flex flex-col items-center">
-                  <div className="w-16 h-20 mb-2 flex items-center justify-center">
-                    <PhoneImage
-                      src="/images/phones/iphone-16-pro.svg"
-                      alt="iPhone 16 Pro"
-                      className="w-full h-full object-contain"
-                    />
-                  </div>
-                  <div className="text-xs font-extrabold text-white">
-                    iPhone 16 Pro
-                  </div>
-                  <div className="text-xs font-black text-[#38bdf8] mt-0.5">
-                    ₺59.899
-                  </div>
-                  <div className="text-[10px] text-slate-500 mt-1">
-                    6.3&quot; ProMotion
-                  </div>
-                  <div className="text-[10px] text-slate-500">48MP Fusion</div>
-                </div>
-
-                {/* Center VS */}
-                <div className="col-span-1 flex items-center justify-center">
-                  <div className="w-8 h-8 rounded-full bg-[#151b26] border border-[#263147] text-[10px] font-black text-slate-300 flex items-center justify-center shadow-inner">
-                    VS
-                  </div>
-                </div>
-
-                {/* Right Phone */}
-                <div className="col-span-5 flex flex-col items-center">
-                  <div className="w-16 h-20 mb-2 flex items-center justify-center">
-                    <PhoneImage
-                      src="/images/phones/samsung-galaxy-s24-ultra.webp"
-                      alt="Galaxy S24 Ultra"
-                      className="w-full h-full object-contain"
-                    />
-                  </div>
-                  <div className="text-xs font-extrabold text-white">
-                    Galaxy S24 Ultra
-                  </div>
-                  <div className="text-xs font-black text-[#38bdf8] mt-0.5">
-                    ₺64.499
-                  </div>
-                  <div className="text-[10px] text-slate-500 mt-1">
-                    6.8&quot; AMOLED 2X
-                  </div>
-                  <div className="text-[10px] text-slate-500">
-                    200MP Quad Cam
-                  </div>
-                </div>
-              </div>
-
-              {/* Animated Benchmark Bar */}
-              <div className="mt-4 space-y-1.5">
-                <div className="flex items-center justify-between text-[11px]">
-                  <span className="text-slate-400 font-medium">
-                    AnTuTu v10 Skoru
-                  </span>
-                  <span className="font-extrabold text-white">
-                    1.82M vs 1.94M
-                  </span>
-                </div>
-                <div className="w-full h-2 rounded-full bg-[#151b26] overflow-hidden flex gap-0.5">
-                  <div className="w-[48%] h-full bg-emerald-400 rounded-l-full animate-bar-grow" />
-                  <div className="w-[52%] h-full bg-[#1d8cf8] rounded-r-full animate-bar-grow" />
-                </div>
-              </div>
+          {/* Hero Content */}
+          <section className="max-w-7xl mx-auto px-gutter pt-space-xl pb-margin flex flex-col items-center text-center relative z-10">
+            {/* Eyebrow Pill */}
+            <div className="inline-flex items-center gap-space-xs px-space-md py-1.5 rounded-full bg-surface-container/70 shadow-sm backdrop-blur-md mb-space-lg border border-white/[0.08] transition-all hover:border-primary/40">
+              <span className="material-symbols-outlined text-[16px] text-tertiary">
+                verified
+              </span>
+              <span className="font-label-sm text-label-sm text-on-surface-variant tracking-wide uppercase">
+                Türkiye&apos;nin Akıllı Telefon ve Fiyat Rehberi
+              </span>
             </div>
 
-            <Link
-              href="/karsilastir"
-              className="mt-5 w-full py-3 rounded-xl bg-[#151b26] hover:bg-[#1c2433] border border-[#232c3e] text-xs font-bold text-white flex items-center justify-center gap-2 transition-all"
+            {/* Main Headline */}
+            <h1 className="font-display-hero text-display-hero md:text-[68px] tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-white via-on-surface to-outline max-w-4xl leading-[1.08] mb-space-md">
+              En doğru telefonu bul.
+              <br className="hidden sm:inline" />
+              En dip fiyata al.
+            </h1>
+
+            {/* Subtitle */}
+            <p className="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mx-auto mb-space-xl leading-relaxed">
+              <span
+                className="font-semibold text-on-surface count-metric"
+                data-suffix="+"
+                data-target="488"
+              >
+                488+
+              </span>{" "}
+              güncel model,{" "}
+              <span
+                className="font-semibold text-on-surface count-metric"
+                data-suffix=""
+                data-target="16"
+              >
+                16
+              </span>{" "}
+              resmi yetkili satıcı ve anlık fiyat değişim telemetrisi.
+              Karşılaştır, alarm kur, doğrulanmış en düşük fiyattan sahip ol.
+            </p>
+
+            {/* 3. Glass Search Box Component with Dynamic Typewriter Animation & Blinking Caret */}
+            <form
+              onSubmit={handleSearchSubmit}
+              className="w-full max-w-3xl rounded-full bg-surface-container/90 shadow-2xl backdrop-blur-xl p-2 flex items-center gap-space-sm mb-space-lg transition-all focus-within:bg-surface-container-high/95 border border-white/[0.08] focus-within:border-primary/50 relative"
             >
-              <span>Karşılaştırmayı Başlat</span>
-              <Zap className="w-3.5 h-3.5 text-[#38bdf8]" />
-            </Link>
-          </div>
-        </div>
-
-        {/* Row 2: 3 Equal Bento Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-          {/* Card 1: F/P RADARI — Fiyat/Performans Liderleri */}
-          <div className="rounded-3xl bg-[#0e121a] border border-[#1b2232] p-6 flex flex-col justify-between bento-card-hover animate-fade-up delay-150">
-            <div>
-              <div className="flex items-center justify-between mb-3">
-                <span className="px-2.5 py-1 rounded-md bg-[#151b26] border border-[#232c3d] text-[10px] font-extrabold uppercase tracking-wider text-slate-300">
-                  F/P RADARI
+              <div className="pl-space-md flex items-center justify-center text-outline">
+                <span className="material-symbols-outlined text-[24px]">
+                  search
                 </span>
-                <Award className="w-4 h-4 text-slate-400" />
               </div>
-
-              <h3 className="text-lg font-black text-white">
-                Fiyat/Performans Liderleri
-              </h3>
-              <p className="text-xs text-slate-400 mt-1">
-                Bütçenize göre en yüksek donanım endeksine sahip modeller.
-              </p>
-
-              <div className="mt-5 space-y-2.5">
-                {/* Item 1 */}
-                <Link
-                  href="/telefon/poco-f6-pro"
-                  className="flex items-center justify-between p-3 rounded-2xl bg-[#090c12] border border-[#171d2b] hover:border-[#2a354d] transition-colors group"
-                >
-                  <div className="flex items-center gap-3">
-                    <span className="w-6 h-6 rounded-full bg-emerald-500/15 border border-emerald-500/40 text-emerald-400 text-xs font-black flex items-center justify-center">
-                      1
-                    </span>
-                    <div>
-                      <div className="text-xs font-bold text-white group-hover:text-[#38bdf8] transition-colors">
-                        Xiaomi Poco F6 Pro
-                      </div>
-                      <div className="text-[10px] text-slate-500">
-                        12 Mağaza • 4.9/5 Skor
-                      </div>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-xs font-black text-white">₺23.499</div>
-                    <div className="text-[10px] font-bold text-emerald-400">
-                      Bütçe Lideri
-                    </div>
-                  </div>
-                </Link>
-
-                {/* Item 2 */}
-                <Link
-                  href="/telefon/samsung-galaxy-a55"
-                  className="flex items-center justify-between p-3 rounded-2xl bg-[#090c12] border border-[#171d2b] hover:border-[#2a354d] transition-colors group"
-                >
-                  <div className="flex items-center gap-3">
-                    <span className="w-6 h-6 rounded-full bg-[#151b26] border border-[#232c3d] text-slate-300 text-xs font-black flex items-center justify-center">
-                      2
-                    </span>
-                    <div>
-                      <div className="text-xs font-bold text-white group-hover:text-[#38bdf8] transition-colors">
-                        Samsung Galaxy A55
-                      </div>
-                      <div className="text-[10px] text-slate-500">
-                        16 Mağaza • 4.8/5 Skor
-                      </div>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-xs font-black text-white">₺16.890</div>
-                    <div className="text-[10px] text-slate-400">Çok Satan</div>
-                  </div>
-                </Link>
-
-                {/* Item 3 */}
-                <Link
-                  href="/telefon/nothing-phone-2a"
-                  className="flex items-center justify-between p-3 rounded-2xl bg-[#090c12] border border-[#171d2b] hover:border-[#2a354d] transition-colors group"
-                >
-                  <div className="flex items-center gap-3">
-                    <span className="w-6 h-6 rounded-full bg-[#151b26] border border-[#232c3d] text-slate-300 text-xs font-black flex items-center justify-center">
-                      3
-                    </span>
-                    <div>
-                      <div className="text-xs font-bold text-white group-hover:text-[#38bdf8] transition-colors">
-                        Nothing Phone (2a)
-                      </div>
-                      <div className="text-[10px] text-slate-500">
-                        9 Mağaza • 4.7/5 Skor
-                      </div>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-xs font-black text-white">₺18.499</div>
-                    <div className="text-[10px] text-slate-400">
-                      Özgün Tasarım
-                    </div>
-                  </div>
-                </Link>
-              </div>
-            </div>
-
-            <Link
-              href="/telefonlar?sort=price-drop"
-              className="mt-5 inline-flex items-center gap-1.5 text-xs font-bold text-slate-300 hover:text-white transition-colors"
-            >
-              <span>Tüm Fiyat Kademe Listelerini Gör</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </Link>
-          </div>
-
-          {/* Card 2: HIZLI RADAR — Fiyat Alarmı Kurun */}
-          <div className="rounded-3xl bg-[#0e121a] border border-[#1b2232] p-6 flex flex-col justify-between bento-card-hover animate-fade-up delay-225">
-            <div>
-              <div className="flex items-center justify-between mb-3">
-                <span className="px-2.5 py-1 rounded-md bg-[#151b26] border border-[#232c3d] text-[10px] font-extrabold uppercase tracking-wider text-slate-300">
-                  HIZLI RADAR
-                </span>
-                <Bell className="w-4 h-4 text-[#38bdf8]" />
-              </div>
-
-              <h3 className="text-lg font-black text-white">
-                Fiyat Alarmı Kurun
-              </h3>
-              <p className="text-xs text-slate-400 mt-1">
-                İstediğiniz model hedef rakama indiğinde saniyeler içinde
-                bildirim alın.
-              </p>
-
-              <div className="mt-5 rounded-2xl bg-[#090c12] border border-[#171d2b] p-4 space-y-3">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-slate-400">Hedef Cihaz</span>
-                  <span className="font-bold text-white">iPhone 15 128GB</span>
-                </div>
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-slate-400">Güncel Fiyat</span>
-                  <span className="text-slate-400 line-through">₺48.999</span>
-                </div>
-
-                {/* Green Target Price Control Box */}
-                <div className="rounded-xl bg-[#0b221c] border border-[#144638] p-3 flex items-center justify-between">
-                  <div>
-                    <div className="text-[10.5px] font-bold text-emerald-400">
-                      Hedef Eşik Fiyat
-                    </div>
-                    <div className="text-base font-black text-white mt-0.5">
-                      {formatPrice(targetAlertPrice)}
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setTargetAlertPrice((p) => Math.max(20000, p - 1000))
-                      }
-                      className="w-7 h-7 rounded-lg bg-[#0f2e26] hover:bg-[#164237] border border-emerald-500/30 text-emerald-300 flex items-center justify-center transition-colors cursor-pointer"
-                    >
-                      <Minus className="w-3.5 h-3.5" />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setTargetAlertPrice((p) => p + 1000)}
-                      className="w-7 h-7 rounded-lg bg-[#0f2e26] hover:bg-[#164237] border border-emerald-500/30 text-emerald-300 flex items-center justify-center transition-colors cursor-pointer"
-                    >
-                      <Plus className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-                </div>
-
-                {/* Toggle Switch */}
-                <div className="flex items-center justify-between pt-1">
-                  <span className="text-xs text-slate-300 flex items-center gap-1.5">
-                    <Zap className="w-3.5 h-3.5 text-[#38bdf8]" />
-                    <span>Telegram &amp; SMS Bildirimi</span>
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => setTelegramEnabled(!telegramEnabled)}
-                    className={`w-10 h-5 rounded-full transition-colors relative cursor-pointer ${
-                      telegramEnabled ? "bg-[#1d8cf8]" : "bg-slate-700"
-                    }`}
+              <div className="relative flex-1 flex items-center overflow-hidden">
+                <input
+                  ref={searchInputRef}
+                  autoComplete="off"
+                  value={searchValue}
+                  onChange={(e) => setSearchValue(e.target.value)}
+                  onFocus={() => setIsSearchFocused(true)}
+                  onBlur={() => setIsSearchFocused(false)}
+                  className="w-full bg-transparent border-0 outline-none text-on-surface font-body-md text-body-md placeholder:text-outline focus:ring-0 px-space-xs text-left"
+                  id="hero-device-search"
+                  placeholder=""
+                  type="text"
+                />
+                {/* Animated Typewriter Display Overlay (visible when input is empty) */}
+                {searchValue.length === 0 && (
+                  <div
+                    style={{ opacity: isSearchFocused ? 0.4 : 1 }}
+                    className="absolute left-1 pointer-events-none text-outline font-body-md text-body-md truncate flex items-center transition-opacity"
+                    id="search-typewriter-container"
                   >
-                    <span
-                      className={`absolute top-0.5 w-4 h-4 rounded-full bg-white transition-transform ${
-                        telegramEnabled ? "left-5" : "left-0.5"
-                      }`}
-                    />
-                  </button>
-                </div>
+                    <span id="typewriter-text">{typewriterText}</span>
+                    <span className="typewriter-cursor text-primary font-normal text-lg leading-none ml-0.5">
+                      |
+                    </span>
+                  </div>
+                )}
               </div>
-            </div>
-
-            <button
-              type="button"
-              onClick={() => {
-                showToast(
-                  `iPhone 15 128GB için ${formatPrice(targetAlertPrice)} fiyat alarmı hazırlandı!`
-                );
-                openAlertModal();
-              }}
-              className="mt-5 w-full py-3 rounded-xl bg-[#1d8cf8] hover:bg-[#1577d6] text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20 transition-all cursor-pointer"
-            >
-              <Bell className="w-3.5 h-3.5" />
-              <span>Ücretsiz Alarm Oluştur</span>
-            </button>
-          </div>
-
-          {/* Card 3: DOĞRULANMIŞ AĞ — Sıfır Risk Garantisi */}
-          <div className="rounded-3xl bg-[#0e121a] border border-[#1b2232] p-6 flex flex-col justify-between bento-card-hover animate-fade-up delay-300">
-            <div>
-              <div className="flex items-center justify-between mb-3">
-                <span className="px-2.5 py-1 rounded-md bg-[#151b26] border border-[#232c3d] text-[10px] font-extrabold uppercase tracking-wider text-slate-300">
-                  DOĞRULANMIŞ AĞ
-                </span>
-                <Shield className="w-4 h-4 text-emerald-400" />
+              <div className="hidden md:flex items-center gap-1 px-space-sm py-1 rounded bg-surface-container-highest text-on-surface-variant font-label-sm text-label-sm border border-white/5">
+                <span>⌘K</span>
               </div>
-
-              <h3 className="text-lg font-black text-white">
-                Sıfır Risk Garantisi
-              </h3>
-              <p className="text-xs text-slate-400 mt-1">
-                Yalnızca resmi ithalat ve yetkili distribütör faturalı satıcılar
-                listelenir.
-              </p>
-
-              <div className="mt-5 space-y-3">
-                <div className="rounded-2xl bg-[#090c12] border border-[#171d2b] p-3.5 flex items-start gap-3">
-                  <div className="w-8 h-8 rounded-xl bg-blue-500/10 border border-blue-500/25 flex items-center justify-center text-[#38bdf8] shrink-0 mt-0.5">
-                    <Shield className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <div className="text-xs font-bold text-white">
-                      BTK IMEI Sorgusu
-                    </div>
-                    <p className="text-[11px] text-slate-400 leading-relaxed mt-0.5">
-                      Tüm listelenen cihazlar Türkiye kayıtlı seri numaralarıyla
-                      senkronizedir.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="rounded-2xl bg-[#090c12] border border-[#171d2b] p-3.5 flex items-start gap-3">
-                  <div className="w-8 h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/25 flex items-center justify-center text-emerald-400 shrink-0 mt-0.5">
-                    <Store className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <div className="text-xs font-bold text-white">
-                      16 Yetkili Pazar Yeri
-                    </div>
-                    <p className="text-[11px] text-slate-400 leading-relaxed mt-0.5">
-                      Apple Store, Amazon, Hepsiburada, Teknosa, MediaMarkt ve
-                      diğerleri.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-5 pt-3 border-t border-[#171d2b] flex items-center justify-between text-xs">
-              <span className="text-slate-400">
-                Güvenlik Puanı:{" "}
-                <strong className="text-white font-extrabold">100/100</strong>
-              </span>
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-[10.5px] font-bold text-emerald-400">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                <span>Aktif Doğrulama</span>
-              </span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ─── 5. CANLI TRENDLER SECTION ─────────────────────────────────────── */}
-      <section className="max-w-[1280px] mx-auto px-6 py-10">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-7">
-          <div>
-            <div className="text-[11px] font-extrabold uppercase tracking-widest text-[#38bdf8] mb-1.5">
-              CANLI TRENDLER
-            </div>
-            <h2 className="text-3xl font-black text-white tracking-tight">
-              Piyasanın En Gözde Cihazları
-            </h2>
-          </div>
-
-          {/* Filter Tabs: Tümü / iOS / Android */}
-          <div className="inline-flex items-center p-1 rounded-full bg-[#0f131b] border border-[#1d2433]">
-            {(["Tümü", "iOS", "Android"] as const).map((tab) => (
               <button
-                key={tab}
-                type="button"
-                onClick={() => setTrendFilter(tab)}
-                className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
-                  trendFilter === tab
-                    ? "bg-[#1d2433] text-white shadow-sm"
-                    : "text-slate-400 hover:text-white"
-                }`}
+                className="shrink-0 h-12 px-space-xl rounded-full bg-primary-container text-white font-label-md text-label-md shadow-md hover:bg-primary hover:text-on-primary transition-all flex items-center gap-space-xs active:scale-[0.98] cursor-pointer"
+                type="submit"
               >
-                {tab}
+                <span>Fiyatları Gör</span>
+                <span className="material-symbols-outlined text-[18px]">
+                  arrow_forward
+                </span>
               </button>
-            ))}
-          </div>
-        </div>
+            </form>
 
-        {/* 4 Product Cards Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          {filteredTrends.map((device) => {
-            const isFav =
-              favorites.includes(device.slug) ||
-              localFavs.includes(device.slug);
-            return (
-              <div
-                key={device.slug}
-                className="rounded-3xl bg-[#0e121a] border border-[#1b2232] p-5 flex flex-col justify-between bento-card-hover group"
-              >
-                <div>
-                  {/* Top Badge + Favorite Button */}
-                  <div className="flex items-center justify-between mb-3">
-                    <span
-                      className={`px-2.5 py-0.5 rounded-md text-[10.5px] font-extrabold ${
-                        device.badgeType === "discount"
-                          ? "bg-emerald-500/15 border border-emerald-500/30 text-emerald-400"
-                          : "bg-[#161c28] border border-[#263044] text-slate-200"
-                      }`}
-                    >
-                      {device.badge}
-                    </span>
-
-                    <button
-                      type="button"
-                      onClick={() => handleToggleFav(device.slug, device.name)}
-                      className={`w-7 h-7 rounded-full border flex items-center justify-center transition-colors cursor-pointer ${
-                        isFav
-                          ? "bg-rose-500/20 border-rose-500/40 text-rose-400"
-                          : "bg-[#131822] border-[#202838] text-slate-400 hover:text-white"
-                      }`}
-                      aria-label="Favorilere ekle"
-                    >
-                      <Heart
-                        className={`w-3.5 h-3.5 ${isFav ? "fill-current" : ""}`}
-                      />
-                    </button>
-                  </div>
-
-                  {/* Framed Image Area */}
-                  <Link
-                    href={`/telefon/${device.slug}`}
-                    className="block rounded-2xl bg-[#080a0f] border border-[#151b26] h-44 p-4 mb-4 flex items-center justify-center overflow-hidden relative"
+            {/* Quick Brand Chips */}
+            <div className="flex flex-wrap items-center justify-center gap-space-xs max-w-3xl">
+              {brands.map((brand) => {
+                const isSelected = activeBrand === brand;
+                return (
+                  <button
+                    key={brand}
+                    type="button"
+                    onClick={() => {
+                      setActiveBrand(brand);
+                      if (brand !== "Tümü") {
+                        const slug = brand.toLowerCase().split(" ")[0];
+                        router.push(`/telefonlar?brand=${slug}`);
+                      }
+                    }}
+                    className={
+                      isSelected
+                        ? "h-9 px-space-md rounded-full bg-white text-surface font-label-md text-label-md shadow-sm transition-all hover:opacity-95 cursor-pointer"
+                        : "h-9 px-space-md rounded-full bg-surface-container-low text-on-surface-variant font-label-md text-label-md hover:text-on-surface hover:bg-surface-container transition-all cursor-pointer"
+                    }
                   >
-                    <div className="w-28 h-32 flex items-center justify-center group-hover:scale-108 transition-transform duration-500">
-                      <PhoneImage
-                        src={device.image}
-                        alt={device.name}
-                        className="w-full h-full object-contain"
-                      />
-                    </div>
-                  </Link>
-
-                  {/* Brand & Model */}
-                  <div className="text-[10px] font-extrabold uppercase tracking-wider text-slate-500">
-                    {device.brand}
-                  </div>
-                  <Link
-                    href={`/telefon/${device.slug}`}
-                    className="text-base font-black text-white hover:text-[#38bdf8] transition-colors block mt-0.5 truncate"
-                  >
-                    {device.name}
-                  </Link>
-                  <div className="text-[11px] text-slate-400 mt-1 truncate">
-                    {device.specs}
-                  </div>
-                </div>
-
-                <div className="mt-5 pt-3 border-t border-[#161c28]">
-                  <div className="flex items-baseline justify-between mb-3">
-                    <span className="text-2xl font-black text-white tracking-tight">
-                      {formatPrice(device.price)}
-                    </span>
-                    <span className="text-[11px] text-slate-400">
-                      {device.storeCount} Mağaza
-                    </span>
-                  </div>
-
-                  <Link
-                    href={`/telefon/${device.slug}`}
-                    className="w-full py-2.5 rounded-xl bg-[#151b26] group-hover:bg-[#1d8cf8] border border-[#222b3d] group-hover:border-[#1d8cf8] text-xs font-bold text-slate-200 group-hover:text-white flex items-center justify-center gap-1.5 transition-all"
-                  >
-                    <span>Fiyatları İncele</span>
-                    <ChevronRight className="w-3.5 h-3.5" />
-                  </Link>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </section>
-
-      {/* ─── 6. AI SMART ASSISTANT CALLOUT BANNER ──────────────────────────── */}
-      <section className="max-w-[1280px] mx-auto px-6 pt-4 pb-16">
-        <div className="rounded-3xl bg-gradient-to-r from-[#0e131f] via-[#111827] to-[#0c1018] border border-[#1e2638] p-8 lg:p-11 flex flex-col lg:flex-row items-center justify-between gap-6 relative overflow-hidden shadow-2xl">
-          <div className="absolute -right-16 -bottom-16 w-72 h-72 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
-
-          <div className="max-w-xl space-y-2 relative z-10 text-center lg:text-left">
-            <div className="text-[10.5px] font-extrabold uppercase tracking-widest text-[#38bdf8]">
-              CEBİNİZE UYGUN AKILLI TERCİH
+                    {brand}
+                  </button>
+                );
+              })}
             </div>
-            <h3 className="text-2xl lg:text-3xl font-black text-white leading-tight">
-              Hangi telefonu seçeceğinizden emin değil misiniz?
-            </h3>
-            <p className="text-xs sm:text-sm text-slate-400 leading-relaxed pt-1">
-              3 adımlık akıllı cihaz asistanımızla bütçenize ve ihtiyaçlarınıza
-              en uygun amiral gemisini 60 saniyede bulun.
+          </section>
+        </div>
+
+        {/* 6. Telemetry Bar with Dynamic Animated Counters */}
+        <section className="w-full bg-surface-container-lowest/60 py-space-md mb-margin border-y border-white/[0.04]">
+          <div className="max-w-7xl mx-auto px-gutter flex flex-wrap items-center justify-between gap-space-md text-on-surface-variant">
+            <div className="flex items-center gap-space-sm">
+              <span className="w-2.5 h-2.5 rounded-full bg-tertiary animate-pulse" />
+              <span className="font-label-sm text-label-sm tracking-wide text-on-surface font-semibold">
+                CANLI TELEMETRİ
+              </span>
+              <span className="font-body-sm text-body-sm text-outline">
+                Son güncelleme: 34 saniye önce
+              </span>
+            </div>
+            <div className="hidden lg:flex items-center gap-space-xl font-label-sm text-label-sm">
+              <div className="flex items-center gap-space-xs">
+                <span
+                  className="text-on-surface font-semibold text-[15px] count-metric"
+                  data-formatted="true"
+                  data-target="1482903"
+                >
+                  1.482.903
+                </span>
+                <span className="text-outline">
+                  günlük taranan fiyat satırı
+                </span>
+              </div>
+              <div className="flex items-center gap-space-xs">
+                <span
+                  className="text-tertiary font-semibold text-[15px] count-metric"
+                  data-prefix="%"
+                  data-suffix=""
+                  data-target="100"
+                >
+                  %100
+                </span>
+                <span className="text-outline">
+                  BTK Kayıtlı Türkiye Garantili
+                </span>
+              </div>
+              <div className="flex items-center gap-space-xs">
+                <span className="text-primary font-semibold text-[15px]">
+                  0 ms
+                </span>
+                <span className="text-outline">aracı komisyonu</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* BENTO GRID SECTION: Akıllı Alışverişin Yeni Standardı */}
+        <section className="max-w-7xl mx-auto px-gutter mb-margin w-full">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-space-md mb-space-xl">
+            <div>
+              <span className="font-label-sm text-label-sm text-primary uppercase tracking-wider font-semibold">
+                Bento Ekosistemi
+              </span>
+              <h2 className="font-headline-xl text-headline-xl tracking-tight text-on-surface mt-1">
+                Akıllı Alışverişin Yeni Standardı
+              </h2>
+            </div>
+            <p className="font-body-md text-body-md text-on-surface-variant max-w-md">
+              Karmaşık reklam bannerları yok. Sadece saf veri, berrak fiyat
+              değişim analizleri ve onaylı satıcı rotaları.
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center justify-center gap-3 relative z-10 shrink-0">
-            <Link
-              href="/telefon-rehberi"
-              className="px-6 py-3.5 rounded-full bg-[#1d8cf8] hover:bg-[#1577d6] text-white font-bold text-xs sm:text-sm flex items-center gap-2 shadow-lg shadow-blue-500/25 transition-all"
-            >
-              <span>Akıllı Rehberi Başlat</span>
-              <Sparkles className="w-4 h-4" />
-            </Link>
+          {/* Bento Grid Container with Animated Border-Beam & Spotlight Effects */}
+          <div className="grid grid-cols-1 md:grid-cols-6 lg:grid-cols-12 gap-gutter">
+            {/* BENTO 1: Large Feature - Fiyatı En Çok Düşenler (8 Cols) */}
+            <div className="border-beam-card md:col-span-6 lg:col-span-8 bg-surface-container/85 p-space-xl relative overflow-hidden flex flex-col justify-between shadow-xl transition-all duration-300 hover:bg-surface-container-high/90 group">
+              <div className="beam-spotlight" />
+              {/* Ambient subtle accent */}
+              <div className="absolute -top-24 -right-24 w-96 h-96 bg-primary-container/10 rounded-full blur-[80px] pointer-events-none" />
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-space-md mb-space-lg relative z-10">
+                <div className="flex items-center gap-space-xs">
+                  {/* 4. Pulsing Badge */}
+                  <span className="px-space-sm py-1 rounded-full bg-tertiary-container/30 text-tertiary font-label-sm text-label-sm flex items-center gap-1 price-drop-pulse">
+                    <span className="material-symbols-outlined text-[14px]">
+                      trending_down
+                    </span>
+                    Günün Rekor Düşüşü
+                  </span>
+                  <span
+                    className="px-space-sm py-1 rounded-full bg-surface-container-highest text-on-surface-variant font-label-sm text-label-sm price-drop-pulse"
+                    style={{ animationDelay: "1.5s" }}
+                  >
+                    Son 6 Ayın En Dibi
+                  </span>
+                </div>
+                <span className="font-label-sm text-label-sm text-outline">
+                  Güncelleme: 14:20
+                </span>
+              </div>
 
-            <Link
-              href="/telefonlar"
-              className="px-6 py-3.5 rounded-full bg-[#141923] hover:bg-[#1c2331] border border-[#242e42] text-slate-200 hover:text-white font-bold text-xs sm:text-sm transition-all"
-            >
-              Tüm Modelleri Keşfet
-            </Link>
+              <div className="grid grid-cols-1 sm:grid-cols-12 gap-space-lg items-center mb-space-lg relative z-10">
+                <div className="sm:col-span-7 flex flex-col">
+                  <span className="font-label-md text-label-md text-primary font-medium tracking-wide">
+                    APPLE FLAGSHIP
+                  </span>
+                  <h3 className="font-headline-lg text-headline-lg text-on-surface tracking-tight mt-1 mb-space-xs">
+                    iPhone 16 Pro 256GB
+                  </h3>
+                  <p className="font-body-sm text-body-sm text-on-surface-variant mb-space-md">
+                    Doğal Titanyum, A18 Pro Çip, 48MP Pro Kamera Sistemi. Resmi
+                    Türkiye Garantili Ürün.
+                  </p>
+                  <div className="flex items-baseline gap-space-sm mb-space-sm">
+                    {/* 4. Price Glow Pulse */}
+                    <span className="font-price-xl text-price-xl text-on-surface tracking-tight price-number-pulse">
+                      ₺59.899
+                    </span>
+                    <span className="font-body-md text-body-md text-outline line-through">
+                      ₺72.999
+                    </span>
+                    <span className="font-label-sm text-label-sm text-tertiary font-semibold ml-1 price-drop-pulse px-2 py-0.5 rounded-full bg-tertiary/10">
+                      -%18 İndirim
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-space-xs text-on-surface-variant font-label-sm text-label-sm">
+                    <span className="material-symbols-outlined text-[16px] text-tertiary">
+                      check_circle
+                    </span>
+                    <span>
+                      En düşük satıcı: <strong>Amazon TR</strong> (Satıcı &amp;
+                      Gönderici Resmi Amazon)
+                    </span>
+                  </div>
+                </div>
+
+                {/* 5. 3D Floating Mockup Phone */}
+                <div className="sm:col-span-5 relative flex items-center justify-center p-space-md rounded bg-surface-container-lowest/60">
+                  <img
+                    alt="Studio hardware render of Apple iPhone 16 Pro Natural Titanium"
+                    className="w-48 h-56 object-contain drop-shadow-2xl animate-float-mockup transition-transform duration-500 group-hover:scale-105"
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuDDrVAurp_xNMekkJUnRh__oYVfi6GZhC-OVW_Oo0WLfhcEVZk2YGKIkXMVU_7EdpBAFbTPFnoSs-cK7_8um0OcXNjoWFs1DACEplsSrjKjett3wVgxI3KXb_TUvpA6QuMNbgPs0HKaxtj2UfOsys1Fp-fJTvnivZjk0sSwQ9QFleu-qe8-3IkbEsSo4EnNNCXaOeyZGc4tnvJwPms6QMpqjVE57tEgCZ58O_q_w_c"
+                  />
+                </div>
+              </div>
+
+              {/* Price History Sparkline & Action Row */}
+              <div className="pt-space-md mt-space-sm bg-surface-container-lowest/40 rounded-DEFAULT p-space-md flex flex-col md:flex-row md:items-center justify-between gap-space-md relative z-10 border border-white/[0.04]">
+                <div className="flex flex-col gap-1">
+                  <span className="font-label-sm text-label-sm text-outline">
+                    6 Aylık Fiyat Telemetrisi Grafiği
+                  </span>
+                  <div className="flex items-center gap-space-md">
+                    {/* Inline SVG Sparkline */}
+                    <svg
+                      className="w-44 h-8 text-tertiary overflow-visible"
+                      fill="none"
+                      viewBox="0 0 160 32"
+                    >
+                      <path
+                        d="M0 8 L30 12 L60 7 L90 19 L120 15 L160 28"
+                        stroke="currentColor"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2.5"
+                      />
+                      <circle
+                        className="animate-ping"
+                        cx="160"
+                        cy="28"
+                        fill="currentColor"
+                        opacity="0.7"
+                        r="4"
+                      />
+                      <circle cx="160" cy="28" fill="currentColor" r="4" />
+                    </svg>
+                    <span className="font-label-sm text-label-sm text-tertiary font-medium price-drop-pulse px-2 py-0.5 rounded bg-tertiary/10">
+                      -₺13.100 Tasarruf
+                    </span>
+                  </div>
+                </div>
+                <div className="flex items-center gap-space-sm">
+                  <div className="flex -space-x-2 overflow-hidden">
+                    <span className="inline-block px-2 py-1 rounded text-[10px] font-semibold bg-surface-bright text-on-surface">
+                      Amazon
+                    </span>
+                    <span className="inline-block px-2 py-1 rounded text-[10px] font-semibold bg-surface-container-highest text-on-surface">
+                      HB
+                    </span>
+                    <span className="inline-block px-2 py-1 rounded text-[10px] font-semibold bg-surface-container-high text-on-surface">
+                      Trendyol
+                    </span>
+                  </div>
+                  <Link
+                    className="h-10 px-space-lg rounded-full bg-primary-container text-white font-label-md text-label-md flex items-center gap-1 shadow-md hover:bg-primary hover:text-on-primary transition-all active:scale-95"
+                    href="/telefon/iphone-16-pro"
+                  >
+                    <span>Fırsatı İncele</span>
+                    <span className="material-symbols-outlined text-[16px]">
+                      chevron_right
+                    </span>
+                  </Link>
+                </div>
+              </div>
+            </div>
+
+            {/* BENTO 2: Head-to-Head Comparison VS (4 Cols) with Device Hover Convergence */}
+            <div className="border-beam-card beam-delay-1 md:col-span-6 lg:col-span-4 bg-surface-container/85 p-space-xl flex flex-col justify-between shadow-xl relative overflow-hidden transition-all duration-300 hover:bg-surface-container-high/90 group-vs group">
+              <div className="beam-spotlight" />
+              <div className="relative z-10">
+                <div className="flex items-center justify-between mb-space-md">
+                  <span className="px-space-sm py-1 rounded-full bg-surface-container-highest text-primary font-label-sm text-label-sm font-semibold tracking-wide">
+                    KAFA KAFAYA ANALİZ
+                  </span>
+                  <span className="material-symbols-outlined text-outline text-[20px] transition-transform duration-300 group-hover:rotate-12 group-hover:text-primary">
+                    balance
+                  </span>
+                </div>
+                <h3 className="font-headline-md text-headline-md text-on-surface tracking-tight mb-space-xs">
+                  Amiral Gemisi Düellosu
+                </h3>
+                <p className="font-body-sm text-body-sm text-on-surface-variant mb-space-lg">
+                  Donanım matrisi, AnTuTu performansı ve anlık piyasa fiyat
+                  karşılaştırması.
+                </p>
+
+                {/* 5. Dual spec comparison card with interactive device convergence on hover */}
+                <div className="grid grid-cols-2 gap-space-sm rounded bg-surface-container-lowest p-space-md mb-space-md border border-white/[0.04] relative">
+                  {/* VS Center Pill */}
+                  <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20 w-7 h-7 rounded-full bg-surface-container-highest border border-white/10 flex items-center justify-center shadow-lg pointer-events-none">
+                    <span className="text-[10px] font-bold text-primary">
+                      VS
+                    </span>
+                  </div>
+
+                  {/* Left Device */}
+                  <div className="vs-device-left flex flex-col items-center text-center transition-transform duration-300 ease-out">
+                    <img
+                      alt="Clean front view of iPhone 16 Pro"
+                      className="w-16 h-24 object-contain mb-space-xs drop-shadow-md"
+                      src="https://lh3.googleusercontent.com/aida-public/AB6AXuBcWxymk-dsDtNmhFf_jhgjjVUi0HWvLTsfOm2HSSfcCUtHFviOdv6DoSvWaKEhyD6136lFISkxzBYIvOhVUzux0q-mfQarb0HQAEUm7hkj4xntSeoVxUQN16NyaXZzEg7f6midVNJXZRYI5zvGnzAEGsXRt_IBXo00WeGPw7i8lFhuW2j8GBKgUdl9HuHupVvL_sb6rh4t-VJib87oNVxZaz-CwGaAxxDH0WEt-_I"
+                    />
+                    <span className="font-label-sm text-label-sm text-on-surface font-semibold truncate w-full">
+                      iPhone 16 Pro
+                    </span>
+                    <span className="font-label-sm text-label-sm text-primary font-bold mt-1">
+                      ₺59.899
+                    </span>
+                    <span className="text-[11px] text-outline mt-1">
+                      6.3&quot; ProMotion
+                    </span>
+                    <span className="text-[11px] text-outline">
+                      48MP Fusion
+                    </span>
+                  </div>
+
+                  {/* Right Device */}
+                  <div className="vs-device-right flex flex-col items-center text-center transition-transform duration-300 ease-out">
+                    <img
+                      alt="Clean front view of Samsung Galaxy S24 Ultra"
+                      className="w-16 h-24 object-contain mb-space-xs drop-shadow-md"
+                      src="https://lh3.googleusercontent.com/aida-public/AB6AXuA44u-M6KmPysMFuFPLcLx1Fy4Y1zQZImQoPqHHeHBJKOfTOppWpsPnMkVskEVe_19LOObF5zGbzfwOmmuwkVnO-Jd65KAQFioGcXLlmUP8yWCA5onRd-MHwLEs7LB4Huf4k7hkSupHk592WTgGlTYoP0QJrIefa5GE0WZyGa_Zpl8qcYYEcDRNdWnqHI39Ny_dx2BY7m3XfBhAZAvJZhvk1Gl9vsbzWhHFZlqfo_Q"
+                    />
+                    <span className="font-label-sm text-label-sm text-on-surface font-semibold truncate w-full">
+                      Galaxy S24 Ultra
+                    </span>
+                    <span className="font-label-sm text-label-sm text-primary font-bold mt-1">
+                      ₺54.499
+                    </span>
+                    <span className="text-[11px] text-outline mt-1">
+                      6.8&quot; AMOLED 2X
+                    </span>
+                    <span className="text-[11px] text-outline">
+                      200MP Quad Cam
+                    </span>
+                  </div>
+                </div>
+
+                {/* Spec Bar */}
+                <div className="flex flex-col gap-1.5 mb-space-md">
+                  <div className="flex justify-between text-[12px] font-label-sm text-outline">
+                    <span>AnTuTu v10 Skoru</span>
+                    <span className="text-on-surface font-semibold">
+                      1.82M vs 1.94M
+                    </span>
+                  </div>
+                  <div className="w-full h-2 rounded-full bg-surface-container-highest overflow-hidden flex">
+                    <div className="bg-primary h-full w-[48%] transition-all duration-500" />
+                    <div className="bg-tertiary-container h-full w-[52%] transition-all duration-500" />
+                  </div>
+                </div>
+              </div>
+
+              <Link
+                className="relative z-10 w-full h-11 rounded-full bg-surface-container-highest hover:bg-surface-bright text-on-surface font-label-md text-label-md flex items-center justify-center gap-space-xs transition-all active:scale-98"
+                href="/karsilastir"
+              >
+                <span>Karşılaştırmayı Başlat</span>
+                <span className="material-symbols-outlined text-[18px]">
+                  compare_arrows
+                </span>
+              </Link>
+            </div>
+
+            {/* BENTO 3: Bütçe & F/P Şampiyonları (4 Cols) */}
+            <div className="border-beam-card beam-delay-2 md:col-span-6 lg:col-span-4 bg-surface-container/85 p-space-xl flex flex-col justify-between shadow-xl transition-all duration-300 hover:bg-surface-container-high/90">
+              <div className="beam-spotlight" />
+              <div className="relative z-10">
+                <div className="flex items-center justify-between mb-space-md">
+                  <span className="px-space-sm py-1 rounded-full bg-surface-container-highest text-tertiary font-label-sm text-label-sm font-semibold tracking-wide">
+                    F/P RADARI
+                  </span>
+                  <span className="material-symbols-outlined text-outline text-[20px]">
+                    military_tech
+                  </span>
+                </div>
+                <h3 className="font-headline-md text-headline-md text-on-surface tracking-tight mb-space-xs">
+                  Fiyat/Performans Liderleri
+                </h3>
+                <p className="font-body-sm text-body-sm text-on-surface-variant mb-space-md">
+                  Bütçenize göre en yüksek donanım endeksine sahip modeller.
+                </p>
+                <div className="flex flex-col gap-space-sm">
+                  {/* Row 1 */}
+                  <Link
+                    href="/telefon/poco-f6-pro"
+                    className="p-space-sm rounded bg-surface-container-lowest/80 flex items-center justify-between transition-all hover:bg-surface-container-lowest hover:translate-x-1 border border-transparent hover:border-white/5"
+                  >
+                    <div className="flex items-center gap-space-sm min-w-0">
+                      <span className="w-7 h-7 rounded-full bg-tertiary/10 text-tertiary flex items-center justify-center text-[12px] font-bold shrink-0">
+                        1
+                      </span>
+                      <div className="truncate">
+                        <h4 className="font-label-md text-label-md text-on-surface font-semibold truncate">
+                          Xiaomi Poco F6 Pro
+                        </h4>
+                        <span className="text-[12px] text-outline">
+                          12 Mağaza • 4.9/5 Skor
+                        </span>
+                      </div>
+                    </div>
+                    <div className="text-right shrink-0 pl-space-sm">
+                      <span className="font-title-sm text-title-sm text-on-surface font-bold">
+                        ₺23.499
+                      </span>
+                      <span className="block text-[11px] text-tertiary font-medium">
+                        Bütçe Lideri
+                      </span>
+                    </div>
+                  </Link>
+
+                  {/* Row 2 */}
+                  <Link
+                    href="/telefon/samsung-galaxy-a55"
+                    className="p-space-sm rounded bg-surface-container-lowest/80 flex items-center justify-between transition-all hover:bg-surface-container-lowest hover:translate-x-1 border border-transparent hover:border-white/5"
+                  >
+                    <div className="flex items-center gap-space-sm min-w-0">
+                      <span className="w-7 h-7 rounded-full bg-primary/10 text-primary flex items-center justify-center text-[12px] font-bold shrink-0">
+                        2
+                      </span>
+                      <div className="truncate">
+                        <h4 className="font-label-md text-label-md text-on-surface font-semibold truncate">
+                          Samsung Galaxy A55
+                        </h4>
+                        <span className="text-[12px] text-outline">
+                          18 Mağaza • 4.8/5 Skor
+                        </span>
+                      </div>
+                    </div>
+                    <div className="text-right shrink-0 pl-space-sm">
+                      <span className="font-title-sm text-title-sm text-on-surface font-bold">
+                        ₺16.890
+                      </span>
+                      <span className="block text-[11px] text-outline">
+                        20k Altı Kralı
+                      </span>
+                    </div>
+                  </Link>
+
+                  {/* Row 3 */}
+                  <Link
+                    href="/telefon/nothing-phone-2a"
+                    className="p-space-sm rounded bg-surface-container-lowest/80 flex items-center justify-between transition-all hover:bg-surface-container-lowest hover:translate-x-1 border border-transparent hover:border-white/5"
+                  >
+                    <div className="flex items-center gap-space-sm min-w-0">
+                      <span className="w-7 h-7 rounded-full bg-surface-bright text-on-surface-variant flex items-center justify-center text-[12px] font-bold shrink-0">
+                        3
+                      </span>
+                      <div className="truncate">
+                        <h4 className="font-label-md text-label-md text-on-surface font-semibold truncate">
+                          Nothing Phone (2a)
+                        </h4>
+                        <span className="text-[12px] text-outline">
+                          9 Mağaza • 4.7/5 Skor
+                        </span>
+                      </div>
+                    </div>
+                    <div className="text-right shrink-0 pl-space-sm">
+                      <span className="font-title-sm text-title-sm text-on-surface font-bold">
+                        ₺18.499
+                      </span>
+                      <span className="block text-[11px] text-outline">
+                        Özgün Tasarım
+                      </span>
+                    </div>
+                  </Link>
+                </div>
+              </div>
+
+              <Link
+                className="relative z-10 font-label-md text-label-md text-primary hover:text-primary-fixed mt-space-md flex items-center gap-1 transition-colors group"
+                href="/telefonlar?sort=price-drop"
+              >
+                <span>Tüm Fiyat Kademe Listelerini Gör</span>
+                <span className="material-symbols-outlined text-[16px] transition-transform duration-300 group-hover:translate-x-1">
+                  arrow_forward
+                </span>
+              </Link>
+            </div>
+
+            {/* BENTO 4: Canlı Fiyat Radarı & Alarm Kur (4 Cols) with Wiggling Bell Icon */}
+            <div className="border-beam-card beam-delay-3 md:col-span-6 lg:col-span-4 bg-surface-container/85 p-space-xl flex flex-col justify-between shadow-xl transition-all duration-300 hover:bg-surface-container-high/90 group group-hover-bell">
+              <div className="beam-spotlight" />
+              <div className="relative z-10">
+                <div className="flex items-center justify-between mb-space-md">
+                  <span className="px-space-sm py-1 rounded-full bg-surface-container-highest text-primary font-label-sm text-label-sm font-semibold tracking-wide">
+                    AKILLI RADAR
+                  </span>
+                  {/* 5. Wiggling Bell Icon */}
+                  <span className="material-symbols-outlined text-outline text-[20px] bell-target transition-colors group-hover:text-primary">
+                    notifications_active
+                  </span>
+                </div>
+                <h3 className="font-headline-md text-headline-md text-on-surface tracking-tight mb-space-xs">
+                  Fiyat Alarmı Kurun
+                </h3>
+                <p className="font-body-sm text-body-sm text-on-surface-variant mb-space-md">
+                  Seçtiğiniz model hedef rakama indiği an saniyeler içinde
+                  bildirim alın.
+                </p>
+                <div className="p-space-md rounded bg-surface-container-lowest/80 flex flex-col gap-space-sm mb-space-md border border-white/[0.04]">
+                  <div className="flex justify-between items-center text-body-sm">
+                    <span className="text-on-surface-variant">Hedef Cihaz:</span>
+                    <span className="text-on-surface font-semibold">
+                      iPhone 15 128GB
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center text-body-sm">
+                    <span className="text-on-surface-variant">
+                      Güncel Fiyat:
+                    </span>
+                    <span className="text-outline line-through">₺48.999</span>
+                  </div>
+                  <div className="flex items-center justify-between p-2 rounded bg-surface-container border border-white/[0.04]">
+                    <span className="font-label-sm text-label-sm text-tertiary">
+                      Hedef Eşik Fiyatı
+                    </span>
+                    <span className="font-title-sm text-title-sm font-bold text-on-surface price-number-pulse">
+                      ₺44.000
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between pt-1">
+                    <span className="text-[12px] text-outline flex items-center gap-1">
+                      <span className="material-symbols-outlined text-[14px] text-primary">
+                        send
+                      </span>
+                      Telegram &amp; SMS Bildirimi
+                    </span>
+                    {/* Smooth Toggle Pill */}
+                    <button
+                      type="button"
+                      onClick={() => setAlarmToggle(!alarmToggle)}
+                      className={`w-10 h-5 rounded-full relative p-0.5 flex items-center cursor-pointer transition-colors ${
+                        alarmToggle
+                          ? "bg-primary-container"
+                          : "bg-surface-container-highest"
+                      }`}
+                      id="alarm-toggle-switch"
+                    >
+                      <div
+                        className={`w-4 h-4 rounded-full bg-white shadow-sm transition-transform ${
+                          alarmToggle ? "ml-auto" : "ml-0"
+                        }`}
+                      />
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <button
+                onClick={() => {
+                  showToast(
+                    "iPhone 15 128GB için ₺44.000 hedef fiyat alarmı hazırlandı!"
+                  );
+                  openAlertModal();
+                }}
+                className="relative z-10 w-full h-11 rounded-full bg-primary-container text-white font-label-md text-label-md shadow-md hover:bg-primary hover:text-on-primary transition-all flex items-center justify-center gap-space-xs active:scale-98 cursor-pointer"
+                type="button"
+              >
+                <span className="material-symbols-outlined text-[18px]">
+                  add_alert
+                </span>
+                <span>Ücretsiz Alarm Oluştur</span>
+              </button>
+            </div>
+
+            {/* BENTO 5: Güvenilirlik & Resmi Distribütör Garantisi (4 Cols) */}
+            <div className="border-beam-card beam-delay-4 md:col-span-6 lg:col-span-4 bg-surface-container/85 p-space-xl flex flex-col justify-between shadow-xl transition-all duration-300 hover:bg-surface-container-high/90">
+              <div className="beam-spotlight" />
+              <div className="relative z-10">
+                <div className="flex items-center justify-between mb-space-md">
+                  <span className="px-space-sm py-1 rounded-full bg-surface-container-highest text-tertiary font-label-sm text-label-sm font-semibold tracking-wide">
+                    DOĞRULANMIŞ AĞ
+                  </span>
+                  <span className="material-symbols-outlined text-outline text-[20px]">
+                    security
+                  </span>
+                </div>
+                <h3 className="font-headline-md text-headline-md text-on-surface tracking-tight mb-space-xs">
+                  Sıfır Risk Garantisi
+                </h3>
+                <p className="font-body-sm text-body-sm text-on-surface-variant mb-space-md">
+                  Yalnızca resmi ithalat ve yetkili distribütör faturalı
+                  satıcılar listelenir.
+                </p>
+                <div className="space-y-space-sm">
+                  <div className="flex items-start gap-space-sm p-space-sm rounded bg-surface-container-lowest/80 border border-white/[0.04]">
+                    <span className="material-symbols-outlined text-primary text-[20px] shrink-0 mt-0.5">
+                      verified_user
+                    </span>
+                    <div className="flex flex-col">
+                      <span className="font-label-md text-label-md text-on-surface font-semibold">
+                        BTK IMEI Sorgusu
+                      </span>
+                      <span className="text-[12px] text-outline">
+                        Tüm listelenen satıcılar Türkiye kayıtlı seri
+                        numaralarıyla senkronizedir.
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-space-sm p-space-sm rounded bg-surface-container-lowest/80 border border-white/[0.04]">
+                    <span className="material-symbols-outlined text-tertiary text-[20px] shrink-0 mt-0.5">
+                      storefront
+                    </span>
+                    <div className="flex flex-col">
+                      <span className="font-label-md text-label-md text-on-surface font-semibold">
+                        16 Yetkili Pazar Yeri
+                      </span>
+                      <span className="text-[12px] text-outline">
+                        Apple Store, Amazon, Hepsiburada, Teknosa, MediaMarkt ve
+                        diğerleri.
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="relative z-10 pt-space-md flex items-center justify-between text-outline text-[12px]">
+                <span>
+                  Güvenlik Puanı:{" "}
+                  <strong className="text-on-surface">100/100</strong>
+                </span>
+                <span className="text-tertiary flex items-center gap-1 font-medium price-drop-pulse px-2 py-0.5 rounded-full bg-tertiary/10">
+                  <span className="w-1.5 h-1.5 rounded-full bg-tertiary animate-pulse" />{" "}
+                  Aktif Doğrulama
+                </span>
+              </div>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+
+        {/* POPÜLER & EN ÇOK ARANAN CİHAZLAR SHOWCASE */}
+        <section className="w-full bg-surface-container-low/40 py-margin mb-margin border-y border-white/[0.04]">
+          <div className="max-w-7xl mx-auto px-gutter">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-space-md mb-space-xl">
+              <div>
+                <span className="font-label-sm text-label-sm text-primary uppercase tracking-wider font-semibold">
+                  Canlı Trendler
+                </span>
+                <h2 className="font-headline-xl text-headline-xl tracking-tight text-on-surface mt-1">
+                  Piyasanın En Gözde Cihazları
+                </h2>
+              </div>
+              <div className="flex items-center gap-space-xs">
+                {(["Tümü", "iOS", "Android"] as const).map((tab) => (
+                  <button
+                    key={tab}
+                    type="button"
+                    onClick={() => setActiveTrendTab(tab)}
+                    className={
+                      activeTrendTab === tab
+                        ? "h-9 px-space-md rounded-full bg-surface-container-highest text-on-surface font-label-md text-label-md cursor-pointer"
+                        : "h-9 px-space-md rounded-full bg-transparent hover:bg-surface-container text-on-surface-variant font-label-md text-label-md transition-colors cursor-pointer"
+                    }
+                  >
+                    {tab}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Device Showcase Cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-gutter">
+              {displayedTrends.map((card) => (
+                <div
+                  key={card.name}
+                  className="rounded-lg bg-surface-container/90 p-space-md flex flex-col justify-between shadow-lg transition-all duration-300 hover:bg-surface-container-high border border-white/[0.05] hover:border-primary/30 group"
+                >
+                  <div>
+                    <div className="flex items-center justify-between mb-space-sm">
+                      {card.isDiscount ? (
+                        <span className="px-space-xs py-0.5 rounded bg-tertiary-container/20 text-tertiary font-label-sm text-label-sm font-semibold price-drop-pulse">
+                          {card.badge}
+                        </span>
+                      ) : (
+                        <span className="px-space-xs py-0.5 rounded bg-surface-container-highest text-on-surface-variant font-label-sm text-label-sm font-semibold">
+                          {card.badge}
+                        </span>
+                      )}
+                      <button
+                        type="button"
+                        onClick={() =>
+                          showToast(
+                            `${card.name} favorilerinize eklendi! ❤️`,
+                            "success"
+                          )
+                        }
+                        className="w-8 h-8 rounded-full bg-surface-container-highest text-outline hover:text-primary flex items-center justify-center transition-colors active:scale-90 cursor-pointer"
+                      >
+                        <span className="material-symbols-outlined text-[16px]">
+                          favorite
+                        </span>
+                      </button>
+                    </div>
+                    <Link
+                      href={`/telefon/${card.slug}`}
+                      className="relative w-full h-44 flex items-center justify-center mb-space-md"
+                    >
+                      <img
+                        alt={card.alt}
+                        className="h-40 object-contain drop-shadow-xl transition-transform duration-500 group-hover:scale-105"
+                        src={card.img}
+                      />
+                    </Link>
+                    <div className="flex flex-col mb-space-md">
+                      <span className="font-label-sm text-label-sm text-outline uppercase tracking-wider">
+                        {card.brand}
+                      </span>
+                      <h3 className="font-title-sm text-title-sm text-on-surface font-semibold truncate">
+                        {card.name}
+                      </h3>
+                      <p className="font-body-sm text-body-sm text-on-surface-variant mt-0.5">
+                        {card.specs}
+                      </p>
+                    </div>
+                  </div>
+                  <div>
+                    <div className="flex items-baseline justify-between mb-space-xs">
+                      <span className="font-price-xl text-price-xl text-on-surface">
+                        {card.price}
+                      </span>
+                      <span className="font-label-sm text-label-sm text-outline">
+                        {card.stores}
+                      </span>
+                    </div>
+                    <Link
+                      className="w-full h-10 rounded-full bg-surface-container-highest group-hover:bg-primary-container group-hover:text-white text-on-surface font-label-md text-label-md flex items-center justify-center gap-1 transition-all"
+                      href={`/telefon/${card.slug}`}
+                    >
+                      <span>Fiyatları İncele</span>
+                      <span className="material-symbols-outlined text-[16px]">
+                        arrow_forward
+                      </span>
+                    </Link>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* BOTTOM CALL-TO-ACTION (Minimalist Pro Finish) */}
+        <section className="max-w-7xl mx-auto px-gutter mb-margin w-full">
+          <div className="rounded-xl bg-gradient-to-r from-surface-container to-surface-container-high p-space-xl flex flex-col lg:flex-row items-center justify-between gap-space-lg shadow-2xl relative overflow-hidden border border-white/[0.06]">
+            <div className="absolute -right-12 -bottom-12 w-64 h-64 bg-primary-container/20 rounded-full blur-[80px] pointer-events-none" />
+            <div className="flex flex-col max-w-xl text-center lg:text-left z-10">
+              <span className="font-label-sm text-label-sm text-primary uppercase tracking-wider font-semibold mb-1">
+                Cebinize Uygun Akıllı Tercih
+              </span>
+              <h3 className="font-headline-lg text-headline-lg text-on-surface tracking-tight mb-space-xs">
+                Hangi telefonu seçeceğinizden emin değil misiniz?
+              </h3>
+              <p className="font-body-md text-body-md text-on-surface-variant">
+                3 adımlık akıllı cihaz asistanımızla bütçenize ve
+                ihtiyaçlarınıza en uygun amiral gemisini 60 saniyede bulun.
+              </p>
+            </div>
+            <div className="flex flex-wrap items-center justify-center gap-space-md z-10">
+              <Link
+                className="h-12 px-space-xl rounded-full bg-primary-container text-white font-label-md text-label-md shadow-md hover:bg-primary hover:text-on-primary transition-all flex items-center gap-space-xs active:scale-95"
+                href="/telefon-rehberi"
+              >
+                <span>Akıllı Rehberi Başlat</span>
+                <span className="material-symbols-outlined text-[18px]">
+                  auto_awesome
+                </span>
+              </Link>
+              <Link
+                className="h-12 px-space-lg rounded-full bg-surface-container-lowest hover:bg-surface-bright text-on-surface font-label-md text-label-md transition-colors flex items-center"
+                href="/telefonlar"
+              >
+                <span>Tüm Modelleri Keşfet</span>
+              </Link>
+            </div>
+          </div>
+        </section>
+      </div>
     </div>
   );
 }

@@ -71,12 +71,6 @@ export default function StitchMobileHome() {
     "Apple",
     "Samsung",
     "Xiaomi",
-    "POCO",
-    "HONOR",
-    "Huawei",
-    "vivo",
-    "Google",
-    "Nothing",
   ];
 
   return (
@@ -215,13 +209,13 @@ export default function StitchMobileHome() {
 
             {/* Card 3 */}
             <div className="rounded-xl bg-surface-container/80 border border-white/[0.06] p-2.5 text-center backdrop-blur-md">
-              <div className="text-[10px] font-bold text-tertiary flex items-center justify-center gap-1">
-                <Percent className="w-3 h-3" />
+              <div className="text-[10px] font-bold text-primary flex items-center justify-center gap-1">
+                <Zap className="w-3 h-3" />
               </div>
               <div className="text-sm sm:text-base font-black text-white mt-0.5">
-                0 ₺
+                Anlık
               </div>
-              <div className="text-[9.5px] text-outline">Komisyonsuz</div>
+              <div className="text-[9.5px] text-outline">Fiyat Takibi</div>
             </div>
           </div>
         </div>
@@ -249,7 +243,7 @@ export default function StitchMobileHome() {
             <div className="col-span-7 space-y-1">
               <div className="flex items-center gap-1.5">
                 <span className="text-[10px] font-bold text-primary">
-                  Apple
+                  GÜNÜN FIRSATI
                 </span>
                 <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-on-surface-variant">
                   A18 Pro
@@ -304,7 +298,7 @@ export default function StitchMobileHome() {
           <div className="beam-spotlight" />
           <div className="text-[10.5px] font-bold text-primary flex items-center gap-1.5 uppercase tracking-wider relative z-10">
             <Zap className="w-3.5 h-3.5 fill-current" />
-            <span>ZİRVE CİHAZLARI BİREBİR KIYASLAMA</span>
+            <span>ZİRVEDEKİLERİN KAPIŞMASI</span>
           </div>
 
           {/* Two Devices with VS in Center */}

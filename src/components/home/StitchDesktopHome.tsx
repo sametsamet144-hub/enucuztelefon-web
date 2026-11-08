@@ -198,11 +198,6 @@ export default function StitchDesktopHome() {
     "Apple",
     "Samsung",
     "Xiaomi",
-    "Honor",
-    "Huawei",
-    "Google Pixel",
-    "Nothing Phone",
-    "Vivo",
   ];
 
   const trendCards = [
@@ -586,9 +581,9 @@ export default function StitchDesktopHome() {
               </div>
               <div className="flex items-center gap-space-xs">
                 <span className="text-primary font-semibold text-[15px]">
-                  0 ms
+                  16+
                 </span>
-                <span className="text-outline">aracı komisyonu</span>
+                <span className="text-outline">Resmi Satıcı Ağı</span>
               </div>
             </div>
           </div>
@@ -596,19 +591,10 @@ export default function StitchDesktopHome() {
 
         {/* BENTO GRID SECTION: Akıllı Alışverişin Yeni Standardı */}
         <section className="max-w-7xl mx-auto px-gutter mb-margin w-full">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-space-md mb-space-xl">
-            <div>
-              <span className="font-label-sm text-label-sm text-primary uppercase tracking-wider font-semibold">
-                Bento Ekosistemi
-              </span>
-              <h2 className="font-headline-xl text-headline-xl tracking-tight text-on-surface mt-1">
-                Akıllı Alışverişin Yeni Standardı
-              </h2>
-            </div>
-            <p className="font-body-md text-body-md text-on-surface-variant max-w-md">
-              Karmaşık reklam bannerları yok. Sadece saf veri, berrak fiyat
-              değişim analizleri ve onaylı satıcı rotaları.
-            </p>
+          <div className="mb-space-xl">
+            <h2 className="font-headline-xl text-headline-xl tracking-tight text-on-surface">
+              Akıllı Alışverişin Yeni Standardı
+            </h2>
           </div>
 
           {/* Bento Grid Container with Animated Border-Beam & Spotlight Effects */}
@@ -642,7 +628,7 @@ export default function StitchDesktopHome() {
               <div className="grid grid-cols-1 sm:grid-cols-12 gap-space-lg items-center mb-space-lg relative z-10">
                 <div className="sm:col-span-7 flex flex-col">
                   <span className="font-label-md text-label-md text-primary font-medium tracking-wide">
-                    APPLE FLAGSHIP
+                    GÜNÜN FIRSATI • AMİRAL GEMİSİ
                   </span>
                   <h3 className="font-headline-lg text-headline-lg text-on-surface tracking-tight mt-1 mb-space-xs">
                     iPhone 16 Pro 256GB
@@ -757,11 +743,10 @@ export default function StitchDesktopHome() {
                   </span>
                 </div>
                 <h3 className="font-headline-md text-headline-md text-on-surface tracking-tight mb-space-xs">
-                  Amiral Gemisi Düellosu
+                  Zirvedekilerin Kapışması
                 </h3>
                 <p className="font-body-sm text-body-sm text-on-surface-variant mb-space-lg">
-                  Donanım matrisi, AnTuTu performansı ve anlık piyasa fiyat
-                  karşılaştırması.
+                  Saf işlemci gücü, kamera yetenekleri ve anlık piyasa fiyatıyla iki amiral gemisi karşı karşıya.
                 </p>
 
                 {/* 5. Dual spec comparison card with interactive device convergence on hover */}

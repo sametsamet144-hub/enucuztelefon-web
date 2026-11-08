@@ -7314,7 +7314,43 @@
 .holo-glow-honor { background: radial-gradient(circle, rgba(99, 102, 241, 0.45) 0%, rgba(168, 85, 247, 0.25) 50%, transparent 75%); }
 .holo-glow-huawei { background: radial-gradient(circle, rgba(16, 185, 129, 0.45) 0%, rgba(20, 184, 166, 0.25) 50%, transparent 75%); }
 .holo-glow-poco { background: radial-gradient(circle, rgba(234, 179, 8, 0.45) 0%, rgba(245, 158, 11, 0.3) 50%, transparent 75%); }
+.holo-glow-vivo { background: radial-gradient(circle, rgba(59, 130, 246, 0.45) 0%, rgba(147, 51, 234, 0.25) 50%, transparent 75%); }
+.holo-glow-oneplus { background: radial-gradient(circle, rgba(239, 68, 68, 0.45) 0%, rgba(220, 38, 38, 0.25) 50%, transparent 75%); }
+.holo-glow-pixel { background: radial-gradient(circle, rgba(66, 133, 244, 0.45) 0%, rgba(52, 168, 83, 0.25) 50%, transparent 75%); }
+.holo-glow-rog { background: radial-gradient(circle, rgba(220, 38, 38, 0.5) 0%, rgba(153, 27, 27, 0.3) 50%, transparent 75%); }
+.holo-glow-nothing { background: radial-gradient(circle, rgba(255, 255, 255, 0.4) 0%, rgba(161, 161, 170, 0.2) 50%, transparent 75%); }
 .holo-glow-default { background: radial-gradient(circle, rgba(41, 151, 255, 0.4) 0%, rgba(99, 102, 241, 0.2) 50%, transparent 75%); }
+
+/* Card Backdrop Aurora & Mockup Stage */
+.card-backdrop-aurora {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(circle at 50% 0%, rgba(41, 151, 255, 0.05), transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+.stage-plasma-disk {
+  position: absolute;
+  width: 130px;
+  height: 130px;
+  border-radius: 9999px;
+  background: conic-gradient(transparent 0deg, rgba(41, 151, 255, 0.35) 90deg, rgba(56, 189, 248, 0.25) 180deg, rgba(99, 102, 241, 0.3) 270deg, transparent 360deg);
+  pointer-events: none;
+  opacity: 0.4;
+  filter: blur(14px);
+  z-index: 1;
+}
+.stage-ring-outer {
+  position: absolute;
+  width: 105px;
+  height: 105px;
+  border-radius: 9999px;
+  border: 1px dashed rgba(41, 151, 255, 0.25);
+  pointer-events: none;
+  opacity: 0.35;
+  z-index: 1;
+}
 
 /* Filter Pill Neon Glow */
 .filter-pill-neon {
@@ -7359,3 +7395,166 @@
   animation: radarPing 2.2s cubic-bezier(0, 0, 0.2, 1) infinite;
   pointer-events: none;
 }
+
+/* Obsidian Precision / Apple Luxury Mobile Classes */
+.soft-lift-card {
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.28s ease, border-color 0.28s ease;
+}
+.soft-lift-card:hover, .soft-lift-card:active {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.65);
+}
+
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+.pt-safe {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+/* ==========================================================================
+   Stitch Mobile Apple-Style Keyframe Animations & Effects (Obsidian Precision)
+   ========================================================================== */
+
+@keyframes beamRotateFast {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes floatGentle {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-6px) rotate(1deg); }
+}
+
+@keyframes floatLeftSubtle {
+  0%, 100% { transform: translateY(0px) rotate(-0.5deg); }
+  50% { transform: translateY(-4px) rotate(0.5deg); }
+}
+
+@keyframes floatRightSubtle {
+  0%, 100% { transform: translateY(-4px) rotate(0.5deg); }
+  50% { transform: translateY(0px) rotate(-0.5deg); }
+}
+
+@keyframes shimmerEffect {
+  0% { transform: translateX(-140%); }
+  50%, 100% { transform: translateX(160%); }
+}
+
+@keyframes pulseExpandingRing {
+  0% { transform: scale(0.9); opacity: 0.8; box-shadow: 0 0 0 0 rgba(41,151,255,0.6); }
+  70% { transform: scale(1.15); opacity: 0.2; box-shadow: 0 0 24px 12px rgba(41,151,255,0.25); }
+  100% { transform: scale(1.25); opacity: 0; box-shadow: 0 0 30px 18px rgba(41,151,255,0); }
+}
+
+@keyframes pulseEnergyCore {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 16px rgba(41,151,255,0.6), inset 0 0 8px rgba(255,255,255,0.3); }
+  50% { transform: scale(1.06); box-shadow: 0 0 26px rgba(121,40,202,0.7), inset 0 0 12px rgba(41,151,255,0.5); }
+}
+
+@keyframes radarContinuousSweep {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes radarWaveEmit {
+  0% { transform: scale(0.3); opacity: 0.9; }
+  50% { opacity: 0.5; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+
+@keyframes bellTinkle {
+  0%, 75%, 100% { transform: rotate(0deg); }
+  80% { transform: rotate(-12deg); }
+  85% { transform: rotate(10deg); }
+  90% { transform: rotate(-8deg); }
+  95% { transform: rotate(4deg); }
+}
+
+@keyframes auroraGradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes breathingGlow {
+  0%, 100% { opacity: 0.35; transform: scale(0.98); }
+  50% { opacity: 0.7; transform: scale(1.08); }
+}
+
+@keyframes livePulseDot {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.3); opacity: 0.6; }
+}
+
+.aurora-btn-bg {
+  background: linear-gradient(115deg, #0060aa, #2997ff, #7928ca, #00ac40, #2997ff);
+  background-size: 260% 260%;
+  animation: auroraGradientShift 5s ease infinite;
+}
+
+.shimmer-badge {
+  position: relative;
+  overflow: hidden;
+}
+.shimmer-badge::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(60deg, transparent 35%, rgba(255,255,255,0.28) 50%, transparent 65%);
+  animation: shimmerEffect 3.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  pointer-events: none;
+}
+
+/* Card-level diagonal sweep shimmer */
+.card-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+.card-shimmer::before {
+  content: '';
+  position: absolute;
+  top: -60%;
+  left: -60%;
+  width: 220%;
+  height: 220%;
+  background: linear-gradient(115deg, transparent 40%, rgba(255,255,255,0.06) 48%, rgba(255,255,255,0.18) 50%, rgba(255,255,255,0.06) 52%, transparent 60%);
+  animation: shimmerEffect 5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  pointer-events: none;
+  z-index: 15;
+}
+
+.gold-glow {
+  box-shadow: 0 0 16px rgba(255, 215, 0, 0.45);
+  border: 1px solid rgba(255, 215, 0, 0.6);
+}
+.silver-glow {
+  box-shadow: 0 0 14px rgba(220, 226, 235, 0.4);
+  border: 1px solid rgba(220, 226, 235, 0.55);
+}
+.bronze-glow {
+  box-shadow: 0 0 14px rgba(255, 140, 0, 0.4);
+  border: 1px solid rgba(255, 140, 0, 0.55);
+}
+
+/* Margin and Gutter Mobile Spacing */
+.px-margin-mobile {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+.px-gutter-mobile {
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+

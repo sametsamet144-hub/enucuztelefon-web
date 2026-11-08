@@ -12,6 +12,31 @@ import type {
   ProductFilterParams,
 } from "@/types";
 
+const DUMMY_CONCEPT_SLUGS = new Set([
+  "iphone-17-pro-max",
+  "iphone-17-pro",
+  "iphone-17-plus",
+  "iphone-17",
+  "iphone-17-air",
+  "iphone-air",
+  "samsung-galaxy-s26-ultra",
+  "samsung-galaxy-s26",
+  "samsung-galaxy-s25-phone-015",
+  "redmi-note-13-pro-5g-phone-038",
+  "iphone-se-4-nesil",
+]);
+
+const SHOWCASE_TOP_SLUGS = [
+  "iphone-16-pro-max",
+  "samsung-galaxy-s25-ultra",
+  "xiaomi-15",
+  "honor-magic-v3",
+  "poco-f6-pro",
+  "iphone-15",
+  "samsung-galaxy-s24-fe",
+  "vivo-x200-pro",
+];
+
 /**
  * Fetch phones catalog exclusively from backend REST API with optional query filters.
  * No fake or mock data fallback.
@@ -55,10 +80,37 @@ export async function getPhones(
   if (filters?.sortBy) params.sortBy = filters.sortBy;
   if (filters?.page) params.page = filters.page;
   if (filters?.pageSize) params.pageSize = filters.pageSize;
-  else params.pageSize = 50;
+  else params.pageSize = 100;
 
   const apiResponse = await backendApi.getProducts(params);
   let result = apiResponse?.items && Array.isArray(apiResponse.items) ? [...apiResponse.items] : [];
+
+  // Filter out unreleased dummy concept models
+  result = result.filter((p) => !DUMMY_CONCEPT_SLUGS.has(p.slug));
+
+  // Sort Stitch showcase flagship items to the top for default popular view
+  if (
+    (!filters?.sortBy || filters.sortBy === "popular") &&
+    !filters?.brand &&
+    !filters?.brands?.length &&
+    !filters?.search
+  ) {
+    const topItems: Phone[] = [];
+    const remainingItems: Phone[] = [];
+
+    for (const slug of SHOWCASE_TOP_SLUGS) {
+      const found = result.find((p) => p.slug === slug);
+      if (found) topItems.push(found);
+    }
+
+    for (const p of result) {
+      if (!SHOWCASE_TOP_SLUGS.includes(p.slug)) {
+        remainingItems.push(p);
+      }
+    }
+
+    result = [...topItems, ...remainingItems];
+  }
 
   if (!filters || result.length === 0) return result;
 

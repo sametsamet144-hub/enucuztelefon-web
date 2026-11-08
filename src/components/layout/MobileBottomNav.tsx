@@ -10,13 +10,7 @@ export default function MobileBottomNav() {
 
   const tabs = [
     {
-      label: "Ana Sayfa",
-      href: "/",
-      icon: "home",
-      isAction: false,
-    },
-    {
-      label: "Katalog",
+      label: "Modeller",
       href: "/telefonlar",
       icon: "grid_view",
       isAction: false,
@@ -36,20 +30,18 @@ export default function MobileBottomNav() {
     {
       label: "Alarmlarım",
       href: "/fiyat-takibi",
-      icon: "notification_important",
+      icon: "notifications_active",
       isAction: true,
     },
   ];
 
   return (
-    <nav className="fixed bottom-0 w-full z-50 pb-safe bg-surface/85 backdrop-blur-2xl border-t border-white/[0.08] shadow-[0_-4px_24px_rgba(0,0,0,0.5)] lg:hidden">
-      <div className="h-16 px-gutter-mobile flex items-center justify-around">
+    <nav className="fixed bottom-0 w-full z-50 pb-safe bg-[#131315]/85 backdrop-blur-xl border-t border-white/[0.08] shadow-[0_-2px_16px_rgba(0,0,0,0.45)] lg:hidden">
+      <div className="h-16 px-3 flex items-center justify-around">
         {tabs.map((tab) => {
           const isActive =
-            tab.href === "/"
-              ? pathname === "/"
-              : tab.href === "/telefonlar"
-              ? pathname === "/telefonlar" || pathname.startsWith("/telefon/")
+            tab.href === "/telefonlar"
+              ? pathname === "/telefonlar" || pathname.startsWith("/telefon/") || pathname === "/"
               : tab.href === "/telefonlar/fiyati-dusen"
               ? pathname === "/telefonlar/fiyati-dusen"
               : pathname.startsWith(tab.href);
@@ -60,10 +52,10 @@ export default function MobileBottomNav() {
                 key={tab.label}
                 type="button"
                 onClick={() => openAlertModal()}
-                className={`flex flex-col items-center justify-center min-w-[54px] min-h-[44px] gap-0.5 active:scale-80 transition-transform duration-200 cursor-pointer ${
+                className={`flex flex-col items-center justify-center min-w-[56px] min-h-[44px] gap-0.5 active:scale-90 transition-transform duration-200 cursor-pointer ${
                   isActive
-                    ? "text-primary-container font-semibold"
-                    : "text-on-surface-variant hover:text-on-surface"
+                    ? "text-[#2997ff] font-semibold"
+                    : "text-[#c0c7d5] hover:text-[#e5e1e4]"
                 }`}
               >
                 <span
@@ -73,7 +65,7 @@ export default function MobileBottomNav() {
                 >
                   {tab.icon}
                 </span>
-                <span className="font-label-sm text-[11px]">{tab.label}</span>
+                <span className="text-[11px] tracking-tight">{tab.label}</span>
               </button>
             );
           }
@@ -82,10 +74,10 @@ export default function MobileBottomNav() {
             <Link
               key={tab.label}
               href={tab.href}
-              className={`flex flex-col items-center justify-center min-w-[54px] min-h-[44px] gap-0.5 active:scale-80 transition-transform duration-200 ${
+              className={`flex flex-col items-center justify-center min-w-[56px] min-h-[44px] gap-0.5 active:scale-90 transition-transform duration-200 ${
                 isActive
-                  ? "text-primary-container font-semibold"
-                  : "text-on-surface-variant hover:text-on-surface"
+                  ? "text-[#2997ff] font-semibold"
+                  : "text-[#c0c7d5] hover:text-[#e5e1e4]"
               }`}
             >
               <span
@@ -95,7 +87,7 @@ export default function MobileBottomNav() {
               >
                 {tab.icon}
               </span>
-              <span className="font-label-sm text-[11px]">{tab.label}</span>
+              <span className="text-[11px] tracking-tight">{tab.label}</span>
             </Link>
           );
         })}

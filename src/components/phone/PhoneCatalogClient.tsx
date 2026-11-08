@@ -206,7 +206,7 @@ export default function PhoneCatalogClient({
   };
 
   const brandPills = useMemo(() => {
-    return brands.map((b) => ({
+    const list = brands.map((b) => ({
       name: b.name,
       count:
         b.phoneCount ||
@@ -214,6 +214,16 @@ export default function PhoneCatalogClient({
           (p) => p.brand.toLowerCase() === b.name.toLowerCase()
         ).length,
     }));
+
+    const priorityBrands = ["Apple", "Samsung", "Xiaomi", "POCO", "HONOR"];
+    return list.sort((a, b) => {
+      const idxA = priorityBrands.findIndex((p) => p.toLowerCase() === a.name.toLowerCase());
+      const idxB = priorityBrands.findIndex((p) => p.toLowerCase() === b.name.toLowerCase());
+      if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+      if (idxA !== -1) return -1;
+      if (idxB !== -1) return 1;
+      return b.count - a.count;
+    });
   }, [brands, initialPhones]);
 
   const filteredSidebarBrands = useMemo(() => {
@@ -345,14 +355,36 @@ export default function PhoneCatalogClient({
   // ── Sorting Logic ──
   const sortedPhones = useMemo(() => {
     const list = [...filteredPhones];
-    if (sort === "popular") return list.sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
+    if (sort === "popular") {
+      if (selectedBrands.length === 0 && !search.trim()) {
+        const SHOWCASE_ORDER = [
+          "iphone-16-pro-max",
+          "samsung-galaxy-s25-ultra",
+          "xiaomi-15",
+          "honor-magic-v3",
+          "poco-f6-pro",
+          "iphone-15",
+          "samsung-galaxy-s24-fe",
+          "vivo-x200-pro",
+        ];
+        return list.sort((a, b) => {
+          const idxA = SHOWCASE_ORDER.indexOf(a.slug);
+          const idxB = SHOWCASE_ORDER.indexOf(b.slug);
+          if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+          if (idxA !== -1) return -1;
+          if (idxB !== -1) return 1;
+          return (b.rating ?? 0) - (a.rating ?? 0);
+        });
+      }
+      return list.sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
+    }
     if (sort === "price-asc") return list.sort((a, b) => a.lowestPrice - b.lowestPrice);
     if (sort === "price-desc") return list.sort((a, b) => b.lowestPrice - a.lowestPrice);
     if (sort === "rating") return list.sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
     if (sort === "price-drop")
       return list.sort((a, b) => (b.priceDropPercent ?? 0) - (a.priceDropPercent ?? 0));
     return list;
-  }, [filteredPhones, sort]);
+  }, [filteredPhones, sort, selectedBrands, search]);
 
   // ── Paginated Phones ──
   const paginatedDesktop = useMemo(() => {
@@ -905,6 +937,96 @@ export default function PhoneCatalogClient({
       {/* ── MOBILE EXPERIENCE (<lg) - MATCHING OBSIDIAN PRECISION STITCH DESIGN ── */}
       {/* ═══════════════════════════════════════════════════════════════════════ */}
       <div className="block lg:hidden">
+        <style
+          dangerouslySetInnerHTML={{
+            __html: `
+@keyframes border-beam-rotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+@keyframes float-phone {
+  0%, 100% { transform: translateY(0px) scale(1); }
+  50% { transform: translateY(-4px) scale(1.02); }
+}
+@keyframes sheen-sweep {
+  0% { transform: translateX(-150%) skewX(-20deg); }
+  30%, 100% { transform: translateX(250%) skewX(-20deg); }
+}
+@keyframes badge-breathe {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 180, 171, 0.4); }
+  50% { transform: scale(1.05); box-shadow: 0 0 8px 2px rgba(255, 180, 171, 0.3); }
+}
+@keyframes radar-wave {
+  0% { transform: scale(0.9); opacity: 0.9; }
+  70% { transform: scale(2.2); opacity: 0; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+.anim-border-beam {
+  position: relative;
+  overflow: hidden;
+}
+.anim-border-beam::before {
+  content: '';
+  position: absolute;
+  inset: -50%;
+  background: conic-gradient(from 0deg, transparent 0deg, #2997ff 60deg, transparent 120deg, #47e266 220deg, transparent 280deg);
+  animation: border-beam-rotate 4s linear infinite;
+  z-index: 0;
+}
+.anim-border-beam-amber::before {
+  background: conic-gradient(from 0deg, transparent 0deg, #ff9500 70deg, transparent 140deg, #ff2d55 240deg, transparent 300deg);
+}
+.anim-card-inner {
+  position: relative;
+  z-index: 1;
+  border-radius: calc(1rem - 1.5px);
+}
+.anim-float-3d {
+  animation: float-phone 4.5s ease-in-out infinite !important;
+  will-change: transform;
+}
+.anim-sheen-btn {
+  position: relative;
+  overflow: hidden;
+}
+.anim-sheen-btn::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.45), transparent);
+  animation: sheen-sweep 3.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  pointer-events: none;
+}
+.anim-badge-pulse {
+  animation: badge-breathe 2.4s ease-in-out infinite;
+  will-change: transform;
+}
+.anim-radar-ping {
+  position: relative;
+}
+.anim-radar-ping::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: inherit;
+  animation: radar-wave 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
+  pointer-events: none;
+  z-index: -1;
+}
+.soft-lift-card {
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.28s ease;
+}
+.soft-lift-card:hover, .soft-lift-card:active {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 28px rgba(0,0,0,0.65);
+}
+`,
+          }}
+        />
         {/* Top Mobile Header */}
         <header className="sticky top-0 w-full z-40 bg-[#131315]/90 backdrop-blur-xl border-b border-white/[0.06] shadow-[0_1px_12px_rgba(0,0,0,0.35)]">
           <div className="h-16 px-3 flex items-center justify-between gap-2">

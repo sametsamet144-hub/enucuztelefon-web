@@ -14,13 +14,13 @@ export default function PhoneImage({
   src,
   alt,
   className = "w-full h-full object-contain drop-shadow-md",
-  fallbackIconClassName = "w-12 h-12 text-slate-300",
+  fallbackIconClassName = "w-10 h-10 text-zinc-500",
 }: PhoneImageProps) {
   const [hasError, setHasError] = useState(false);
 
   if (!src || hasError) {
     return (
-      <div className="flex items-center justify-center w-full h-full bg-slate-50 rounded-xl">
+      <div className="flex items-center justify-center w-full h-full bg-[#1c1b1d]/80 rounded-xl border border-white/5">
         <Smartphone className={fallbackIconClassName} />
       </div>
     );

@@ -1,5 +1,120 @@
 import type { Phone, PhoneSpecs, StorePrice, PriceHistory } from "@/types";
 
+export const FLAGSHIP_STUDIO_PHOTOS: Record<string, string> = {
+  // Apple
+  "iphone-16-pro-max":
+    "https://lh3.googleusercontent.com/aida-public/AB6AXuC0vj7rv81MUeOggNnTdP9Ln_oEwfzko5WKQSWADsGRJ7kdCvXOCovz5FR3ljzVWz49kVVMB1iulmFqVNAZBSnaV9s1fchWUQxkGdYzuFGbLYf1pWWvEau-5yFJ26hiZky60f8Pp6a5IReNuZ0trnTvEUw2dcJoiHgPBaJVjIRD6hPSeUXJrYH7mUibjryvJxK4XGfAoXVEOQe16l6tGWvCwdTsRy563yQLDQb4icY",
+  "iphone-16-pro":
+    "https://lh3.googleusercontent.com/aida-public/AB6AXuC0vj7rv81MUeOggNnTdP9Ln_oEwfzko5WKQSWADsGRJ7kdCvXOCovz5FR3ljzVWz49kVVMB1iulmFqVNAZBSnaV9s1fchWUQxkGdYzuFGbLYf1pWWvEau-5yFJ26hiZky60f8Pp6a5IReNuZ0trnTvEUw2dcJoiHgPBaJVjIRD6hPSeUXJrYH7mUibjryvJxK4XGfAoXVEOQe16l6tGWvCwdTsRy563yQLDQb4icY",
+  "iphone-16":
+    "https://lh3.googleusercontent.com/aida-public/AB6AXuAXttEFuCSMxqCB6CX6XbI3_vfZZnuryTiawJ56TfSTFtT6zm_XBCMdOzTFyGZz1m7S5zqWHdiJEavKJsvbmIIzAcFZ8xRxf4m98QNYNLboYrLqhlHX-VP5abgbga-EUMuR-9UT9bjSvcyWl9v8W-paIFYk5TAHRNWi0dD1ymmwjdXU8Sli-u6WqiyhEJxGkW7TsgzsL7GCc6zovNWvDvfKWRlwnwIdfWxu8kODg5c",
+  "iphone-16-plus":
+    "https://lh3.googleusercontent.com/aida-public/AB6AXuAXttEFuCSMxqCB6CX6XbI3_vfZZnuryTiawJ56TfSTFtT6zm_XBCMdOzTFyGZz1m7S5zqWHdiJEavKJsvbmIIzAcFZ8xRxf4m98QNYNLboYrLqhlHX-VP5abgbga-EUMuR-9UT9bjSvcyWl9v8W-paIFYk5TAHRNWi0dD1ymmwjdXU8Sli-u6WqiyhEJxGkW7TsgzsL7GCc6zovNWvDvfKWRlwnwIdfWxu8kODg5c",
+  "iphone-15":
+    "https://lh3.googleusercontent.com/aida-public/AB6AXuAXttEFuCSMxqCB6CX6XbI3_vfZZnuryTiawJ56TfSTFtT6zm_XBCMdOzTFyGZz1m7S5zqWHdiJEavKJsvbmIIzAcFZ8xRxf4m98QNYNLboYrLqhlHX-VP5abgbga-EUMuR-9UT9bjSvcyWl9v8W-paIFYk5TAHRNWi0dD1ymmwjdXU8Sli-u6WqiyhEJxGkW7TsgzsL7GCc6zovNWvDvfKWRlwnwIdfWxu8kODg5c",
+  "iphone-15-pro-max": "/images/phones/iphone-15-pro-max.webp",
+  "iphone-15-pro": "/images/phones/iphone-15-pro-max.webp",
+  "iphone-14": "/images/phones/iphone-14.webp",
+  "iphone-13": "/images/phones/iphone-13.webp",
+
+  // Samsung
+  "samsung-galaxy-s25-ultra":
+    "https://lh3.googleusercontent.com/aida-public/AB6AXuDtjLSOzd0Yv-vG7uGoaOUjRK1Jm6HL5SjQJ10WOFUZIlj5wZrZF-n_LSce4iq_AsDvGFt9H-Orun3jiNyCC_LxXuyJEGpNZQ5VU_pvUuHBZ3d9lu5T8hSWiN_rmZPjpWn-nFfSkOwqQ3KU0ZJ2iqf2YDx-eHz_dVK6Bh8G-f9qyE4jt5XZri9SSvP4G-Q9Njx4x_ufWXPMsrsk9XLXLA8RZMg6VfckMHg8YsUup5k",
+  "samsung-galaxy-s25":
+    "https://lh3.googleusercontent.com/aida-public/AB6AXuDtjLSOzd0Yv-vG7uGoaOUjRK1Jm6HL5SjQJ10WOFUZIlj5wZrZF-n_LSce4iq_AsDvGFt9H-Orun3jiNyCC_LxXuyJEGpNZQ5VU_pvUuHBZ3d9lu5T8hSWiN_rmZPjpWn-nFfSkOwqQ3KU0ZJ2iqf2YDx-eHz_dVK6Bh8G-f9qyE4jt5XZri9SSvP4G-Q9Njx4x_ufWXPMsrsk9XLXLA8RZMg6VfckMHg8YsUup5k",
+  "samsung-galaxy-s24-fe":
+    "https://lh3.googleusercontent.com/aida-public/AB6AXuCJzrZxD7TjyxrvQhvQ_lOwHnQfRCw4UeM8KpGUmpbAXdAaiYGn1WwMdWon2qZoWIt0D7I7rmHJQQg_FhyXOtp3GC_SklX1nR-oy6sdUvbyP3SAfnF1RaPzaFkosUpMEqkP1Ck-YMmIS09M8r3lmc2amiADk4rXDOefu1EAkqWrydO1MN_KYv-j1z-XwBS0uhtAX6GGnaArql8gb2R0ajM00WogNDxnkhqeMRx8Y64",
+  "samsung-galaxy-s24-ultra": "/images/phones/samsung-galaxy-s24-ultra.webp",
+  "samsung-galaxy-s24": "/images/phones/samsung-galaxy-s24.webp",
+  "samsung-galaxy-z-fold-6": "/images/phones/samsung-galaxy-z-fold-6.webp",
+  "samsung-galaxy-z-flip-6": "/images/phones/samsung-galaxy-z-fold-6.webp",
+  "samsung-galaxy-a56": "/images/phones/samsung-galaxy-a56.webp",
+  "samsung-galaxy-a55": "/images/phones/samsung-galaxy-a55.webp",
+  "samsung-galaxy-a35": "/images/phones/samsung-galaxy-a35.webp",
+
+  // Xiaomi & POCO
+  "xiaomi-15-ultra":
+    "https://lh3.googleusercontent.com/aida-public/AB6AXuBCB_m7zqFC678Lc5ZAKNn08YQWxdSLouFjvxXm6Dlt6-dIB5l7e426A8w2AOX7hiaPQ2XLArIUJamoaqmiI8WQpxvjuHbAdfI7bJOx7IjOqFSPHpeKmPO61w2-0jBXVn3H6yLmIeAqizvR9KFy9Nj1KrUAcVeT-xrNdkEEQpUcX0AY5SsqJKtf84swrFHRwuZmY-jZPGV3gNjUcPLXIsFK8EKhuILMrebinWopnno",
+  "xiaomi-15":
+    "https://lh3.googleusercontent.com/aida-public/AB6AXuBCB_m7zqFC678Lc5ZAKNn08YQWxdSLouFjvxXm6Dlt6-dIB5l7e426A8w2AOX7hiaPQ2XLArIUJamoaqmiI8WQpxvjuHbAdfI7bJOx7IjOqFSPHpeKmPO61w2-0jBXVn3H6yLmIeAqizvR9KFy9Nj1KrUAcVeT-xrNdkEEQpUcX0AY5SsqJKtf84swrFHRwuZmY-jZPGV3gNjUcPLXIsFK8EKhuILMrebinWopnno",
+  "xiaomi-15-pro": "/images/phones/xiaomi-15-pro.webp",
+  "xiaomi-14": "/images/phones/xiaomi-14.webp",
+  "xiaomi-14t-pro": "/images/phones/xiaomi-14t-pro.webp",
+  "poco-f6-pro":
+    "https://lh3.googleusercontent.com/aida-public/AB6AXuBd5yYKglTOHH2xPhNeM2hHCpEVo-u_twfi1Hxq8SmEHp3taxnjJe2EHWOI1sJ7_UB0S5BmQoXcFmOV-TODBnkcWCUsmTKQXId_IAHZVmpNXpC7vSptaZY_5S6-L1ub-8r9Hn2YZIfJ1T1Ev5bDXmKh6sH35gRX80NpitR262Ayqg5DV1Kq3DOJqOSpjezEfDD7GqSQdhKOevj7G6ttpI37TsPBaU7CGKvi4w5nd_Y",
+  "poco-x6-pro": "/images/phones/poco-x6-pro.webp",
+  "redmi-note-13-pro-5g": "/images/phones/redmi-note-13-pro-5g.webp",
+  "redmi-note-14-pro-plus": "/images/phones/redmi-note-14-pro-plus.webp",
+
+  // HONOR
+  "honor-magic-v3":
+    "https://lh3.googleusercontent.com/aida-public/AB6AXuC1QFn27SalL6G4AYYH50EHxAVBUW8knHJbAzACbFubswgm8CAlDRRP2HPBwXkBdIUaDsrF0waFHya2SpZxgG9HQ-lyL0PXBpwzAmvxmEvyqeouM7FPkmVC2jAxGm_218pfjEVyiIJ-xKa0VG2138GuPvkty2TEYP_symLz3DQu5PQEtfAeqmM4CwbkZgXF6aXnLFepx6TvE8BfFTZ51HmyzZPRq2xM9aDf_bpnWSQ",
+  "honor-magic-6-pro": "/images/phones/honor-magic-6-pro.webp",
+
+  // vivo
+  "vivo-x200-pro":
+    "https://lh3.googleusercontent.com/aida-public/AB6AXuBDysvFI6lXxgB9gutYq7jDGUOEZXUIoxwhJFVwXOvbxOwrKuElKlSn53TfVaigobpmCZWYjpY_6AzrhS11tmpoYEA2OPwFBzxDu34BXNeq4ii2XPnErpSJFtIEefBf17VSRCzXsxgteecg10QE-s8bbQGLZCjcyroNWZEHJCpsTSm79Qb0J5mlx5B9IDrDl6CHkwOu1MNO24SkQIplaaxEUSCWeRjoAB1TtefKXwE",
+  "vivo-x100-pro": "/images/phones/vivo-x100-pro.webp",
+
+  // Others
+  "huawei-pura-70-ultra": "/images/phones/huawei-pura-70-ultra.webp",
+  "google-pixel-9-pro-xl": "/images/phones/google-pixel-9-pro-xl.webp",
+  "oppo-find-x8-pro": "/images/phones/oppo-find-x8-pro.webp",
+  "oneplus-12": "/images/phones/oneplus-12.webp",
+  "realme-gt-6": "/images/phones/realme-gt-6.webp",
+  "nothing-phone-2": "/images/phones/nothing-phone-2.webp",
+};
+
+export function getStudioPhotoUrl(slug?: string, brand?: string, image?: string): string {
+  const cleanSlug = (slug || "").toLowerCase().trim();
+  if (cleanSlug && FLAGSHIP_STUDIO_PHOTOS[cleanSlug]) {
+    return FLAGSHIP_STUDIO_PHOTOS[cleanSlug];
+  }
+
+  // If image is a valid remote URL or existing webp, keep it
+  if (
+    image &&
+    !image.endsWith(".svg") &&
+    !image.includes("placeholder") &&
+    (image.startsWith("http://") ||
+      image.startsWith("https://") ||
+      image.endsWith(".webp") ||
+      image.endsWith(".jpg") ||
+      image.endsWith(".png"))
+  ) {
+    return image;
+  }
+
+  // Fallback brand studio photography for SVGs/placeholders
+  const cleanBrand = (brand || "").toLowerCase().trim();
+  if (cleanBrand.includes("apple")) {
+    return FLAGSHIP_STUDIO_PHOTOS["iphone-16-pro-max"];
+  }
+  if (cleanBrand.includes("samsung")) {
+    return FLAGSHIP_STUDIO_PHOTOS["samsung-galaxy-s25-ultra"];
+  }
+  if (cleanBrand.includes("xiaomi") || cleanBrand.includes("redmi")) {
+    return FLAGSHIP_STUDIO_PHOTOS["xiaomi-15-ultra"];
+  }
+  if (cleanBrand.includes("poco")) {
+    return FLAGSHIP_STUDIO_PHOTOS["poco-f6-pro"];
+  }
+  if (cleanBrand.includes("honor")) {
+    return FLAGSHIP_STUDIO_PHOTOS["honor-magic-v3"];
+  }
+  if (cleanBrand.includes("vivo")) {
+    return FLAGSHIP_STUDIO_PHOTOS["vivo-x200-pro"];
+  }
+  if (cleanBrand.includes("huawei")) {
+    return FLAGSHIP_STUDIO_PHOTOS["huawei-pura-70-ultra"];
+  }
+  if (cleanBrand.includes("google")) {
+    return FLAGSHIP_STUDIO_PHOTOS["google-pixel-9-pro-xl"];
+  }
+
+  return FLAGSHIP_STUDIO_PHOTOS["iphone-16-pro-max"];
+}
+
 /**
  * Strictly validates that a store offer is a real direct product offer.
  * Discards all fake fallback search links and non-phone supermarket templates.
@@ -251,14 +366,20 @@ export function normalizePhone(raw: any): Phone {
   const lowestPriceStoreName = realLowestOffer ? realLowestOffer.store : undefined;
   const lowestPriceUrl = realLowestOffer ? realLowestOffer.url : undefined;
 
+  const resolvedImage = getStudioPhotoUrl(raw.slug, raw.brand, raw.image);
+  const resolvedImages =
+    Array.isArray(raw.images) && raw.images.length > 0
+      ? raw.images.map((img: string) => (typeof img === "string" && img.endsWith(".svg") ? resolvedImage : img))
+      : [resolvedImage];
+
   return {
     id: String(raw.id || raw.slug),
     slug: raw.slug,
     name: raw.name,
     brand: raw.brand || "Bilinmeyen",
     brandSlug: raw.brandSlug || (raw.brand || "").toLowerCase().replace(/[^a-z0-9]/g, ""),
-    image: raw.image || "/images/phones/placeholder.webp",
-    images: Array.isArray(raw.images) && raw.images.length > 0 ? raw.images : [raw.image || "/images/phones/placeholder.webp"],
+    image: resolvedImage,
+    images: resolvedImages,
     lowestPrice,
     highestPrice,
     sixMonthLowestPrice: raw.sixMonthLowestPrice ? Number(raw.sixMonthLowestPrice) : undefined,

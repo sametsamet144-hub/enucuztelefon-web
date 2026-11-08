@@ -102,8 +102,8 @@ export default function ProPriceAnalysisCenter({
       });
     }
 
-    if (phone && phone.lowestPrice > 0) {
-      const stName = phone.lowestPriceStoreName || "Resmi Satıcı";
+    if (phone && phone.lowestPrice > 0 && phone.lowestPriceUrl) {
+      const stName = phone.lowestPriceStoreName || "Doğrulanmış Satıcı";
       return [
         {
           rank: 1,
@@ -125,7 +125,7 @@ export default function ProPriceAnalysisCenter({
           rangeSub: "Canlı Fiyat",
           peakPrice: phone.highestPrice || phone.lowestPrice,
           lastUpdated: "Canlı",
-          url: phone.lowestPriceUrl || undefined,
+          url: phone.lowestPriceUrl,
         },
       ];
     }
@@ -277,7 +277,7 @@ export default function ProPriceAnalysisCenter({
               </span>
               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-[10px] font-extrabold">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                10 Doğrulanmış Satıcı
+                {storeItems.length} Doğrulanmış Satıcı
               </span>
               <span className="text-[10px] text-slate-400 font-semibold">
                 • Canlı Telemetri
@@ -371,7 +371,7 @@ export default function ProPriceAnalysisCenter({
                   <span>En Ucuz Satan Satıcılar &amp; Mağaza Telemetrisi</span>
                 </div>
                 <p className="text-[11px] text-slate-400 mt-0.5">
-                  Fiyat artış sırasına göre sıralanmış 10 Resmi Satıcı
+                  Fiyat artış sırasına göre sıralanmış {storeItems.length} Doğrulanmış Satıcı
                 </p>
               </div>
               <span className="px-2.5 py-1 rounded-md bg-white/5 border border-white/10 text-[10px] font-black uppercase tracking-wider text-slate-300 shrink-0">

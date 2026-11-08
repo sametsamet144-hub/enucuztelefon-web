@@ -1,6 +1,62 @@
 import type { Phone, PhoneSpecs, StorePrice, PriceHistory } from "@/types";
 
 /**
+ * Strictly validates that a store offer is a real direct product offer.
+ * Discards all fake fallback search links and non-phone supermarket templates.
+ */
+export function isRealDirectStoreOffer(sp: any): boolean {
+  if (!sp || typeof sp !== "object") return false;
+  const price = Number(sp.price);
+  if (!price || isNaN(price) || price <= 0) return false;
+
+  const url = typeof sp.url === "string" ? sp.url.trim() : "";
+  if (!url || (!url.startsWith("http://") && !url.startsWith("https://"))) return false;
+
+  const lowerUrl = url.toLowerCase();
+
+  // Search or generic category fallback URLs are strictly fake:
+  if (
+    lowerUrl.includes("/arama") ||
+    lowerUrl.includes("/ara?") ||
+    lowerUrl.includes("/sr?q=") ||
+    lowerUrl.includes("/s?k=") ||
+    lowerUrl.includes("search_text=") ||
+    lowerUrl.includes("?query=") ||
+    lowerUrl.includes("&query=") ||
+    lowerUrl.includes("?text=") ||
+    lowerUrl.includes("&text=") ||
+    lowerUrl.includes("search.html") ||
+    lowerUrl.includes("/categories/") ||
+    lowerUrl.includes("/cihazlar") ||
+    lowerUrl.includes("/faturaya-ek") ||
+    lowerUrl.includes("apple.com/tr/iphone") ||
+    lowerUrl.includes("shop.samsung.com") ||
+    lowerUrl.includes("/mobil/cep-telefonu") ||
+    lowerUrl.includes("mi.com/tr") ||
+    lowerUrl.includes("honor.com/tr") ||
+    lowerUrl.includes("consumer.huawei.com") ||
+    lowerUrl.includes("tecno-mobile.com") ||
+    lowerUrl.includes("infinixmobility.com") ||
+    lowerUrl.includes("myepoint.com") ||
+    lowerUrl.includes("enucuztelefon.com") ||
+    lowerUrl.includes("placeholder") ||
+    lowerUrl.includes("-10000000") ||
+    lowerUrl.includes("HBC0000100000")
+  ) {
+    return false;
+  }
+
+  // Supermarket/grocery or installment catalog chains without real live phone feeds:
+  const storeSlug = (sp.storeSlug || sp.store || "").toLowerCase().trim();
+  const fakeStoreSlugs = ["bim", "a101", "sok", "evkur", "yonavm", "mutluevim"];
+  if (fakeStoreSlugs.includes(storeSlug)) {
+    return false;
+  }
+
+  return true;
+}
+
+/**
  * Normalizes raw backend product data into consistent frontend Phone model.
  * Handles both rich local format and lightweight backend REST format gracefully.
  */
@@ -137,26 +193,34 @@ export function normalizePhone(raw: any): Phone {
     },
   };
 
-  // Stores prices mapping
-  const storesPrices: StorePrice[] = Array.isArray(raw.storesPrices)
-    ? raw.storesPrices.map((sp: any) => ({
-        store: sp.store || "Mağaza",
-        storeSlug: sp.storeSlug || (sp.store || "").toLowerCase().replace(/[^a-z0-9]/g, ""),
-        sellerName: sp.sellerName || sp.store,
-        sellerRating: sp.sellerRating || 9.5,
-        price: Number(sp.price) || 0,
-        url: sp.url || "",
-        isAvailable: sp.isAvailable ?? true,
-        lastUpdated: sp.lastUpdated || new Date().toISOString(),
-        shippingText: sp.shippingText || "Ücretsiz Kargo",
-        guaranteeText: sp.guaranteeText || "Resmi Distribütör Garantili",
-        installmentText: sp.installmentText || "Peşin Fiyatına Taksit",
-        isOfficial: sp.isOfficial ?? false,
-      }))
-    : [];
+  // Stores prices mapping - only real direct product offers are kept
+  const rawStores = Array.isArray(raw.storesPrices) ? raw.storesPrices : [];
+  const storesPrices: StorePrice[] = rawStores
+    .filter(isRealDirectStoreOffer)
+    .map((sp: any) => ({
+      store: sp.store || "Mağaza",
+      storeSlug: sp.storeSlug || (sp.store || "").toLowerCase().replace(/[^a-z0-9]/g, ""),
+      sellerName: sp.sellerName || sp.store,
+      sellerRating: sp.sellerRating || 9.5,
+      price: Number(sp.price) || 0,
+      url: sp.url || "",
+      isAvailable: sp.isAvailable ?? true,
+      lastUpdated: sp.lastUpdated || new Date().toISOString(),
+      shippingText: sp.shippingText || "Ücretsiz Kargo",
+      guaranteeText: sp.guaranteeText || "Resmi Distribütör Garantili",
+      installmentText: sp.installmentText || "Peşin Fiyatına Taksit",
+      isOfficial: sp.isOfficial ?? false,
+    }))
+    .sort((a: StorePrice, b: StorePrice) => a.price - b.price);
 
-  const lowestPrice = Number(raw.lowestPrice) || 0;
-  const highestPrice = Number(raw.highestPrice) || lowestPrice;
+  const realLowestOffer = storesPrices.length > 0 ? storesPrices[0] : null;
+  const lowestPrice = realLowestOffer ? realLowestOffer.price : (Number(raw.lowestPrice) || 0);
+  const highestPrice = storesPrices.length > 0
+    ? storesPrices[storesPrices.length - 1].price
+    : (Number(raw.highestPrice) || lowestPrice);
+
+  const lowestPriceStoreName = realLowestOffer ? realLowestOffer.store : undefined;
+  const lowestPriceUrl = realLowestOffer ? realLowestOffer.url : undefined;
 
   return {
     id: String(raw.id || raw.slug),
@@ -169,17 +233,17 @@ export function normalizePhone(raw: any): Phone {
     lowestPrice,
     highestPrice,
     sixMonthLowestPrice: raw.sixMonthLowestPrice ? Number(raw.sixMonthLowestPrice) : undefined,
-    lowestPriceStoreName: raw.lowestPriceStoreName || storesPrices[0]?.store || undefined,
-    lowestPriceUrl: raw.lowestPriceUrl || storesPrices[0]?.url || undefined,
-    priceStore: raw.priceStore || raw.lowestPriceStoreName || storesPrices[0]?.store || null,
-    priceUrl: raw.priceUrl || raw.lowestPriceUrl || storesPrices[0]?.url || null,
+    lowestPriceStoreName,
+    lowestPriceUrl,
+    priceStore: lowestPriceStoreName || null,
+    priceUrl: lowestPriceUrl || null,
     releaseDate: raw.releaseDate || new Date().toISOString(),
     isNew: raw.isNew ?? false,
     isPriceDropped: raw.isPriceDropped ?? false,
     priceDropPercent: raw.priceDropPercent !== undefined ? raw.priceDropPercent : null,
     rating: raw.rating ? Number(raw.rating) : 9.0,
     reviewCount: raw.reviewCount ? Number(raw.reviewCount) : 100,
-    storesCount: raw.storesCount || storesPrices.length || 1,
+    storesCount: storesPrices.length,
     storesPrices,
     specs,
     tags: raw.tags || [],

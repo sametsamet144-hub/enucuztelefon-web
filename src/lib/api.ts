@@ -13,7 +13,7 @@ import type {
   StoreRedirectParams,
   StoreRedirectResponse,
 } from "@/types";
-import { normalizePhone, normalizePriceHistory } from "./normalizers";
+import { normalizePhone, normalizePriceHistory, isRealDirectStoreOffer } from "./normalizers";
 
 const DEFAULT_API_URL =
   process.env.NODE_ENV === "production"
@@ -137,7 +137,8 @@ export const backendApi = {
    */
   getProductOffers: async (slug: string): Promise<StorePrice[] | null> => {
     const raw = await fetchApi<StorePrice[]>(`/products/${encodeURIComponent(slug)}/offers`);
-    return raw || null;
+    if (!raw || !Array.isArray(raw)) return null;
+    return raw.filter(isRealDirectStoreOffer);
   },
 
   /**

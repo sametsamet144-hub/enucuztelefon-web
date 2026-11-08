@@ -107,9 +107,9 @@ export default function StoreComparisonTable({
       return sortAsc ? rows : [...rows].reverse();
     }
 
-    // If only base price is present without individual store breakdown
-    if (rawBaseLowest > 0) {
-      const singleStore = phone?.lowestPriceStoreName || "Resmi Satıcı";
+    // If only base price is present with a verified offer URL
+    if (rawBaseLowest > 0 && phone?.lowestPriceUrl) {
+      const singleStore = phone?.lowestPriceStoreName || "Doğrulanmış Satıcı";
       return [
         {
           rank: 1,

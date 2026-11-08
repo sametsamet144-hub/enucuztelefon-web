@@ -80,7 +80,7 @@ export async function getPhones(
   if (filters?.sortBy) params.sortBy = filters.sortBy;
   if (filters?.page) params.page = filters.page;
   if (filters?.pageSize) params.pageSize = filters.pageSize;
-  else params.pageSize = 100;
+  else params.pageSize = 200;
 
   const apiResponse = await backendApi.getProducts(params);
   let result = apiResponse?.items && Array.isArray(apiResponse.items) ? [...apiResponse.items] : [];

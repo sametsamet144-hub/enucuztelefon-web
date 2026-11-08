@@ -1179,19 +1179,21 @@ export default function PhoneCatalogClient({
                 setSelectedBrands([]);
                 setCurrentPage(1);
               }}
-              className={`h-8 px-3.5 rounded-full flex items-center gap-1.5 shrink-0 text-xs font-semibold shadow-sm transition-all cursor-pointer ${
-                selectedBrands.length === 0
-                  ? "bg-white text-[#0e0e10]"
-                  : "bg-[#201f22] text-[#c0c7d5] hover:text-white border border-white/[0.06]"
-              }`}
+              style={{
+                backgroundColor: selectedBrands.length === 0 ? "#ffffff" : "#201f22",
+                color: selectedBrands.length === 0 ? "#000000" : "#c0c7d5",
+                fontWeight: selectedBrands.length === 0 ? 700 : 500,
+                border: selectedBrands.length === 0 ? "none" : "1px solid rgba(255,255,255,0.08)",
+              }}
+              className="h-8 px-3.5 rounded-full flex items-center gap-1.5 shrink-0 text-xs shadow-sm transition-all cursor-pointer"
             >
               <span>Tüm Markalar</span>
               <span
-                className={`px-1.5 py-0.2 rounded-full text-[11px] font-bold ${
-                  selectedBrands.length === 0
-                    ? "bg-black/15 text-black"
-                    : "bg-[#353437] text-[#c0c7d5]"
-                }`}
+                style={{
+                  backgroundColor: selectedBrands.length === 0 ? "rgba(0,0,0,0.12)" : "#2a2a2c",
+                  color: selectedBrands.length === 0 ? "#000000" : "#8a919e",
+                }}
+                className="px-1.5 py-0.2 rounded-full text-[11px] font-bold"
               >
                 {initialPhones.length}
               </span>
@@ -1203,19 +1205,21 @@ export default function PhoneCatalogClient({
                   key={b.name}
                   type="button"
                   onClick={() => toggleBrand(b.name)}
-                  className={`h-8 px-3.5 rounded-full flex items-center gap-1.5 shrink-0 text-xs font-semibold shadow-sm transition-all cursor-pointer ${
-                    active
-                      ? "bg-white text-[#0e0e10]"
-                      : "bg-[#201f22] text-[#c0c7d5] hover:text-white border border-white/[0.06]"
-                  }`}
+                  style={{
+                    backgroundColor: active ? "#ffffff" : "#201f22",
+                    color: active ? "#000000" : "#c0c7d5",
+                    fontWeight: active ? 700 : 500,
+                    border: active ? "none" : "1px solid rgba(255,255,255,0.08)",
+                  }}
+                  className="h-8 px-3.5 rounded-full flex items-center gap-1.5 shrink-0 text-xs shadow-sm transition-all cursor-pointer"
                 >
                   <span>{b.name}</span>
                   <span
-                    className={`px-1.5 py-0.2 rounded-full text-[11px] font-bold ${
-                      active
-                        ? "bg-black/15 text-black"
-                        : "bg-[#353437] text-[#c0c7d5]"
-                    }`}
+                    style={{
+                      backgroundColor: active ? "rgba(0,0,0,0.12)" : "#2a2a2c",
+                      color: active ? "#000000" : "#8a919e",
+                    }}
+                    className="px-1.5 py-0.2 rounded-full text-[11px] font-bold"
                   >
                     {b.count}
                   </span>
@@ -1232,13 +1236,14 @@ export default function PhoneCatalogClient({
                 setFreeShippingOnly((v) => !v);
                 setCurrentPage(1);
               }}
-              className={`h-7 px-2.5 rounded-full flex items-center gap-1 shrink-0 text-[11px] font-medium border transition-all cursor-pointer ${
-                freeShippingOnly
-                  ? "bg-[#201f22] text-[#47e266] border-[#47e266]/60 shadow-[0_0_12px_rgba(71,226,102,0.2)]"
-                  : "bg-[#201f22] text-[#c0c7d5] border-white/[0.06] hover:text-white"
-              }`}
+              style={{
+                backgroundColor: "#201f22",
+                color: freeShippingOnly ? "#47e266" : "#c0c7d5",
+                borderColor: freeShippingOnly ? "rgba(71,226,102,0.6)" : "rgba(255,255,255,0.06)",
+              }}
+              className="h-7 px-2.5 rounded-full flex items-center gap-1 shrink-0 text-[11px] font-medium border transition-all cursor-pointer"
             >
-              <span className="material-symbols-outlined text-[15px] text-[#47e266]">
+              <span className="material-symbols-outlined text-[15px]" style={{ color: "#47e266" }}>
                 local_shipping
               </span>
               <span>Kargo Bedava</span>
@@ -1250,13 +1255,14 @@ export default function PhoneCatalogClient({
                 setInstallmentOnly((v) => !v);
                 setCurrentPage(1);
               }}
-              className={`h-7 px-2.5 rounded-full flex items-center gap-1 shrink-0 text-[11px] font-medium border transition-all cursor-pointer ${
-                installmentOnly
-                  ? "bg-[#201f22] text-[#2997ff] border-[#2997ff]/60 shadow-[0_0_12px_rgba(41,151,255,0.2)]"
-                  : "bg-[#201f22] text-[#c0c7d5] border-white/[0.06] hover:text-white"
-              }`}
+              style={{
+                backgroundColor: "#201f22",
+                color: installmentOnly ? "#2997ff" : "#c0c7d5",
+                borderColor: installmentOnly ? "rgba(41,151,255,0.6)" : "rgba(255,255,255,0.06)",
+              }}
+              className="h-7 px-2.5 rounded-full flex items-center gap-1 shrink-0 text-[11px] font-medium border transition-all cursor-pointer"
             >
-              <span className="material-symbols-outlined text-[15px] text-[#2997ff]">
+              <span className="material-symbols-outlined text-[15px]" style={{ color: "#2997ff" }}>
                 credit_card
               </span>
               <span>Peşin Fiyatına Taksit</span>
@@ -1268,13 +1274,14 @@ export default function PhoneCatalogClient({
                 setDipFiyatOnly((v) => !v);
                 setCurrentPage(1);
               }}
-              className={`h-7 px-2.5 rounded-full flex items-center gap-1 shrink-0 text-[11px] font-medium border transition-all cursor-pointer ${
-                dipFiyatOnly
-                  ? "bg-[#201f22] text-[#ffb4ab] border-[#ffb4ab]/60 shadow-[0_0_12px_rgba(255,180,171,0.2)]"
-                  : "bg-[#201f22] text-[#c0c7d5] border-white/[0.06] hover:text-white"
-              }`}
+              style={{
+                backgroundColor: "#201f22",
+                color: dipFiyatOnly ? "#ffb4ab" : "#c0c7d5",
+                borderColor: dipFiyatOnly ? "rgba(255,180,171,0.6)" : "rgba(255,255,255,0.06)",
+              }}
+              className="h-7 px-2.5 rounded-full flex items-center gap-1 shrink-0 text-[11px] font-medium border transition-all cursor-pointer"
             >
-              <span className="material-symbols-outlined text-[15px] text-[#47e266]">
+              <span className="material-symbols-outlined text-[15px]" style={{ color: "#47e266" }}>
                 trending_down
               </span>
               <span>Tarihi Dip Fiyat</span>
@@ -1445,7 +1452,12 @@ export default function PhoneCatalogClient({
             <button
               type="button"
               onClick={() => setMobileFilterOpen(true)}
-              className="pointer-events-auto flex items-center gap-2.5 px-5 py-3 rounded-full bg-[#2997ff] text-[#002e57] text-xs font-bold shadow-[0_8px_24px_rgba(41,151,255,0.45)] active:scale-95 transition-all cursor-pointer"
+              style={{
+                backgroundColor: "#2997ff",
+                color: "#002e57",
+                boxShadow: "0 8px 24px rgba(41, 151, 255, 0.45)",
+              }}
+              className="pointer-events-auto flex items-center gap-2.5 px-5 py-3 rounded-full text-xs font-bold active:scale-95 transition-all cursor-pointer"
             >
               <span className="material-symbols-outlined text-[20px]">filter_list</span>
               <span>Filtrele ({sortedPhones.length} Model)</span>

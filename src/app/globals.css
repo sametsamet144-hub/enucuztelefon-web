@@ -7557,4 +7557,51 @@
   scrollbar-width: none;
 }
 
+/* Explicit Bulletproof Keyframe & Gradient Utilities */
+.beam-rotate-fast-7s {
+  animation: beamRotateFast 7s linear infinite;
+  background: conic-gradient(from 0deg, #2997ff, transparent 30%, #a3c9ff 50%, #47e266 75%, transparent 90%);
+}
+.beam-rotate-fast-vs {
+  animation: beamRotateFast 6.5s linear infinite;
+  background: conic-gradient(from 0deg, #2997ff, transparent 25%, #7928ca 50%, #2997ff 75%, transparent 95%);
+}
+.beam-rotate-fast-radar {
+  animation: beamRotateFast 6.5s linear infinite;
+  background: conic-gradient(from 180deg, #47e266, transparent 40%, #2997ff 70%, transparent 95%);
+}
+.beam-rotate-fast-aurora {
+  animation: beamRotateFast 5.5s linear infinite;
+  background: conic-gradient(from 0deg, #2997ff, #7928ca, #47e266, #2997ff);
+}
+.radar-sweep-conic {
+  background: conic-gradient(from 0deg, transparent 65%, rgba(71, 226, 102, 0.85) 100%);
+  animation: radarContinuousSweep 3.2s linear infinite;
+}
+.radar-wave-anim {
+  animation: radarWaveEmit 2.4s ease-out infinite;
+}
+.pulse-expanding-ring {
+  animation: pulseExpandingRing 2.6s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+}
+.pulse-energy-core {
+  animation: pulseEnergyCore 2.4s infinite;
+}
+.btn-firsat-incele {
+  background: linear-gradient(to right, #2997ff, #a3c9ff) !important;
+  color: #002e57 !important;
+  box-shadow: 0 4px 22px rgba(41, 151, 255, 0.45) !important;
+}
+.btn-fiyat-alarm {
+  background: linear-gradient(to right, #00ac40, #00c853, #47e266) !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 22px rgba(0, 172, 64, 0.38) !important;
+}
+.btn-fiyatlari-gor-blue {
+  background: #2997ff !important;
+  color: #ffffff !important;
+  box-shadow: 0 2px 10px rgba(41, 151, 255, 0.35) !important;
+}
+
+
 

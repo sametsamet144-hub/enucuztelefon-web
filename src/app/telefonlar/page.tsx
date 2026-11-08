@@ -45,7 +45,7 @@ export default async function PhonesPage({ searchParams }: PageProps) {
     isNew: params.isNew === "true" ? true : undefined,
     sortBy: params.sortBy as any,
     page: params.page ? Number(params.page) : 1,
-    pageSize: params.pageSize ? Number(params.pageSize) : 50,
+    pageSize: params.pageSize ? Number(params.pageSize) : 200,
   };
 
   const [phones, brands] = await Promise.all([

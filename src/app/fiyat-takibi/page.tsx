@@ -58,6 +58,23 @@ export default function PriceTrackingPage() {
 
   // Quick Radar Card State (Middle Bento Card 2)
   const [radarTargetPrice, setRadarTargetPrice] = useState<number>(44000);
+
+  const heroPhone = phones.length > 0 ? phones[0] : null;
+  const vsPhone1 = phones.find((p) => p.brand.toLowerCase() === "apple") || phones[0] || null;
+  const vsPhone2 = phones.find((p) => p.brand.toLowerCase() === "samsung" && p.slug !== vsPhone1?.slug) || phones[1] || null;
+  const radarPhone = phones[1] || phones[0] || null;
+
+  const fpList = useMemo(() => {
+    return phones.slice(0, 3).map((p, idx) => ({
+      rank: idx + 1,
+      name: p.name,
+      sub: `${p.brand} • ${p.specs?.performance?.chipset?.split("(")[0].trim() || "Mobil Donanım"}`,
+      price: p.lowestPrice,
+      tag: p.priceDropPercent ? `-%${p.priceDropPercent} İndirim` : "Doğrulanmış Fiyat",
+      tagEmerald: idx === 0,
+      slug: p.slug,
+    }));
+  }, [phones]);
   const [radarTelegramSms, setRadarTelegramSms] = useState<boolean>(true);
   const [radarCreated, setRadarCreated] = useState<boolean>(false);
 
@@ -70,6 +87,11 @@ export default function PriceTrackingPage() {
         const ip16Pro = res.find((p) => p.slug === "iphone-16-pro");
         if (ip16Pro) {
           setSelectedSlug(ip16Pro.slug);
+        }
+        if (res[1]?.lowestPrice) {
+          setRadarTargetPrice(Math.round((res[1].lowestPrice * 0.95) / 100) * 100);
+        } else if (res[0]?.lowestPrice) {
+          setRadarTargetPrice(Math.round((res[0].lowestPrice * 0.95) / 100) * 100);
         }
       }
     });
@@ -93,8 +115,7 @@ export default function PriceTrackingPage() {
   };
 
   const handleCreateQuickRadarAlert = () => {
-    const targetPhone =
-      phones.find((p) => p.slug.includes("iphone-15")) || activePhone || phones[0];
+    const targetPhone = radarPhone || activePhone || phones[0];
     if (targetPhone) {
       createAlert({
         phone: targetPhone,
@@ -133,23 +154,26 @@ export default function PriceTrackingPage() {
               {/* Left Text Info */}
               <div className="sm:col-span-7 space-y-3">
                 <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
-                  iPhone 16 Pro 256GB
+                  {heroPhone?.name || "Günün Öne Çıkan Modeli"}
                 </h2>
                 <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
-                  Doğal Titanyum. A18 Pro Çip. 48MP Pro Kamera sistemi. Resmi
-                  Türkiye Garantili Ürün.
+                  {heroPhone?.specs?.performance?.chipset || heroPhone?.brand || "Gelişmiş donanım"} • Doğrulanmış yetkili satıcı fiyatı.
                 </p>
 
                 <div className="pt-1 flex items-baseline gap-3 flex-wrap">
                   <span className="text-3xl sm:text-4xl font-black text-white price-display tracking-tight">
-                    ₺59.899
+                    {heroPhone ? formatPrice(heroPhone.lowestPrice) : "Fiyat Yükleniyor"}
                   </span>
-                  <span className="text-sm text-slate-500 line-through font-bold">
-                    ₺72.999
-                  </span>
-                  <span className="px-2.5 py-0.5 rounded-md bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 text-xs font-extrabold">
-                    -%18 İndirim
-                  </span>
+                  {heroPhone?.highestPrice && heroPhone.highestPrice > heroPhone.lowestPrice && (
+                    <span className="text-sm text-slate-500 line-through font-bold">
+                      {formatPrice(heroPhone.highestPrice)}
+                    </span>
+                  )}
+                  {heroPhone?.priceDropPercent ? (
+                    <span className="px-2.5 py-0.5 rounded-md bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 text-xs font-extrabold">
+                      -%{heroPhone.priceDropPercent} İndirim
+                    </span>
+                  ) : null}
                 </div>
 
                 <div className="flex items-center gap-2 text-xs text-slate-300 pt-1">
@@ -157,11 +181,8 @@ export default function PriceTrackingPage() {
                   <span>
                     En düşük satıcı:{" "}
                     <strong className="text-white font-extrabold">
-                      Amazon TR
-                    </strong>{" "}
-                    <span className="text-slate-400">
-                      (Satıcı &amp; Gönderici: Resmi Amazon)
-                    </span>
+                      {heroPhone?.lowestPriceStoreName || "Doğrulanmış Satıcı"}
+                    </strong>
                   </span>
                 </div>
               </div>
@@ -171,8 +192,8 @@ export default function PriceTrackingPage() {
                 <div className="w-full max-w-[230px] aspect-[4/3] rounded-2xl bg-gradient-to-br from-[#172033] via-[#0d121d] to-[#090d14] border border-white/10 p-4 flex items-center justify-center shadow-inner group">
                   <div className="w-32 h-32 flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
                     <PhoneImage
-                      src="/images/phones/iphone-16-pro.svg"
-                      alt="iPhone 16 Pro 256GB"
+                      src={heroPhone?.image || "/images/phones/placeholder.webp"}
+                      alt={heroPhone?.name || "Telefon"}
                     />
                   </div>
                 </div>
@@ -201,27 +222,34 @@ export default function PriceTrackingPage() {
                       />
                       <circle cx="116" cy="23" r="3.5" fill="#10b981" />
                     </svg>
-                    <span className="text-xs font-extrabold text-emerald-400">
-                      + ₺13.100 Tasarruf
-                    </span>
+                    {heroPhone?.highestPrice && heroPhone.highestPrice > heroPhone.lowestPrice ? (
+                      <span className="text-xs font-extrabold text-emerald-400">
+                        + {formatPrice(heroPhone.highestPrice - heroPhone.lowestPrice)} Tasarruf
+                      </span>
+                    ) : null}
                   </div>
                 </div>
               </div>
 
               <div className="flex items-center justify-between sm:justify-end gap-2.5">
                 <div className="flex items-center gap-1">
-                  {["Amazon", "HB", "Trendyol"].map((st) => (
+                  {heroPhone?.lowestPriceStoreName && (
+                    <span className="px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-[10px] font-bold text-slate-300">
+                      {heroPhone.lowestPriceStoreName}
+                    </span>
+                  )}
+                  {heroPhone?.storesPrices?.slice(0, 3).map((st) => (
                     <span
-                      key={st}
+                      key={st.store}
                       className="px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-[10px] font-bold text-slate-300"
                     >
-                      {st}
+                      {st.store}
                     </span>
                   ))}
                 </div>
 
                 <Link
-                  href="/telefon/iphone-16-pro"
+                  href={heroPhone ? `/telefon/${heroPhone.slug}` : "/telefonlar"}
                   className="px-4 py-2.5 rounded-xl bg-[#1d8cf8] hover:bg-sky-500 text-white font-extrabold text-xs inline-flex items-center gap-1 shadow-lg shadow-sky-500/25 transition-all shrink-0"
                 >
                   <span>Fırsatı İncele</span>
@@ -238,64 +266,51 @@ export default function PriceTrackingPage() {
               <div className="flex flex-col items-center">
                 <div className="w-16 h-16 rounded-xl bg-white/5 border border-white/10 p-2 flex items-center justify-center mb-2.5">
                   <PhoneImage
-                    src="/images/phones/iphone-16-pro.svg"
-                    alt="iPhone 16 Pro"
+                    src={vsPhone1?.image || "/images/phones/placeholder.webp"}
+                    alt={vsPhone1?.name || "Model 1"}
                   />
                 </div>
-                <div className="text-xs font-black text-white">
-                  iPhone 16 Pro
+                <div className="text-xs font-black text-white truncate max-w-full">
+                  {vsPhone1?.name || "Model 1"}
                 </div>
                 <div className="text-xs font-extrabold text-sky-400 mt-0.5">
-                  ₺59.899
+                  {vsPhone1?.lowestPrice ? formatPrice(vsPhone1.lowestPrice) : "Fiyat Yok"}
                 </div>
                 <div className="text-[10px] text-slate-400 mt-1">
-                  6.3&quot; ProMotion
+                  {vsPhone1?.specs?.display?.size ? `${vsPhone1.specs.display.size}" Ekran` : vsPhone1?.brand}
                 </div>
-                <div className="text-[10px] text-slate-500">48MP Fusion</div>
               </div>
 
               {/* Phone 2 */}
               <div className="flex flex-col items-center">
                 <div className="w-16 h-16 rounded-xl bg-white/5 border border-white/10 p-2 flex items-center justify-center mb-2.5">
                   <PhoneImage
-                    src="/images/phones/samsung-galaxy-s24-ultra.svg"
-                    alt="Galaxy S24 Ultra"
+                    src={vsPhone2?.image || "/images/phones/placeholder.webp"}
+                    alt={vsPhone2?.name || "Model 2"}
                   />
                 </div>
-                <div className="text-xs font-black text-white">
-                  Galaxy S24 Ultra
+                <div className="text-xs font-black text-white truncate max-w-full">
+                  {vsPhone2?.name || "Model 2"}
                 </div>
                 <div className="text-xs font-extrabold text-sky-400 mt-0.5">
-                  ₺64.499
+                  {vsPhone2?.lowestPrice ? formatPrice(vsPhone2.lowestPrice) : "Fiyat Yok"}
                 </div>
                 <div className="text-[10px] text-slate-400 mt-1">
-                  6.8&quot; AMOLED 2X
+                  {vsPhone2?.specs?.display?.size ? `${vsPhone2.specs.display.size}" Ekran` : vsPhone2?.brand}
                 </div>
-                <div className="text-[10px] text-slate-500">200MP Quad-cam</div>
               </div>
             </div>
 
-            {/* Score Bar */}
-            <div className="my-4 space-y-2">
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-slate-400 font-semibold">
-                  Kafa Kafaya Skor
-                </span>
-                <span className="font-black text-white">1.82M vs 1.84M</span>
-              </div>
-              <div className="w-full h-2 rounded-full bg-slate-800 overflow-hidden flex">
-                <div className="w-1/2 h-full bg-sky-400" />
-                <div className="w-1/2 h-full bg-emerald-400" />
-              </div>
+            {/* Action */}
+            <div className="my-4">
+              <Link
+                href={vsPhone1 && vsPhone2 ? `/karsilastir?phone1=${vsPhone1.slug}&phone2=${vsPhone2.slug}` : "/karsilastir"}
+                className="w-full py-3 rounded-2xl bg-white/10 hover:bg-white/15 border border-white/10 text-white font-extrabold text-xs inline-flex items-center justify-center gap-1.5 transition-all"
+              >
+                <span>Karşılaştırmayı Başlat</span>
+                <Zap className="w-3.5 h-3.5 text-amber-400" />
+              </Link>
             </div>
-
-            <Link
-              href="/karsilastir?phone1=iphone-16-pro&phone2=samsung-galaxy-s24-ultra"
-              className="w-full py-3 rounded-2xl bg-white/10 hover:bg-white/15 border border-white/10 text-white font-extrabold text-xs inline-flex items-center justify-center gap-1.5 transition-all"
-            >
-              <span>Karşılaştırmayı Başlat</span>
-              <Zap className="w-3.5 h-3.5 text-amber-400" />
-            </Link>
           </div>
         </section>
 
@@ -319,35 +334,7 @@ export default function PriceTrackingPage() {
               </p>
 
               <div className="mt-5 space-y-2.5">
-                {[
-                  {
-                    rank: 1,
-                    name: "Xiaomi Poco F6 Pro",
-                    sub: "12 Mağaza • 4.9/5 Skor",
-                    price: 23499,
-                    tag: "Bütçe Lideri",
-                    tagEmerald: true,
-                    slug: "poco-f6-pro",
-                  },
-                  {
-                    rank: 2,
-                    name: "Samsung Galaxy A55",
-                    sub: "16 Mağaza • 4.8/5 Skor",
-                    price: 16890,
-                    tag: "Çok Satan",
-                    tagEmerald: false,
-                    slug: "samsung-galaxy-a55",
-                  },
-                  {
-                    rank: 3,
-                    name: "Nothing Phone (2a)",
-                    sub: "8 Mağaza • 4.7/5 Skor",
-                    price: 18499,
-                    tag: "Özgün Tasarım",
-                    tagEmerald: false,
-                    slug: "nothing-phone-2a",
-                  },
-                ].map((item: any) => (
+                {fpList.map((item: any) => (
                   <Link
                     key={item.rank}
                     href={`/telefon/${item.slug}`}
@@ -422,8 +409,8 @@ export default function PriceTrackingPage() {
                   <span className="text-slate-400 font-medium">
                     Hedef Cihaz:
                   </span>
-                  <strong className="text-white font-extrabold">
-                    iPhone 15 128GB
+                  <strong className="text-white font-extrabold truncate max-w-[180px]">
+                    {radarPhone?.name || "Model Seçiniz"}
                   </strong>
                 </div>
 
@@ -431,8 +418,8 @@ export default function PriceTrackingPage() {
                   <span className="text-slate-400 font-medium">
                     Güncel Fiyat:
                   </span>
-                  <span className="text-slate-400 line-through font-bold">
-                    ₺49.999
+                  <span className="text-slate-300 font-bold">
+                    {radarPhone?.lowestPrice ? formatPrice(radarPhone.lowestPrice) : "Fiyat Yok"}
                   </span>
                 </div>
 

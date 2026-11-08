@@ -53,204 +53,6 @@ interface Props {
 
 type TimeRangeKey = "1m" | "3m" | "6m" | "1y" | "all";
 
-const DEFAULT_IPHONE_STORES: StoreTelemetryItem[] = [
-  {
-    rank: 1,
-    name: "Amazon TR",
-    slug: "amazon",
-    badge: "En Dip Fiyat",
-    badgeType: "emerald",
-    subtitle: "Resmi Satıcı • Aynı Gün Kargo",
-    price: 59899,
-    diffText: "↘ -%18 Rekor",
-    isLowest: true,
-    stockStatus: "Hızlı Teslimat (Stokta)",
-    stockSub: "Resmi Prime Envanteri",
-    shippingSpeed: "Aynı Gün Kargo",
-    shippingSub: "Ücretsiz Kargo",
-    rating: "9.9",
-    reviewCount: "48.2B Değerlendirme",
-    range30d: "₺59.899 - ₺64.499",
-    rangeSub: "Diğer Kapanış",
-    peakPrice: 72999,
-    lastUpdated: "14 sn önce",
-  },
-  {
-    rank: 2,
-    name: "Hepsiburada Resmi",
-    slug: "hepsiburada",
-    badge: "Resmi Distribütör",
-    badgeType: "slate",
-    subtitle: "Satıcı: Hepsiburada • Yarın Kapında",
-    price: 60490,
-    diffText: "+₺591 fark",
-    stockStatus: "Stokta Hazır",
-    stockSub: "Hepsiburada Merkez Depo",
-    shippingSpeed: "Yarın Kapında",
-    shippingSub: "HepsiJET Ücretsiz",
-    rating: "9.8",
-    reviewCount: "62.4B Değerlendirme",
-    range30d: "₺60.490 - ₺65.200",
-    rangeSub: "Stabil Seyir",
-    peakPrice: 72999,
-    lastUpdated: "28 sn önce",
-  },
-  {
-    rank: 3,
-    name: "Trendyol",
-    slug: "trendyol",
-    badge: "Apple Yetkili",
-    badgeType: "sky",
-    subtitle: "Trendyol Doğrulanmış Mağaza",
-    price: 60999,
-    diffText: "+₺1.100 fark",
-    stockStatus: "Stokta Var",
-    stockSub: "Kurumsal Faturalı Stok",
-    shippingSpeed: "24 Saatte Kargoda",
-    shippingSub: "Ücretsiz Hızlı Kargo",
-    rating: "9.7",
-    reviewCount: "84.1B Değerlendirme",
-    range30d: "₺60.999 - ₺65.999",
-    rangeSub: "Kampanya Fiyatı",
-    peakPrice: 72999,
-    lastUpdated: "41 sn önce",
-  },
-  {
-    rank: 4,
-    name: "MediaMarkt TR",
-    slug: "mediamarkt",
-    badge: "Zincir Mağaza",
-    badgeType: "slate",
-    subtitle: "Mağazadan 2 Saatte Teslim",
-    price: 61499,
-    diffText: "+₺1.600 fark",
-    stockStatus: "Mağaza & Online Stok",
-    stockSub: "92 Mağazada Teslimat",
-    shippingSpeed: "2 Saatte Mağazadan",
-    shippingSub: "Ücretsiz Kargo",
-    rating: "9.8",
-    reviewCount: "19.5B Değerlendirme",
-    range30d: "₺61.499 - ₺66.999",
-    rangeSub: "Kulüp İndirimi",
-    peakPrice: 72999,
-    lastUpdated: "1 dk önce",
-  },
-  {
-    rank: 5,
-    name: "Teknosa",
-    slug: "teknosa",
-    subtitle: "Teknosa Güvencesiyle • Ücretsiz Kargo",
-    price: 61890,
-    diffText: "+₺1.991 fark",
-    stockStatus: "Stokta Mevcut",
-    stockSub: "TeknoGaranti Uyumlu",
-    shippingSpeed: "Aynı Gün Kargo",
-    shippingSub: "Ücretsiz Sigortalı Kargo",
-    rating: "9.6",
-    reviewCount: "15.8B Değerlendirme",
-    range30d: "₺61.890 - ₺67.499",
-    rangeSub: "Resmi Bayi",
-    peakPrice: 72999,
-    lastUpdated: "1 dk önce",
-  },
-  {
-    rank: 6,
-    name: "Vatan Bilgisayar",
-    slug: "vatan",
-    subtitle: "Resmi Apple Point • Faturalı",
-    price: 62200,
-    diffText: "+₺2.301 fark",
-    stockStatus: "Stokta (Mağaza + Web)",
-    stockSub: "Resmi Apple Point",
-    shippingSpeed: "Aynı Gün Sevkiyat",
-    shippingSub: "Ücretsiz Kargo",
-    rating: "9.8",
-    reviewCount: "22.1B Değerlendirme",
-    range30d: "₺62.200 - ₺67.999",
-    rangeSub: "Gece Kampanyası",
-    peakPrice: 72999,
-    lastUpdated: "2 dk önce",
-  },
-  {
-    rank: 7,
-    name: "N11",
-    slug: "n11",
-    badge: "Yetkili Satıcı",
-    badgeType: "slate",
-    subtitle: "Kupon + Puan Geçerli",
-    price: 62450,
-    diffText: "+₺2.551 fark",
-    stockStatus: "Stokta Var",
-    stockSub: "Doğrulanmış Kurumsal Mağaza",
-    shippingSpeed: "Yarın Kargoda",
-    shippingSub: "Ücretsiz Kargo",
-    rating: "9.5",
-    reviewCount: "11.3B Değerlendirme",
-    range30d: "₺62.450 - ₺68.000",
-    rangeSub: "Kupon Avantajı",
-    peakPrice: 72999,
-    lastUpdated: "2 dk önce",
-  },
-  {
-    rank: 8,
-    name: "PttAVM",
-    slug: "pttavm",
-    badge: "Resmi Distribütör",
-    badgeType: "slate",
-    subtitle: "PTT Kargo Güvencesi",
-    price: 62900,
-    diffText: "+₺3.001 fark",
-    stockStatus: "Stokta Hazır",
-    stockSub: "Devlet Güvenceli E-Ticaret",
-    shippingSpeed: "24 Saatte Kargoda",
-    shippingSub: "PTT Kargo Ücretsiz",
-    rating: "9.4",
-    reviewCount: "8.7B Değerlendirme",
-    range30d: "₺62.900 - ₺68.500",
-    rangeSub: "Resmi İthalat",
-    peakPrice: 72999,
-    lastUpdated: "3 dk önce",
-  },
-  {
-    rank: 9,
-    name: "Turkcell Pasaj",
-    slug: "turkcell",
-    subtitle: "Faturaya Ek Taksit İmkanı",
-    price: 63499,
-    diffText: "+₺3.600 fark",
-    stockStatus: "Stokta Var",
-    stockSub: "Operatör Garantili Envanter",
-    shippingSpeed: "Hızlı Kurye / Kargo",
-    shippingSub: "Ücretsiz Teslimat",
-    rating: "9.7",
-    reviewCount: "14.2B Değerlendirme",
-    range30d: "₺63.499 - ₺69.000",
-    rangeSub: "Faturaya Ek",
-    peakPrice: 72999,
-    lastUpdated: "4 dk önce",
-  },
-  {
-    rank: 10,
-    name: "Apple Store TR",
-    slug: "apple",
-    badge: "Resmi Üretici",
-    badgeType: "slate",
-    subtitle: "Apple Türkiye Direkt Satış",
-    price: 69999,
-    diffText: "Liste Fiyatı",
-    isListPrice: true,
-    stockStatus: "Stokta (Resmi Üretici)",
-    stockSub: "Apple Türkiye Merkez",
-    shippingSpeed: "1-2 İş Günü",
-    shippingSub: "Ücretsiz Özel Kurye",
-    rating: "10.0",
-    reviewCount: "95.0B Değerlendirme",
-    range30d: "₺69.999 - ₺72.999",
-    rangeSub: "Sabit Liste Fiyatı",
-    peakPrice: 72999,
-    lastUpdated: "Canlı",
-  },
-];
 
 export default function ProPriceAnalysisCenter({
   phone,
@@ -336,31 +138,26 @@ export default function ProPriceAnalysisCenter({
   const [hoveredMonthIdx, setHoveredMonthIdx] = useState<number | null>(null);
   const [showModelPicker, setShowModelPicker] = useState(false);
 
-  const fallbackStore: StoreTelemetryItem = {
-    rank: 1,
-    name: phone?.lowestPriceStoreName || "Resmi Satıcı",
-    slug: "store",
-    subtitle: "Canlı Doğrulanmış Fiyat",
-    price: phone?.lowestPrice || 0,
-    diffText: "En Düşük Fiyat",
-    stockStatus: "Stokta",
-    stockSub: "",
-    shippingSpeed: "Hızlı Teslimat",
-    shippingSub: "Ücretsiz Kargo",
-    rating: "9.8",
-    reviewCount: "",
-    range30d: formatPrice(phone?.lowestPrice || 0),
-    rangeSub: "",
-    peakPrice: phone?.highestPrice || phone?.lowestPrice || 0,
-    lastUpdated: "Canlı",
-  };
+  if (!phone || storeItems.length === 0) {
+    return (
+      <div className="rounded-3xl bg-[#0b0f17] border border-white/10 p-8 sm:p-12 text-center text-white my-6">
+        <Store className="w-12 h-12 text-slate-500 mx-auto mb-3" />
+        <h3 className="text-base sm:text-lg font-bold text-white mb-1.5">
+          {phone?.name || "Cihaz"} için Aktif Mağaza Fiyatı Bulunamadı
+        </h3>
+        <p className="text-xs sm:text-sm text-slate-400 max-w-md mx-auto">
+          Şu anda doğrulanmış yetkili satıcılarda bu modele ait aktif fiyat teklifi veya stok kaydı bulunmuyor.
+        </p>
+      </div>
+    );
+  }
 
   const selectedStore =
-    storeItems.find((s) => s.rank === selectedRank) || storeItems[0] || fallbackStore;
+    storeItems.find((s) => s.rank === selectedRank) || storeItems[0];
 
-  const lowestMarketPrice = storeItems[0]?.price || selectedStore.price;
+  const lowestMarketPrice = storeItems[0].price;
   const highestMarketPrice =
-    storeItems[storeItems.length - 1]?.peakPrice || selectedStore.peakPrice || selectedStore.price;
+    storeItems[storeItems.length - 1].peakPrice || lowestMarketPrice;
 
   // Smart Alert State
   const [alertPrice, setAlertPrice] = useState<number>(
@@ -953,19 +750,22 @@ export default function ProPriceAnalysisCenter({
               </div>
             </div>
 
-            <a
-              href={resolveStoreOfferUrl(
-                selectedStore.slug,
-                displayTitle,
-                selectedStore.url
-              )}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-5 py-2.5 rounded-xl bg-[#1d8cf8] hover:bg-sky-500 text-white font-extrabold text-xs inline-flex items-center justify-center gap-1.5 shadow-lg shadow-sky-500/25 transition-all shrink-0"
-            >
-              <span>{selectedStore.name}&apos;de Fırsatı Aç</span>
-              <ExternalLink className="w-3.5 h-3.5" />
-            </a>
+            {selectedStore.url ? (
+              <a
+                href={selectedStore.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-5 py-2.5 rounded-xl bg-[#1d8cf8] hover:bg-sky-500 text-white font-extrabold text-xs inline-flex items-center justify-center gap-1.5 shadow-lg shadow-sky-500/25 transition-all shrink-0"
+              >
+                <span>{selectedStore.name}&apos;de Fırsatı Aç</span>
+                <ExternalLink className="w-3.5 h-3.5" />
+              </a>
+            ) : (
+              <span className="px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-slate-300 font-bold text-xs inline-flex items-center gap-1.5 shrink-0">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                <span>Doğrulanmış Fiyat</span>
+              </span>
+            )}
           </div>
 
           {/* 5. Smart Price Alert Form Card */}

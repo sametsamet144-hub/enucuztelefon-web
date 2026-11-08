@@ -222,102 +222,47 @@ export function isRecentRelease(releaseDate: string, days = 90): boolean {
 }
 
 /**
- * Resolves and validates outbound store offer URLs so broken or homepage links
- * always point to the real product search/listing page on the verified Turkish store domain.
+ * Validates real outbound store offer URLs.
+ * If no real offer URL is provided by the backend API, returns empty string.
+ * Linkler ve fiyatlar için sahte fallback üretilmez — data yoksa boştur.
  */
 export function resolveStoreOfferUrl(
-  storeSlug: string,
-  phoneName: string,
+  _storeSlug?: string,
+  _phoneName?: string,
   rawUrl?: string
 ): string {
-  const slug = (storeSlug || "").toLowerCase().trim();
-  const q = encodeURIComponent(phoneName.trim());
-  const qPlus = encodeURIComponent(phoneName.trim()).replace(/%20/g, "+");
-
-  // If a valid full product URL exists and is not a broken mock pattern, use it
   if (
     rawUrl &&
+    typeof rawUrl === "string" &&
     (rawUrl.startsWith("http://") || rawUrl.startsWith("https://")) &&
     !rawUrl.includes("enucuztelefon.com") &&
     !rawUrl.includes("-10000000") &&
-    !rawUrl.includes("HBC0000100000") &&
-    rawUrl.length > 20
+    !rawUrl.includes("HBC0000100000")
   ) {
     return rawUrl;
   }
 
-  // Guaranteed working destination store links (Akakce / Cimri standard)
-  switch (slug) {
-    case "trendyol":
-      return `https://www.trendyol.com/sr?q=${qPlus}`;
-    case "hepsiburada":
-      return `https://www.hepsiburada.com/ara?q=${qPlus}`;
-    case "amazon":
-    case "amazon-tr":
-    case "amazon turkiye":
-      return `https://www.amazon.com.tr/s?k=${qPlus}`;
-    case "teknosa":
-      return `https://www.teknosa.com/arama/?s=${qPlus}`;
-    case "vatan":
-    case "vatan-bilgisayar":
-      return `https://www.vatanbilgisayar.com/arama/${q}/`;
-    case "mediamarkt":
-      return `https://www.mediamarkt.com.tr/tr/search.html?query=${qPlus}`;
-    case "n11":
-      return `https://www.n11.com/arama?q=${qPlus}`;
-    case "pttavm":
-      return `https://www.pttavm.com/arama?q=${qPlus}`;
-    case "pazarama":
-      return `https://www.pazarama.com/arama?q=${qPlus}`;
-    case "turkcell":
-    case "turkcell-pasaj":
-      return `https://pasaj.turkcell.com.tr/arama?q=${qPlus}`;
-    case "vodafone":
-      return "https://www.vodafone.com.tr/faturaya-ek/telefonlar";
-    case "turk-telekom":
-    case "turktelekom":
-      return "https://bireysel.turktelekom.com.tr/cihazlar";
-    case "itopya":
-      return `https://www.itopya.com/Arama?q=${qPlus}`;
-    case "sinerji":
-      return `https://www.sinerji.gen.tr/arama?q=${qPlus}`;
-    case "incehesap":
-      return `https://www.incehesap.com/arama/${q}/`;
-    case "ciceksepeti":
-      return `https://www.ciceksepeti.com/arama?query=${qPlus}`;
-    case "applestore":
-    case "apple":
-    case "apple-store":
-      return "https://www.apple.com/tr/iphone/";
-    case "samsungstore":
-    case "samsung":
-    case "samsung-shop":
-      return "https://www.samsung.com/tr/smartphones/";
-    case "mistore":
-    case "xiaomi":
-    case "mi-store":
-      return "https://www.mi.com/tr/phone/";
-    default:
-      return `https://www.hepsiburada.com/ara?q=${qPlus}`;
-  }
+  return "";
 }
 
 /**
  * Generates the backend redirect URL for outbound store links.
- * When visited, backend logs clicks, validates the domain, and redirects (302).
+ * Returns empty string if no valid destination URL exists.
  */
 export function getStoreRedirectUrl(
   storeSlug: string,
   phoneName: string,
   rawUrl?: string
 ): string {
+  const resolved = resolveStoreOfferUrl(storeSlug, phoneName, rawUrl);
+  if (!resolved) return "";
+
   const backendBase =
     (typeof window !== "undefined"
       ? process.env.NEXT_PUBLIC_API_URL
       : process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL) ||
     "http://localhost:5000/api/v1";
 
-  const resolved = resolveStoreOfferUrl(storeSlug, phoneName, rawUrl);
   const params = new URLSearchParams({
     store: storeSlug,
     product: phoneName,

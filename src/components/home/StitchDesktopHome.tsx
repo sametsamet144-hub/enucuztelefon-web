@@ -1,6 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
+import { getPhones } from "@/lib/data";
+import { formatPrice } from "@/lib/utils";
+import type { Phone } from "@/types";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useApp } from "@/context/AppContext";
@@ -26,6 +29,31 @@ export default function StitchDesktopHome() {
   const [alarmToggle, setAlarmToggle] = useState(true);
   const [activeBrand, setActiveBrand] = useState("Tümü");
   const [activeTrendTab, setActiveTrendTab] = useState<"Tümü" | "iOS" | "Android">("Tümü");
+  const [phones, setPhones] = useState<Phone[]>([]);
+
+  useEffect(() => {
+    getPhones().then((res) => {
+      if (res && res.length > 0) setPhones(res);
+    });
+  }, []);
+
+  const heroPhone = phones.length > 0 ? phones[0] : null;
+  const vsPhone1 = phones.find((p) => p.brand.toLowerCase() === "apple") || phones[0] || null;
+  const vsPhone2 = phones.find((p) => p.brand.toLowerCase() === "samsung" && p.slug !== vsPhone1?.slug) || phones[1] || null;
+
+  const tickerItems = useMemo(() => {
+    return phones
+      .filter((p) => p.lowestPrice > 0)
+      .slice(0, 5)
+      .map((p) => ({
+        icon: (p.priceDropPercent || 0) > 0 ? "📉" : "⚡",
+        title: p.name,
+        store: p.lowestPriceStoreName ? `${p.lowestPriceStoreName}'de` : "En Uygun",
+        price: formatPrice(p.lowestPrice),
+        tag: (p.priceDropPercent || 0) > 0 ? `-%${p.priceDropPercent} İndirim` : "Doğrulanmış Fiyat",
+        slug: p.slug,
+      }));
+  }, [phones]);
 
   // 1. Hero & Bento Container Radial Cursor Glow Tracker + Bento Border-Beam Mouse Spotlight
   useEffect(() => {
@@ -200,60 +228,21 @@ export default function StitchDesktopHome() {
     "Xiaomi",
   ];
 
-  const trendCards = [
-    {
-      slug: "iphone-16",
-      brand: "Apple",
-      name: "iPhone 16 128GB",
-      specs: "A18 Çip • Kamera Denetimi • HDR",
-      price: "₺58.999",
-      stores: "14 Mağaza",
-      badge: "-%12",
-      isDiscount: true,
-      os: "iOS",
-      img: "https://lh3.googleusercontent.com/aida-public/AB6AXuDaUIrBxBw_wRHBE6dWd3wP9kiJbZwEx9868os19xKLeQd2ytUxz3_sZLBkF0W0Z5M0T1LZo9LRJ10oXeopf7d6ajL0YJrg8uoj-TkJ4CVWEaWxJgtYBQhjRaQwkh1nOSLtjNmpdSLsov4nIEENfFDlGxYNYYJB15zKtkza1RBrU_H7X_HXmM6PnHJs_2j46Syr346SAOtmleHJMVC3BdHITUwkHv1hPtxlrykrj24",
-      alt: "Apple iPhone 16 Plus Ultramarine premium studio product photography on minimalist clean pedestal",
-    },
-    {
-      slug: "samsung-galaxy-s24-plus",
-      brand: "Samsung",
-      name: "Galaxy S24+ 256GB",
-      specs: "Galaxy AI • QHD+ • 12GB RAM",
-      price: "₺41.299",
-      stores: "19 Mağaza",
-      badge: "-%15",
-      isDiscount: true,
-      os: "Android",
-      img: "https://lh3.googleusercontent.com/aida-public/AB6AXuCpInXkXOXGBE1EHavHpsUF3cXkimDXWCO23Lwl0lGI8vJA9Pv6eEBVyOCdFobvZGztgvBcbMddRZe2o-JKqFprg3qQfCh1lnXxbqdZbF-Tk0JV6bZ-vbPonrStkekMfY9mvcYB0Pyfvu9Q9rx2ZGvwADQYzbJqd_UFuWwRlBcE1tXIvgD0gG3WaiDqlQfSTbqCesH6LpKtWZy38GuSSKGZuXxXVKZl7VBC4Xnil4s",
-      alt: "Samsung Galaxy S24 Plus in Titanium Gray elegant pro studio render centered",
-    },
-    {
-      slug: "honor-magic-v3",
-      brand: "Honor",
-      name: "Magic 6 Pro 512GB",
-      specs: "180MP Periskop • 5600mAh Batarya",
-      price: "₺49.999",
-      stores: "11 Mağaza",
-      badge: "Yeni",
-      isDiscount: false,
-      os: "Android",
-      img: "https://lh3.googleusercontent.com/aida-public/AB6AXuCxaJAOIZt-VMc70XFEH2ehSSp1m4KZfGRNKBA9NHXjsT6EAZ5tdJfOv99eSSYQXTO8ys6wDvOTXbKubj4Qc_YEAWwNz0m9hlaxNeUqvEBSXehWmHpOcTLXA1aUueU1e6XN7o_5ADVuN1i6-B4nSVveiZWcGFeaoL9T8zfgghsIaA8Bjr5xvsn7ILi4FiAlh4VMaIbJ5mJ005ygwkxC58oo6eO4k2gl-j--CsR4Ezw",
-      alt: "Honor Magic 6 Pro Epi Green vegan leather texture back studio camera focus high tech render",
-    },
-    {
-      slug: "iphone-15",
-      brand: "Google",
-      name: "Pixel 9 Pro 128GB",
-      specs: "Tensor G4 • Gemini Nano • Super Actua",
-      price: "₺47.500",
-      stores: "8 Mağaza",
-      badge: "-%8",
-      isDiscount: true,
-      os: "Android",
-      img: "https://lh3.googleusercontent.com/aida-public/AB6AXuA8DIkQLUOx3J2LX2QM4leU6SESQEvYgC9nkM55LVyzvTsIQnYUmX4X3GrIB6Z_nD1J3UzWLy-mZHzuIGor7PbFdYa519LDQEwMdRAfz0kdwOnw48M5zuA3cS6im1G19eai7Jqy9AQGbVRuEm9iMwD39SsBtalCCyrzOXVaOPhsknPVZkH1Bj5pFjNFPr-hWAhQ9wi338JFEsaf6W8qtuT3cle4toVc2x4OcO0Mlfs",
-      alt: "Google Pixel 9 Pro Obsidian dark studio lighting showing iconic camera bar",
-    },
-  ];
+  const trendCards = useMemo(() => {
+    return phones.slice(0, 8).map((p) => ({
+      slug: p.slug,
+      brand: p.brand,
+      name: p.name,
+      specs: `${p.specs?.display?.size ? p.specs.display.size + '" • ' : ""}${p.specs?.performance?.chipset?.split("(")[0].trim() || p.brand}`,
+      price: p.lowestPrice > 0 ? formatPrice(p.lowestPrice) : "Fiyat Bekleniyor",
+      stores: `${p.storesCount || 1} Mağaza`,
+      badge: p.priceDropPercent ? `-%${p.priceDropPercent}` : p.isNew ? "Yeni" : "Günün Fırsatı",
+      isDiscount: Boolean(p.priceDropPercent),
+      os: p.brand.toLowerCase() === "apple" ? "iOS" : "Android",
+      img: p.image || "/images/phones/placeholder.webp",
+      alt: p.name,
+    }));
+  }, [phones]);
 
   const displayedTrends =
     activeTrendTab === "Tümü"
@@ -280,125 +269,32 @@ export default function StitchDesktopHome() {
             {/* Infinite Running Track */}
             <div className="overflow-hidden flex-1 relative">
               <div className="animate-marquee-infinite items-center gap-8 text-[13px] font-label-md font-normal text-on-surface-variant">
-                {/* Set 1 */}
-                <Link
-                  href="/telefon/samsung-galaxy-s24-ultra"
-                  className="inline-flex items-center gap-1.5 whitespace-nowrap hover:text-on-surface transition-colors"
-                >
-                  <span className="text-tertiary">📉</span>{" "}
-                  <strong>Galaxy S24 Ultra</strong> Hepsiburada&apos;da{" "}
-                  <span className="text-tertiary font-semibold">4.200 ₺</span>{" "}
-                  düştü{" "}
-                  <span className="text-[11px] px-1.5 py-0.5 rounded bg-tertiary/10 text-tertiary font-medium">
-                    (Son 6 Ayın Dibi)
-                  </span>
-                </Link>
-                <span className="text-outline/40">•</span>
-                <Link
-                  href="/telefon/iphone-16-pro"
-                  className="inline-flex items-center gap-1.5 whitespace-nowrap hover:text-on-surface transition-colors"
-                >
-                  <span className="text-error">🔥</span>{" "}
-                  <strong>iPhone 16 Pro 256GB</strong> Amazon TR&apos;de{" "}
-                  <span className="text-primary font-semibold">59.899 ₺</span>{" "}
-                  <span className="text-[11px] px-1.5 py-0.5 rounded bg-tertiary-container/30 text-tertiary font-medium">
-                    (-%18 İndirim)
-                  </span>
-                </Link>
-                <span className="text-outline/40">•</span>
-                <Link
-                  href="/telefon/xiaomi-15-ultra"
-                  className="inline-flex items-center gap-1.5 whitespace-nowrap hover:text-on-surface transition-colors"
-                >
-                  <span className="text-primary">⚡</span>{" "}
-                  <strong>Xiaomi 15 Ultra</strong> Trendyol&apos;da{" "}
-                  <span className="text-on-surface font-semibold">
-                    53.819 ₺
-                  </span>{" "}
-                  <span className="text-[11px] px-1.5 py-0.5 rounded bg-surface-container-highest text-outline font-medium">
-                    (Stok Sınırlı)
-                  </span>
-                </Link>
-                <span className="text-outline/40">•</span>
-                <Link
-                  href="/telefon/honor-magic-v3"
-                  className="inline-flex items-center gap-1.5 whitespace-nowrap hover:text-on-surface transition-colors"
-                >
-                  <span className="text-tertiary">📉</span>{" "}
-                  <strong>Honor Magic V3 512GB</strong>{" "}
-                  <span className="text-tertiary font-semibold">
-                    7.000 ₺ İndirimle
-                  </span>{" "}
-                  <span className="text-on-surface">62.999 ₺</span>
-                </Link>
-                <span className="text-outline/40">•</span>
+                {tickerItems.length > 0
+                  ? [...tickerItems, ...tickerItems].map((item, idx) => (
+                      <span key={idx} className="inline-flex items-center gap-8">
+                        <Link
+                          href={`/telefon/${item.slug}`}
+                          className="inline-flex items-center gap-1.5 whitespace-nowrap hover:text-on-surface transition-colors"
+                        >
+                          <span className="text-tertiary">{item.icon}</span>{" "}
+                          <strong>{item.title}</strong> {item.store}{" "}
+                          <span className="text-primary font-semibold">
+                            {item.price}
+                          </span>{" "}
+                          <span className="text-[11px] px-1.5 py-0.5 rounded bg-tertiary-container/30 text-tertiary font-medium">
+                            ({item.tag})
+                          </span>
+                        </Link>
+                        <span className="text-outline/40">•</span>
+                      </span>
+                    ))
+                  : null}
                 <span className="inline-flex items-center gap-1.5 whitespace-nowrap">
                   <span className="w-1.5 h-1.5 rounded-full bg-tertiary inline-block" />{" "}
                   <span className="text-primary font-medium">
                     Canlı Fiyat Telemetrisi:
                   </span>{" "}
-                  16 yetkili satıcı taranıyor...
-                </span>
-                <span className="text-outline/40">•</span>
-
-                {/* Duplicated Set for Smooth Continuous Loop */}
-                <Link
-                  href="/telefon/samsung-galaxy-s24-ultra"
-                  className="inline-flex items-center gap-1.5 whitespace-nowrap hover:text-on-surface transition-colors"
-                >
-                  <span className="text-tertiary">📉</span>{" "}
-                  <strong>Galaxy S24 Ultra</strong> Hepsiburada&apos;da{" "}
-                  <span className="text-tertiary font-semibold">4.200 ₺</span>{" "}
-                  düştü{" "}
-                  <span className="text-[11px] px-1.5 py-0.5 rounded bg-tertiary/10 text-tertiary font-medium">
-                    (Son 6 Ayın Dibi)
-                  </span>
-                </Link>
-                <span className="text-outline/40">•</span>
-                <Link
-                  href="/telefon/iphone-16-pro"
-                  className="inline-flex items-center gap-1.5 whitespace-nowrap hover:text-on-surface transition-colors"
-                >
-                  <span className="text-error">🔥</span>{" "}
-                  <strong>iPhone 16 Pro 256GB</strong> Amazon TR&apos;de{" "}
-                  <span className="text-primary font-semibold">59.899 ₺</span>{" "}
-                  <span className="text-[11px] px-1.5 py-0.5 rounded bg-tertiary-container/30 text-tertiary font-medium">
-                    (-%18 İndirim)
-                  </span>
-                </Link>
-                <span className="text-outline/40">•</span>
-                <Link
-                  href="/telefon/xiaomi-15-ultra"
-                  className="inline-flex items-center gap-1.5 whitespace-nowrap hover:text-on-surface transition-colors"
-                >
-                  <span className="text-primary">⚡</span>{" "}
-                  <strong>Xiaomi 15 Ultra</strong> Trendyol&apos;da{" "}
-                  <span className="text-on-surface font-semibold">
-                    53.819 ₺
-                  </span>{" "}
-                  <span className="text-[11px] px-1.5 py-0.5 rounded bg-surface-container-highest text-outline font-medium">
-                    (Stok Sınırlı)
-                  </span>
-                </Link>
-                <span className="text-outline/40">•</span>
-                <Link
-                  href="/telefon/honor-magic-v3"
-                  className="inline-flex items-center gap-1.5 whitespace-nowrap hover:text-on-surface transition-colors"
-                >
-                  <span className="text-tertiary">📉</span>{" "}
-                  <strong>Honor Magic V3 512GB</strong>{" "}
-                  <span className="text-tertiary font-semibold">
-                    7.000 ₺ İndirimle
-                  </span>{" "}
-                  <span className="text-on-surface">62.999 ₺</span>
-                </Link>
-                <span className="text-outline/40">•</span>
-                <span className="inline-flex items-center gap-1.5 whitespace-nowrap">
-                  <span className="w-1.5 h-1.5 rounded-full bg-tertiary inline-block" />{" "}
-                  <span className="text-primary font-medium">
-                    Canlı Fiyat Telemetrisi:
-                  </span>{" "}
-                  16 yetkili satıcı taranıyor...
+                  Resmi satıcılar taranıyor...
                 </span>
                 <span className="text-outline/40">•</span>
               </div>
@@ -628,34 +524,36 @@ export default function StitchDesktopHome() {
               <div className="grid grid-cols-1 sm:grid-cols-12 gap-space-lg items-center mb-space-lg relative z-10">
                 <div className="sm:col-span-7 flex flex-col">
                   <span className="font-label-md text-label-md text-primary font-medium tracking-wide">
-                    GÜNÜN FIRSATI • AMİRAL GEMİSİ
+                    GÜNÜN FIRSATI • {heroPhone?.brand?.toUpperCase() || "AMİRAL GEMİSİ"}
                   </span>
                   <h3 className="font-headline-lg text-headline-lg text-on-surface tracking-tight mt-1 mb-space-xs">
-                    iPhone 16 Pro 256GB
+                    {heroPhone?.name || "Öne Çıkan Model"}
                   </h3>
                   <p className="font-body-sm text-body-sm text-on-surface-variant mb-space-md">
-                    Doğal Titanyum, A18 Pro Çip, 48MP Pro Kamera Sistemi. Resmi
-                    Türkiye Garantili Ürün.
+                    {heroPhone?.specs?.performance?.chipset || heroPhone?.brand || "Gelişmiş donanım"} • Doğrulanmış yetkili satıcı garantisi.
                   </p>
                   <div className="flex items-baseline gap-space-sm mb-space-sm">
                     {/* 4. Price Glow Pulse */}
                     <span className="font-price-xl text-price-xl text-on-surface tracking-tight price-number-pulse">
-                      ₺59.899
+                      {heroPhone?.lowestPrice ? formatPrice(heroPhone.lowestPrice) : "Fiyat Yükleniyor"}
                     </span>
-                    <span className="font-body-md text-body-md text-outline line-through">
-                      ₺72.999
-                    </span>
-                    <span className="font-label-sm text-label-sm text-tertiary font-semibold ml-1 price-drop-pulse px-2 py-0.5 rounded-full bg-tertiary/10">
-                      -%18 İndirim
-                    </span>
+                    {heroPhone?.highestPrice && heroPhone.highestPrice > heroPhone.lowestPrice && (
+                      <span className="font-body-md text-body-md text-outline line-through">
+                        {formatPrice(heroPhone.highestPrice)}
+                      </span>
+                    )}
+                    {heroPhone?.priceDropPercent ? (
+                      <span className="font-label-sm text-label-sm text-tertiary font-semibold ml-1 price-drop-pulse px-2 py-0.5 rounded-full bg-tertiary/10">
+                        -%{heroPhone.priceDropPercent} İndirim
+                      </span>
+                    ) : null}
                   </div>
                   <div className="flex items-center gap-space-xs text-on-surface-variant font-label-sm text-label-sm">
                     <span className="material-symbols-outlined text-[16px] text-tertiary">
                       check_circle
                     </span>
                     <span>
-                      En düşük satıcı: <strong>Amazon TR</strong> (Satıcı &amp;
-                      Gönderici Resmi Amazon)
+                      En düşük satıcı: <strong>{heroPhone?.lowestPriceStoreName || "Doğrulanmış Satıcı"}</strong>
                     </span>
                   </div>
                 </div>
@@ -663,9 +561,9 @@ export default function StitchDesktopHome() {
                 {/* 5. 3D Floating Mockup Phone */}
                 <div className="sm:col-span-5 relative flex items-center justify-center p-space-md rounded bg-surface-container-lowest/60">
                   <img
-                    alt="Studio hardware render of Apple iPhone 16 Pro Natural Titanium"
+                    alt={heroPhone?.name || "Telefon"}
                     className="w-48 h-56 object-contain drop-shadow-2xl animate-float-mockup transition-transform duration-500 group-hover:scale-105"
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuDDrVAurp_xNMekkJUnRh__oYVfi6GZhC-OVW_Oo0WLfhcEVZk2YGKIkXMVU_7EdpBAFbTPFnoSs-cK7_8um0OcXNjoWFs1DACEplsSrjKjett3wVgxI3KXb_TUvpA6QuMNbgPs0HKaxtj2UfOsys1Fp-fJTvnivZjk0sSwQ9QFleu-qe8-3IkbEsSo4EnNNCXaOeyZGc4tnvJwPms6QMpqjVE57tEgCZ58O_q_w_c"
+                    src={heroPhone?.image || "/images/phones/placeholder.webp"}
                   />
                 </div>
               </div>
@@ -719,7 +617,7 @@ export default function StitchDesktopHome() {
                   </div>
                   <Link
                     className="h-10 px-space-lg rounded-full bg-primary-container text-white font-label-md text-label-md flex items-center gap-1 shadow-md hover:bg-primary hover:text-on-primary transition-all active:scale-95"
-                    href="/telefon/iphone-16-pro"
+                    href={heroPhone ? `/telefon/${heroPhone.slug}` : "/telefonlar"}
                   >
                     <span>Fırsatı İncele</span>
                     <span className="material-symbols-outlined text-[16px]">
@@ -761,42 +659,36 @@ export default function StitchDesktopHome() {
                   {/* Left Device */}
                   <div className="vs-device-left flex flex-col items-center text-center transition-transform duration-300 ease-out">
                     <img
-                      alt="Clean front view of iPhone 16 Pro"
+                      alt={vsPhone1?.name || "Model 1"}
                       className="w-16 h-24 object-contain mb-space-xs drop-shadow-md"
-                      src="https://lh3.googleusercontent.com/aida-public/AB6AXuBcWxymk-dsDtNmhFf_jhgjjVUi0HWvLTsfOm2HSSfcCUtHFviOdv6DoSvWaKEhyD6136lFISkxzBYIvOhVUzux0q-mfQarb0HQAEUm7hkj4xntSeoVxUQN16NyaXZzEg7f6midVNJXZRYI5zvGnzAEGsXRt_IBXo00WeGPw7i8lFhuW2j8GBKgUdl9HuHupVvL_sb6rh4t-VJib87oNVxZaz-CwGaAxxDH0WEt-_I"
+                      src={vsPhone1?.image || "/images/phones/placeholder.webp"}
                     />
                     <span className="font-label-sm text-label-sm text-on-surface font-semibold truncate w-full">
-                      iPhone 16 Pro
+                      {vsPhone1?.name || "Model 1"}
                     </span>
                     <span className="font-label-sm text-label-sm text-primary font-bold mt-1">
-                      ₺59.899
+                      {vsPhone1?.lowestPrice ? formatPrice(vsPhone1.lowestPrice) : "Fiyat Yok"}
                     </span>
                     <span className="text-[11px] text-outline mt-1">
-                      6.3&quot; ProMotion
-                    </span>
-                    <span className="text-[11px] text-outline">
-                      48MP Fusion
+                      {vsPhone1?.brand}
                     </span>
                   </div>
 
                   {/* Right Device */}
                   <div className="vs-device-right flex flex-col items-center text-center transition-transform duration-300 ease-out">
                     <img
-                      alt="Clean front view of Samsung Galaxy S24 Ultra"
+                      alt={vsPhone2?.name || "Model 2"}
                       className="w-16 h-24 object-contain mb-space-xs drop-shadow-md"
-                      src="https://lh3.googleusercontent.com/aida-public/AB6AXuA44u-M6KmPysMFuFPLcLx1Fy4Y1zQZImQoPqHHeHBJKOfTOppWpsPnMkVskEVe_19LOObF5zGbzfwOmmuwkVnO-Jd65KAQFioGcXLlmUP8yWCA5onRd-MHwLEs7LB4Huf4k7hkSupHk592WTgGlTYoP0QJrIefa5GE0WZyGa_Zpl8qcYYEcDRNdWnqHI39Ny_dx2BY7m3XfBhAZAvJZhvk1Gl9vsbzWhHFZlqfo_Q"
+                      src={vsPhone2?.image || "/images/phones/placeholder.webp"}
                     />
                     <span className="font-label-sm text-label-sm text-on-surface font-semibold truncate w-full">
-                      Galaxy S24 Ultra
+                      {vsPhone2?.name || "Model 2"}
                     </span>
                     <span className="font-label-sm text-label-sm text-primary font-bold mt-1">
-                      ₺54.499
+                      {vsPhone2?.lowestPrice ? formatPrice(vsPhone2.lowestPrice) : "Fiyat Yok"}
                     </span>
                     <span className="text-[11px] text-outline mt-1">
-                      6.8&quot; AMOLED 2X
-                    </span>
-                    <span className="text-[11px] text-outline">
-                      200MP Quad Cam
+                      {vsPhone2?.brand}
                     </span>
                   </div>
                 </div>
@@ -818,7 +710,7 @@ export default function StitchDesktopHome() {
 
               <Link
                 className="relative z-10 w-full h-11 rounded-full bg-surface-container-highest hover:bg-surface-bright text-on-surface font-label-md text-label-md flex items-center justify-center gap-space-xs transition-all active:scale-98"
-                href="/karsilastir"
+                href={vsPhone1 && vsPhone2 ? `/karsilastir?phone1=${vsPhone1.slug}&phone2=${vsPhone2.slug}` : "/karsilastir"}
               >
                 <span>Karşılaştırmayı Başlat</span>
                 <span className="material-symbols-outlined text-[18px]">
@@ -967,21 +859,25 @@ export default function StitchDesktopHome() {
                   <div className="flex justify-between items-center text-body-sm">
                     <span className="text-on-surface-variant">Hedef Cihaz:</span>
                     <span className="text-on-surface font-semibold">
-                      iPhone 15 128GB
+                      {heroPhone?.name || "Akıllı Telefon"}
                     </span>
                   </div>
                   <div className="flex justify-between items-center text-body-sm">
                     <span className="text-on-surface-variant">
                       Güncel Fiyat:
                     </span>
-                    <span className="text-outline line-through">₺48.999</span>
+                    <span className="text-on-surface font-bold">
+                      {heroPhone?.lowestPrice ? formatPrice(heroPhone.lowestPrice) : "Fiyat Yükleniyor"}
+                    </span>
                   </div>
                   <div className="flex items-center justify-between p-2 rounded bg-surface-container border border-white/[0.04]">
                     <span className="font-label-sm text-label-sm text-tertiary">
-                      Hedef Eşik Fiyatı
+                      Hedef Eşik Fiyatı (-%10)
                     </span>
                     <span className="font-title-sm text-title-sm font-bold text-on-surface price-number-pulse">
-                      ₺44.000
+                      {heroPhone?.lowestPrice
+                        ? formatPrice(Math.round((heroPhone.lowestPrice * 0.9) / 100) * 100)
+                        : "Hesaplanıyor"}
                     </span>
                   </div>
                   <div className="flex items-center justify-between pt-1">
@@ -1014,7 +910,7 @@ export default function StitchDesktopHome() {
               <button
                 onClick={() => {
                   showToast(
-                    "iPhone 15 128GB için ₺44.000 hedef fiyat alarmı hazırlandı!"
+                    `${heroPhone?.name || "Cihaz"} için fiyat alarmı hazırlandı!`
                   );
                   openAlertModal();
                 }}

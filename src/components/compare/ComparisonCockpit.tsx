@@ -1350,240 +1350,59 @@ export default function ComparisonCockpit() {
                 verified
               </span>
               <span>
-                Maksimum Fiyat Avantajı:{" "}
-                <strong className="text-amber-300">Xiaomi 15 Pro</strong> (iPhone
-                16 Pro Max&apos;e kıyasla tam{" "}
-                <strong className="text-emerald-300">₺14.000 daha uygun</strong>
-                )
+                Karşılaştırılan cihazların canlı mağaza fiyatları ve yetkili satıcı stok durumu API ile anlık senkronizedir.
               </span>
             </div>
           </div>
 
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse min-w-[900px]">
+            <table className="w-full text-left border-collapse min-w-[700px]">
               <thead>
                 <tr className="border-b border-[#212130] text-slate-400 font-mono text-[11px] uppercase tracking-wider">
-                  <th className="py-3.5 px-3">Yetkili Mağaza &amp; Dağıtıcı</th>
-                  <th className="py-3.5 px-3 text-blue-400 font-semibold">
-                    1. {dev1.name}
-                  </th>
-                  <th className="py-3.5 px-3 text-cyan-400 font-semibold">
-                    2. {dev2.name}
-                  </th>
-                  <th className="py-3.5 px-3 text-amber-400 font-semibold">
-                    3. {dev3.name}
-                  </th>
-                  <th className="py-3.5 px-3 text-purple-400 font-semibold">
-                    4. {dev4.name}
-                  </th>
-                  <th className="py-3.5 px-3 text-center">Fiyat Avantajı</th>
-                  <th className="py-3.5 px-3 text-right">Alarm &amp; Git</th>
+                  <th className="py-3.5 px-3">Karşılaştırılan Cihaz</th>
+                  <th className="py-3.5 px-3">Doğrulanmış En Ucuz Mağaza</th>
+                  <th className="py-3.5 px-3 text-right">Piyasa En Dip Fiyatı</th>
+                  <th className="py-3.5 px-3 text-right">Detay &amp; Alarm</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#181822] text-[13px]">
-                {/* Amazon TR */}
-                <tr className="hover:bg-[#12121a] transition-colors group">
-                  <td className="py-4 px-3 font-semibold flex items-center gap-2.5 text-white">
-                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-400" />
-                    <span>Amazon TR (Resmi Dağıtıcı)</span>
-                  </td>
-                  <td className="py-4 px-3 font-bold text-emerald-400 font-mono">
-                    ₺72.499{" "}
-                    <span className="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 ml-1 font-bold">
-                      DİP
-                    </span>
-                  </td>
-                  <td className="py-4 px-3 text-slate-400 font-mono">
-                    ₺69.499
-                  </td>
-                  <td className="py-4 px-3 text-slate-400 font-mono">
-                    ₺59.299
-                  </td>
-                  <td className="py-4 px-3 text-slate-400 font-mono">
-                    ₺65.499
-                  </td>
-                  <td className="py-4 px-3 text-center font-mono text-[11px] text-amber-400 font-semibold">
-                    Xiaomi -₺13.200
-                  </td>
-                  <td className="py-4 px-3 text-right">
-                    <div className="flex items-center justify-end gap-1.5">
-                      <button
-                        type="button"
-                        onClick={() => openAlertModal()}
-                        className="w-7 h-7 rounded-lg bg-[#181824] hover:bg-[#202030] text-slate-400 hover:text-white flex items-center justify-center text-[13px] cursor-pointer"
-                        title="Alarm Kur"
-                      >
-                        <span className="material-symbols-outlined text-[15px]">
-                          notifications
-                        </span>
-                      </button>
-                      <a
-                        className="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-semibold text-[11px] inline-flex items-center gap-1 shadow-sm"
-                        href="https://www.amazon.com.tr"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        <span>Mağaza</span>
-                        <span className="material-symbols-outlined text-[12px]">
-                          open_in_new
-                        </span>
-                      </a>
-                    </div>
-                  </td>
-                </tr>
-
-                {/* Hepsiburada */}
-                <tr className="hover:bg-[#12121a] transition-colors group">
-                  <td className="py-4 px-3 font-semibold flex items-center gap-2.5 text-white">
-                    <span className="w-2.5 h-2.5 rounded-full bg-cyan-400" />
-                    <span>Hepsiburada (Resmi Mağaza)</span>
-                  </td>
-                  <td className="py-4 px-3 text-slate-400 font-mono">
-                    ₺73.299
-                  </td>
-                  <td className="py-4 px-3 font-bold text-emerald-400 font-mono">
-                    ₺68.999{" "}
-                    <span className="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 ml-1 font-bold">
-                      DİP
-                    </span>
-                  </td>
-                  <td className="py-4 px-3 text-slate-400 font-mono">
-                    ₺58.999
-                  </td>
-                  <td className="py-4 px-3 text-slate-400 font-mono">
-                    ₺65.899
-                  </td>
-                  <td className="py-4 px-3 text-center font-mono text-[11px] text-cyan-300 font-semibold">
-                    S25U -₺4.300
-                  </td>
-                  <td className="py-4 px-3 text-right">
-                    <div className="flex items-center justify-end gap-1.5">
-                      <button
-                        type="button"
-                        onClick={() => openAlertModal()}
-                        className="w-7 h-7 rounded-lg bg-[#181824] hover:bg-[#202030] text-slate-400 hover:text-white flex items-center justify-center text-[13px] cursor-pointer"
-                        title="Alarm Kur"
-                      >
-                        <span className="material-symbols-outlined text-[15px]">
-                          notifications
-                        </span>
-                      </button>
-                      <a
-                        className="px-3 py-1.5 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white font-semibold text-[11px] inline-flex items-center gap-1 shadow-sm"
-                        href="https://www.hepsiburada.com"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        <span>Mağaza</span>
-                        <span className="material-symbols-outlined text-[12px]">
-                          open_in_new
-                        </span>
-                      </a>
-                    </div>
-                  </td>
-                </tr>
-
-                {/* Trendyol */}
-                <tr className="hover:bg-[#12121a] transition-colors group">
-                  <td className="py-4 px-3 font-semibold flex items-center gap-2.5 text-white">
-                    <span className="w-2.5 h-2.5 rounded-full bg-amber-400" />
-                    <span>Trendyol (Yetkili Satıcı)</span>
-                  </td>
-                  <td className="py-4 px-3 text-slate-400 font-mono">
-                    ₺73.999
-                  </td>
-                  <td className="py-4 px-3 text-slate-400 font-mono">
-                    ₺69.899
-                  </td>
-                  <td className="py-4 px-3 font-extrabold text-amber-400 font-mono">
-                    ₺58.499{" "}
-                    <span className="text-[9px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 ml-1 font-bold">
-                      REKOR DİP
-                    </span>
-                  </td>
-                  <td className="py-4 px-3 text-slate-400 font-mono">
-                    ₺65.200
-                  </td>
-                  <td className="py-4 px-3 text-center font-mono text-[11px] text-amber-300 font-semibold">
-                    Xiaomi -₺15.500
-                  </td>
-                  <td className="py-4 px-3 text-right">
-                    <div className="flex items-center justify-end gap-1.5">
-                      <button
-                        type="button"
-                        onClick={() => openAlertModal()}
-                        className="w-7 h-7 rounded-lg bg-[#181824] hover:bg-[#202030] text-slate-400 hover:text-white flex items-center justify-center text-[13px] cursor-pointer"
-                        title="Alarm Kur"
-                      >
-                        <span className="material-symbols-outlined text-[15px]">
-                          notifications
-                        </span>
-                      </button>
-                      <a
-                        className="px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-black font-bold text-[11px] inline-flex items-center gap-1 shadow-sm"
-                        href="https://www.trendyol.com"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        <span>Mağaza</span>
-                        <span className="material-symbols-outlined text-[12px]">
-                          open_in_new
-                        </span>
-                      </a>
-                    </div>
-                  </td>
-                </tr>
-
-                {/* Teknosa */}
-                <tr className="hover:bg-[#12121a] transition-colors group">
-                  <td className="py-4 px-3 font-semibold flex items-center gap-2.5 text-white">
-                    <span className="w-2.5 h-2.5 rounded-full bg-purple-400" />
-                    <span>Teknosa (Mağaza &amp; Web)</span>
-                  </td>
-                  <td className="py-4 px-3 text-slate-400 font-mono">
-                    ₺76.999
-                  </td>
-                  <td className="py-4 px-3 text-slate-400 font-mono">
-                    ₺72.499
-                  </td>
-                  <td className="py-4 px-3 text-slate-400 font-mono">
-                    ₺61.999
-                  </td>
-                  <td className="py-4 px-3 font-bold text-emerald-400 font-mono">
-                    ₺64.999{" "}
-                    <span className="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 ml-1 font-bold">
-                      DİP
-                    </span>
-                  </td>
-                  <td className="py-4 px-3 text-center font-mono text-[11px] text-purple-400 font-semibold">
-                    Pixel -₺12.000
-                  </td>
-                  <td className="py-4 px-3 text-right">
-                    <div className="flex items-center justify-end gap-1.5">
-                      <button
-                        type="button"
-                        onClick={() => openAlertModal()}
-                        className="w-7 h-7 rounded-lg bg-[#181824] hover:bg-[#202030] text-slate-400 hover:text-white flex items-center justify-center text-[13px] cursor-pointer"
-                        title="Alarm Kur"
-                      >
-                        <span className="material-symbols-outlined text-[15px]">
-                          notifications
-                        </span>
-                      </button>
-                      <a
-                        className="px-3 py-1.5 rounded-lg bg-purple-600 hover:bg-purple-500 text-white font-semibold text-[11px] inline-flex items-center gap-1 shadow-sm"
-                        href="https://www.teknosa.com"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        <span>Mağaza</span>
-                        <span className="material-symbols-outlined text-[12px]">
-                          open_in_new
-                        </span>
-                      </a>
-                    </div>
-                  </td>
-                </tr>
+                {activeDevices.map((dev, idx) => {
+                  const colors = ["text-blue-400", "text-cyan-400", "text-amber-400", "text-purple-400"];
+                  const dotColors = ["bg-blue-400", "bg-cyan-400", "bg-amber-400", "bg-purple-400"];
+                  return (
+                    <tr key={dev.slug || idx} className="hover:bg-[#12121a] transition-colors">
+                      <td className="py-4 px-3 font-semibold flex items-center gap-2.5 text-white">
+                        <span className={`w-2.5 h-2.5 rounded-full ${dotColors[idx % 4]}`} />
+                        <span className={colors[idx % 4]}>{idx + 1}. {dev.name}</span>
+                      </td>
+                      <td className="py-4 px-3 text-slate-300">
+                        {dev.store || "Yetkili Satıcı"}
+                      </td>
+                      <td className="py-4 px-3 text-right font-mono font-bold text-white">
+                        {dev.price > 0 ? formatPrice(dev.price) : "Fiyat Belirtilmemiş"}
+                      </td>
+                      <td className="py-4 px-3 text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          <button
+                            type="button"
+                            onClick={() => openAlertModal()}
+                            className="px-2.5 py-1.5 rounded-lg bg-[#181824] hover:bg-[#202030] text-slate-300 text-xs font-semibold inline-flex items-center gap-1 cursor-pointer"
+                          >
+                            <span className="material-symbols-outlined text-[14px]">notifications</span>
+                            <span>Alarm</span>
+                          </button>
+                          <Link
+                            href={`/telefon/${dev.slug}`}
+                            className="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs inline-flex items-center gap-1 shadow-sm"
+                          >
+                            <span>İncele</span>
+                            <span className="material-symbols-outlined text-[12px]">chevron_right</span>
+                          </Link>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -1654,106 +1473,41 @@ export default function ComparisonCockpit() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {/* Card 1 */}
-            <div className="p-5 rounded-2xl bg-[#11131c] border border-blue-500/30 hover:border-blue-400/60 transition-all flex flex-col justify-between gap-4 group">
-              <div>
-                <span className="text-blue-400 font-mono text-[11px] font-bold uppercase tracking-wider block mb-1">
-                  Hollywood &amp; 2. El Güvencesi
-                </span>
-                <h3 className="text-[17px] font-bold text-white group-hover:text-blue-300 transition-colors">
-                  iPhone 16 Pro Max
-                </h3>
-                <p className="text-[13px] text-slate-400 mt-2 leading-relaxed">
-                  Sinematik 4K 120fps Dolby Vision, USB-C doğrudan SSD ProRes
-                  kaydı, Apple Log renk derecelendirmesi ve Türkiye pazarında en
-                  az değer kaybı yaşayan ekosistem lideri.
-                </p>
-              </div>
-              <div className="pt-3 border-t border-[#1c2235] flex items-center justify-between">
-                <span className="text-white font-mono font-bold text-[14px]">
-                  ₺72.499
-                </span>
-                <span className="text-[11px] text-blue-400 font-medium">
-                  Amazon TR
-                </span>
-              </div>
-            </div>
-
-            {/* Card 2 */}
-            <div className="p-5 rounded-2xl bg-[#10141b] border border-cyan-500/30 hover:border-cyan-400/60 transition-all flex flex-col justify-between gap-4 group">
-              <div>
-                <span className="text-cyan-400 font-mono text-[11px] font-bold uppercase tracking-wider block mb-1">
-                  Ultra Zoom &amp; Mobil Ofis
-                </span>
-                <h3 className="text-[17px] font-bold text-white group-hover:text-cyan-300 transition-colors">
-                  Galaxy S25 Ultra
-                </h3>
-                <p className="text-[13px] text-slate-400 mt-2 leading-relaxed">
-                  Dahili S-Pen kalemi, Gorilla Armor parlama önleyici camı, 100x
-                  Uzay Zoom yeteneği ve Samsung DeX ile masaüstü üretkenliği
-                  arayan profesyonellerin mutlak tercihi.
-                </p>
-              </div>
-              <div className="pt-3 border-t border-[#1c2738] flex items-center justify-between">
-                <span className="text-white font-mono font-bold text-[14px]">
-                  ₺68.999
-                </span>
-                <span className="text-[11px] text-cyan-400 font-medium">
-                  Hepsiburada
-                </span>
-              </div>
-            </div>
-
-            {/* Card 3 */}
-            <div className="p-5 rounded-2xl bg-[#17130e] border border-amber-500/30 hover:border-amber-400/60 transition-all flex flex-col justify-between gap-4 group">
-              <div>
-                <span className="text-amber-400 font-mono text-[11px] font-bold uppercase tracking-wider block mb-1">
-                  Batarya Canavarı &amp; F/P Zirvesi
-                </span>
-                <h3 className="text-[17px] font-bold text-white group-hover:text-amber-300 transition-colors">
-                  Xiaomi 15 Pro
-                </h3>
-                <p className="text-[13px] text-slate-400 mt-2 leading-relaxed">
-                  6.100 mAh devasa silikon-karbon pil, 32 dakikada tam dolum 90W
-                  şarj, Snapdragon 8 Elite ve iPhone&apos;a oranla tam{" "}
-                  <strong>₺14.000 fiyat avantajı</strong> ile en rasyonel amiral
-                  gemisi.
-                </p>
-              </div>
-              <div className="pt-3 border-t border-[#2e2316] flex items-center justify-between">
-                <span className="text-amber-400 font-mono font-bold text-[14px]">
-                  ₺58.499
-                </span>
-                <span className="text-[11px] text-amber-300 font-medium">
-                  Trendyol (Dip)
-                </span>
-              </div>
-            </div>
-
-            {/* Card 4 */}
-            <div className="p-5 rounded-2xl bg-[#15101c] border border-purple-500/30 hover:border-purple-400/60 transition-all flex flex-col justify-between gap-4 group">
-              <div>
-                <span className="text-purple-400 font-mono text-[11px] font-bold uppercase tracking-wider block mb-1">
-                  Saf Android &amp; Yapay Zeka Uç
-                </span>
-                <h3 className="text-[17px] font-bold text-white group-hover:text-purple-300 transition-colors">
-                  Pixel 9 Pro XL
-                </h3>
-                <p className="text-[13px] text-slate-400 mt-2 leading-relaxed">
-                  En pürüzsüz saf Android arayüzü, 7 yıl garantili anlık OS
-                  güncellemeleri, Magic Editor ve on-device çalışan üretken yapay
-                  zeka deneyimi isteyen teknoloji meraklıları için rakipsiz.
-                </p>
-              </div>
-              <div className="pt-3 border-t border-[#2a1e38] flex items-center justify-between">
-                <span className="text-white font-mono font-bold text-[14px]">
-                  ₺64.999
-                </span>
-                <span className="text-[11px] text-purple-400 font-medium">
-                  Teknosa
-                </span>
-              </div>
-            </div>
+            {activeDevices.map((dev, idx) => {
+              const borderColors = [
+                "border-blue-500/30 hover:border-blue-400/60",
+                "border-cyan-500/30 hover:border-cyan-400/60",
+                "border-amber-500/30 hover:border-amber-400/60",
+                "border-purple-500/30 hover:border-purple-400/60",
+              ];
+              const tagColors = ["text-blue-400", "text-cyan-400", "text-amber-400", "text-purple-400"];
+              return (
+                <div
+                  key={dev.slug || idx}
+                  className={`p-5 rounded-2xl bg-[#11131c] border ${borderColors[idx % 4]} transition-all flex flex-col justify-between gap-4 group`}
+                >
+                  <div>
+                    <span className={`${tagColors[idx % 4]} font-mono text-[11px] font-bold uppercase tracking-wider block mb-1`}>
+                      {dev.brand} Amiral Modeli
+                    </span>
+                    <h3 className="text-[17px] font-bold text-white group-hover:text-blue-300 transition-colors">
+                      {dev.name}
+                    </h3>
+                    <p className="text-[13px] text-slate-400 mt-2 leading-relaxed">
+                      {`${dev.chipset} • ${dev.camera} • ${dev.battery}`}
+                    </p>
+                  </div>
+                  <div className="pt-3 border-t border-[#1c2235] flex items-center justify-between">
+                    <span className="text-white font-mono font-bold text-[14px]">
+                      {dev.price > 0 ? formatPrice(dev.price) : "Fiyat Belirtilmemiş"}
+                    </span>
+                    <span className={`text-[11px] ${tagColors[idx % 4]} font-medium`}>
+                      {dev.store || "Doğrulanmış Satıcı"}
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </section>
       </main>

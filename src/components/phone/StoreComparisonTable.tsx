@@ -50,128 +50,6 @@ interface EnrichedStoreOffer {
   isOfficial: boolean;
 }
 
-const CANONICAL_STORES: {
-  store: string;
-  storeSlug: string;
-  badge: string;
-  badgeTone: "emerald" | "blue" | "slate";
-  subtitle: string;
-  spreadPct: number;
-  rating: string;
-  stockStatus: string;
-  shippingLabel: string;
-}[] = [
-  {
-    store: "Amazon TR",
-    storeSlug: "amazon",
-    badge: "Dip",
-    badgeTone: "emerald",
-    subtitle: "Hızlı Prime • Resmi Satıcı",
-    spreadPct: 0,
-    rating: "9.9",
-    stockStatus: "Hızlı Teslimat (Stokta)",
-    shippingLabel: "Ücretsiz Kargo",
-  },
-  {
-    store: "Hepsiburada",
-    storeSlug: "hepsiburada",
-    badge: "Resmi Satıcı",
-    badgeTone: "blue",
-    subtitle: "Yarın Kapında • Ücretsiz İade",
-    spreadPct: 0.0098,
-    rating: "9.8",
-    stockStatus: "Yarın Kapında (Stokta)",
-    shippingLabel: "Ücretsiz Kargo",
-  },
-  {
-    store: "Trendyol",
-    storeSlug: "trendyol",
-    badge: "Apple Yetkili",
-    badgeTone: "blue",
-    subtitle: "Yetkili Mağaza • Hızlı Kargo",
-    spreadPct: 0.0183,
-    rating: "9.7",
-    stockStatus: "Hızlı Teslimat (Stokta)",
-    shippingLabel: "Ücretsiz Kargo",
-  },
-  {
-    store: "MediaMarkt TR",
-    storeSlug: "mediamarkt",
-    badge: "Zincir Mağaza",
-    badgeTone: "slate",
-    subtitle: "Mağazadan Teslim • Apple Care",
-    spreadPct: 0.0267,
-    rating: "9.6",
-    stockStatus: "Mağaza & Web Stokta",
-    shippingLabel: "Ücretsiz Kargo",
-  },
-  {
-    store: "Teknosa",
-    storeSlug: "teknosa",
-    badge: "Resmi Bayi",
-    badgeTone: "slate",
-    subtitle: "TeknoGaranti • Hızlı Kargo",
-    spreadPct: 0.0332,
-    rating: "9.5",
-    stockStatus: "Aynı Gün Kargo (Stokta)",
-    shippingLabel: "Ücretsiz Kargo",
-  },
-  {
-    store: "Vatan Bilgisayar",
-    storeSlug: "vatan",
-    badge: "Apple Point",
-    badgeTone: "blue",
-    subtitle: "Aynı Gün Sevkiyat",
-    spreadPct: 0.0384,
-    rating: "9.6",
-    stockStatus: "Web & Şube Stokta",
-    shippingLabel: "Ücretsiz Kargo",
-  },
-  {
-    store: "N11",
-    storeSlug: "n11",
-    badge: "Yetkili Satıcı",
-    badgeTone: "slate",
-    subtitle: "Kupon Desteği • Faturalı",
-    spreadPct: 0.0425,
-    rating: "9.3",
-    stockStatus: "Stokta Mevcut",
-    shippingLabel: "Ücretsiz Kargo",
-  },
-  {
-    store: "PttAVM",
-    storeSlug: "pttavm",
-    badge: "Distribütör",
-    badgeTone: "slate",
-    subtitle: "Devlet Güvencesi",
-    spreadPct: 0.0501,
-    rating: "9.2",
-    stockStatus: "Stokta Mevcut",
-    shippingLabel: "Ücretsiz Kargo",
-  },
-  {
-    store: "Turkcell Pasaj",
-    storeSlug: "turkcell",
-    badge: "Operatör",
-    badgeTone: "blue",
-    subtitle: "Faturaya Ek • Hızlı Kurye",
-    spreadPct: 0.0601,
-    rating: "9.5",
-    stockStatus: "Hızlı Kurye (Stokta)",
-    shippingLabel: "Ücretsiz Kargo",
-  },
-  {
-    store: "Apple Store TR",
-    storeSlug: "apple-store",
-    badge: "Resmi Liste",
-    badgeTone: "slate",
-    subtitle: "Üretici Tavsiye Satış Fiyatı",
-    spreadPct: 0.1686,
-    rating: "10.0",
-    stockStatus: "Resmi Mağaza Güvencesi",
-    shippingLabel: "Ücretsiz Kargo",
-  },
-];
 
 export default function StoreComparisonTable({
   storesPrices,
@@ -193,7 +71,7 @@ export default function StoreComparisonTable({
     if (phone?.lowestPrice && phone.lowestPrice > 0) {
       return phone.lowestPrice + storageOffset;
     }
-    return 59899 + storageOffset;
+    return 0;
   }, [storesPrices, phone, storageOffset]);
 
   // Build the 10 verified store rows matching Stitch screen 7f90792fdee54b80a7c5ec745acc8f40
@@ -217,7 +95,7 @@ export default function StoreComparisonTable({
         rating: sp.sellerRating ? String(sp.sellerRating) : "9.6",
         stockStatus: sp.isAvailable ? "Stokta Var" : "Tükendi",
         shippingLabel: sp.shippingText || "Ücretsiz Kargo",
-        url: resolveStoreOfferUrl(sp.storeSlug, phoneName, sp.url),
+        url: sp.url || "",
         isOfficial: sp.isOfficial ?? false,
       }));
 
@@ -246,7 +124,7 @@ export default function StoreComparisonTable({
           rating: "9.8",
           stockStatus: "Stokta Hazır",
           shippingLabel: "Ücretsiz Kargo",
-          url: resolveStoreOfferUrl("store", phoneName, phone?.lowestPriceUrl || undefined),
+          url: phone?.lowestPriceUrl || "",
           isOfficial: true,
         },
       ];
@@ -254,6 +132,20 @@ export default function StoreComparisonTable({
 
     return [];
   }, [rawBaseLowest, storesPrices, storageOffset, phoneName, phone, sortAsc]);
+
+  if (enrichedStores.length === 0) {
+    return (
+      <div className="bg-[#121721] rounded-2xl border border-white/10 p-8 text-center text-slate-400">
+        <ShoppingBag className="w-10 h-10 text-slate-500 mx-auto mb-3" />
+        <p className="text-sm font-semibold text-white mb-1">
+          {phoneName} için Aktif Mağaza Teklifi Bulunamadı
+        </p>
+        <p className="text-xs text-slate-400">
+          Bu model için doğrulanmış mağaza teklifi bulunmamaktadır.
+        </p>
+      </div>
+    );
+  }
 
   const lowestOffer = useMemo(() => {
     return [...enrichedStores].sort((a, b) => a.price - b.price)[0];
@@ -346,28 +238,6 @@ export default function StoreComparisonTable({
     setTimeout(() => setAlarmCreated(false), 4000);
   };
 
-  // Recommended accessory info based on brand
-  const accessoryInfo = useMemo(() => {
-    if (brandName === "Samsung") {
-      return {
-        title: "Samsung 45W USB-C Süper Hızlı Adaptör",
-        priceText: "₺1.099 (Dip Fiyat Amazon TR)",
-        query: "Samsung 45W USB-C Şarj Adaptörü",
-      };
-    }
-    if (brandName === "Xiaomi" || brandName === "Redmi" || brandName === "POCO") {
-      return {
-        title: "Xiaomi 67W HyperCharge Hızlı Adaptör",
-        priceText: "₺949 (Dip Fiyat Hepsiburada)",
-        query: "Xiaomi 67W Şarj Adaptörü",
-      };
-    }
-    return {
-      title: "Apple 30W USB-C Güç Adaptörü",
-      priceText: "₺1.149 (Dip Fiyat Amazon TR)",
-      query: "Apple 30W USB-C Güç Adaptörü",
-    };
-  }, [brandName]);
 
   return (
     <div className="space-y-6 text-white">
@@ -727,35 +597,6 @@ export default function StoreComparisonTable({
                 </div>
               );
             })}
-          </div>
-
-          {/* ─── RECOMMENDED ACCESSORY BANNER ("Tavsiye Edilen Aksesuar") ─── */}
-          <div className="bg-[#12161f] border border-white/[0.08] rounded-3xl p-4 flex items-center justify-between gap-3 shadow-lg">
-            <div className="flex items-center gap-3 min-w-0">
-              <div className="w-12 h-12 rounded-2xl bg-[#090c12] border border-white/10 flex items-center justify-center text-slate-200 shrink-0">
-                <PlugZap className="w-5 h-5 text-sky-400" />
-              </div>
-              <div className="min-w-0">
-                <div className="text-[10px] font-extrabold text-sky-400">
-                  Tavsiye Edilen Aksesuar
-                </div>
-                <div className="text-xs sm:text-sm font-black text-white truncate">
-                  {accessoryInfo.title}
-                </div>
-                <div className="text-[11px] text-slate-400 truncate">
-                  {accessoryInfo.priceText}
-                </div>
-              </div>
-            </div>
-
-            <a
-              href={resolveStoreOfferUrl("amazon", accessoryInfo.query)}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-3.5 py-2 rounded-xl bg-white/[0.08] hover:bg-white/15 border border-white/10 text-white text-[11px] font-extrabold shrink-0 transition-colors"
-            >
-              Birlikte Bak
-            </a>
           </div>
 
           {/* ─── SMART PRICE ALARM CARD ON MOBILE (Matches bottom of 7f90792fdee54b80a7c5ec745acc8f40) ─── */}

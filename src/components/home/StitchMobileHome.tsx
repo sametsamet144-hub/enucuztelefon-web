@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -17,29 +17,10 @@ import {
   Radar,
   Percent,
 } from "lucide-react";
+import { getPhones } from "@/lib/data";
 import { formatPrice } from "@/lib/utils";
 import { useApp } from "@/context/AppContext";
-
-const MOBILE_TICKER_ITEMS = [
-  {
-    icon: "📉",
-    text: "Galaxy S24 Ultra Hepsiburada'da 4.200 ₺ düştü",
-    tag: "Son 6 Ayın Dibi",
-    href: "/telefon/samsung-galaxy-s24-ultra",
-  },
-  {
-    icon: "🔥",
-    text: "iPhone 16 Pro 256GB Amazon TR'de 59.899 ₺",
-    tag: "-%18 İndirim",
-    href: "/telefon/iphone-16-pro",
-  },
-  {
-    icon: "⚡",
-    text: "Xiaomi 15 Ultra Trendyol'da 53.819 ₺",
-    tag: "Stok Sınırlı",
-    href: "/telefon/xiaomi-15-ultra",
-  },
-];
+import type { Phone } from "@/types";
 
 export default function StitchMobileHome() {
   const router = useRouter();
@@ -49,6 +30,37 @@ export default function StitchMobileHome() {
   const [selectedBrand, setSelectedBrand] = useState("Tümü");
   const [radarTargetPrice, setRadarTargetPrice] = useState(44000);
   const [liveScanCount, setLiveScanCount] = useState(1442740);
+  const [phones, setPhones] = useState<Phone[]>([]);
+
+  useEffect(() => {
+    getPhones().then((res) => {
+      if (res && res.length > 0) setPhones(res);
+    });
+  }, []);
+
+  const heroPhone = phones.length > 0 ? phones[0] : null;
+  const vsPhone1 = phones.find((p) => p.brand.toLowerCase() === "apple") || phones[0] || null;
+  const vsPhone2 = phones.find((p) => p.brand.toLowerCase() === "samsung" && p.slug !== vsPhone1?.slug) || phones[1] || null;
+
+  const tickerItems = useMemo(() => {
+    return phones
+      .filter((p) => p.lowestPrice > 0)
+      .slice(0, 4)
+      .map((p) => ({
+        icon: p.priceDropPercent ? "📉" : "⚡",
+        text: `${p.name} ${p.lowestPriceStoreName ? p.lowestPriceStoreName + "'de" : "en uygun"} ${formatPrice(p.lowestPrice)}`,
+        tag: p.priceDropPercent ? `-%${p.priceDropPercent} İndirim` : "Doğrulanmış",
+        href: `/telefon/${p.slug}`,
+      }));
+  }, [phones]);
+
+  const popularPhones = useMemo(() => {
+    return phones.slice(0, 4);
+  }, [phones]);
+
+  const fpPhones = useMemo(() => {
+    return phones.slice(0, 3);
+  }, [phones]);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -89,7 +101,7 @@ export default function StitchMobileHome() {
 
         <div className="overflow-hidden flex-1 relative">
           <div className="animate-marquee-infinite items-center gap-6 text-[11.5px] text-on-surface-variant">
-            {[...MOBILE_TICKER_ITEMS, ...MOBILE_TICKER_ITEMS].map(
+            {tickerItems.length > 0 && [...tickerItems, ...tickerItems].map(
               (item, idx) => (
                 <Link
                   key={idx}
@@ -232,10 +244,12 @@ export default function StitchMobileHome() {
               <span>GÜNÜN REKORU</span>
             </span>
 
-            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-tertiary-container/30 text-[10.5px] font-extrabold text-tertiary price-drop-pulse">
-              <TrendingDown className="w-3 h-3" />
-              <span>-%18 İNDİRİM</span>
-            </span>
+            {heroPhone?.priceDropPercent ? (
+              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-tertiary-container/30 text-[10.5px] font-extrabold text-tertiary price-drop-pulse">
+                <TrendingDown className="w-3 h-3" />
+                <span>-%{heroPhone.priceDropPercent} İNDİRİM</span>
+              </span>
+            ) : null}
           </div>
 
           {/* Card Body: Info on Left, 3D Studio Phone image on Right */}
@@ -246,35 +260,34 @@ export default function StitchMobileHome() {
                   GÜNÜN FIRSATI
                 </span>
                 <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-on-surface-variant">
-                  A18 Pro
+                  {heroPhone?.brand || "Mobil"}
                 </span>
               </div>
 
               <h2 className="text-lg font-black text-on-surface leading-tight">
-                iPhone 16 Pro
+                {heroPhone?.name || "Öne Çıkan Model"}
               </h2>
-              <div className="text-[11px] text-outline font-medium">256GB</div>
 
               <div className="text-[11px] text-on-surface-variant pt-0.5">
-                En ucuz: <strong className="text-primary">Amazon TR</strong>
+                En ucuz: <strong className="text-primary">{heroPhone?.lowestPriceStoreName || "Doğrulanmış Satıcı"}</strong>
               </div>
-
-              <div className="text-[10px] text-outline">Flaş İndirim</div>
 
               <div className="text-2xl font-black text-on-surface tracking-tight price-number-pulse">
-                59.899 ₺
+                {heroPhone?.lowestPrice ? formatPrice(heroPhone.lowestPrice) : "Fiyat Yükleniyor"}
               </div>
 
-              <div className="text-[10px] font-semibold text-tertiary flex items-center gap-1 pt-0.5">
-                <span>✓ Son 30 günün en düşüğü</span>
-              </div>
+              {heroPhone?.highestPrice && heroPhone.highestPrice > heroPhone.lowestPrice && (
+                <div className="text-[10px] text-outline line-through">
+                  {formatPrice(heroPhone.highestPrice)}
+                </div>
+              )}
             </div>
 
             <div className="col-span-5 flex items-center justify-center">
               <div className="w-32 h-36 flex items-center justify-center p-1 rounded-xl bg-surface-container-lowest/60">
                 <img
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuDDrVAurp_xNMekkJUnRh__oYVfi6GZhC-OVW_Oo0WLfhcEVZk2YGKIkXMVU_7EdpBAFbTPFnoSs-cK7_8um0OcXNjoWFs1DACEplsSrjKjett3wVgxI3KXb_TUvpA6QuMNbgPs0HKaxtj2UfOsys1Fp-fJTvnivZjk0sSwQ9QFleu-qe8-3IkbEsSo4EnNNCXaOeyZGc4tnvJwPms6QMpqjVE57tEgCZ58O_q_w_c"
-                  alt="iPhone 16 Pro 256GB"
+                  src={heroPhone?.image || "/images/phones/placeholder.webp"}
+                  alt={heroPhone?.name || "Telefon"}
                   className="w-full h-full object-contain drop-shadow-2xl animate-float-mockup"
                 />
               </div>
@@ -284,7 +297,7 @@ export default function StitchMobileHome() {
           {/* Full-width CTA Button */}
           <div className="mt-3.5 pt-1 relative z-10">
             <Link
-              href="/telefon/iphone-16-pro"
+              href={heroPhone ? `/telefon/${heroPhone.slug}` : "/telefonlar"}
               className="w-full py-2.5 bg-primary-container hover:bg-primary hover:text-on-primary text-white font-bold text-xs rounded-full flex items-center justify-center gap-1.5 shadow-[0_0_20px_rgba(41,151,255,0.3)] transition-all"
             >
               <span>Fırsatı İncele</span>
@@ -303,21 +316,20 @@ export default function StitchMobileHome() {
 
           {/* Two Devices with VS in Center */}
           <div className="grid grid-cols-11 items-center gap-1 text-center py-2 rounded-xl bg-surface-container-lowest p-3 border border-white/[0.04] relative z-10">
-            {/* Left: iPhone 16 Pro */}
+            {/* Left Device */}
             <div className="col-span-5 vs-device-left flex flex-col items-center transition-transform duration-300">
               <div className="w-14 h-20 flex items-center justify-center mb-1">
                 <img
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuBcWxymk-dsDtNmhFf_jhgjjVUi0HWvLTsfOm2HSSfcCUtHFviOdv6DoSvWaKEhyD6136lFISkxzBYIvOhVUzux0q-mfQarb0HQAEUm7hkj4xntSeoVxUQN16NyaXZzEg7f6midVNJXZRYI5zvGnzAEGsXRt_IBXo00WeGPw7i8lFhuW2j8GBKgUdl9HuHupVvL_sb6rh4t-VJib87oNVxZaz-CwGaAxxDH0WEt-_I"
-                  alt="iPhone 16 Pro"
+                  src={vsPhone1?.image || "/images/phones/placeholder.webp"}
+                  alt={vsPhone1?.name || "Model 1"}
                   className="w-full h-full object-contain drop-shadow-md"
                 />
               </div>
               <div className="text-xs font-bold text-on-surface truncate max-w-full">
-                iPhone 16 Pro
+                {vsPhone1?.name || "Model 1"}
               </div>
-              <div className="text-xs font-black text-tertiary">59.899 ₺</div>
-              <div className="text-[10px] text-outline mt-0.5">
-                ⚡ 1.82M AnTuTu
+              <div className="text-xs font-black text-tertiary">
+                {vsPhone1?.lowestPrice ? formatPrice(vsPhone1.lowestPrice) : "Fiyat Yok"}
               </div>
             </div>
 
@@ -326,30 +338,28 @@ export default function StitchMobileHome() {
               <div className="w-7 h-7 rounded-full bg-surface-container-highest border border-white/10 text-primary font-black text-[10px] flex items-center justify-center shadow-lg">
                 VS
               </div>
-              <span className="text-[8.5px] text-outline mt-1">1-0 Üstün</span>
             </div>
 
-            {/* Right: S24 Ultra */}
+            {/* Right Device */}
             <div className="col-span-5 vs-device-right flex flex-col items-center transition-transform duration-300">
               <div className="w-14 h-20 flex items-center justify-center mb-1">
                 <img
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuA44u-M6KmPysMFuFPLcLx1Fy4Y1zQZImQoPqHHeHBJKOfTOppWpsPnMkVskEVe_19LOObF5zGbzfwOmmuwkVnO-Jd65KAQFioGcXLlmUP8yWCA5onRd-MHwLEs7LB4Huf4k7hkSupHk592WTgGlTYoP0QJrIefa5GE0WZyGa_Zpl8qcYYEcDRNdWnqHI39Ny_dx2BY7m3XfBhAZAvJZhvk1Gl9vsbzWhHFZlqfo_Q"
-                  alt="S24 Ultra"
+                  src={vsPhone2?.image || "/images/phones/placeholder.webp"}
+                  alt={vsPhone2?.name || "Model 2"}
                   className="w-full h-full object-contain drop-shadow-md"
                 />
               </div>
               <div className="text-xs font-bold text-on-surface truncate max-w-full">
-                S24 Ultra
+                {vsPhone2?.name || "Model 2"}
               </div>
-              <div className="text-xs font-black text-tertiary">54.499 ₺</div>
-              <div className="text-[10px] text-outline mt-0.5">
-                📷 200MP Quad
+              <div className="text-xs font-black text-tertiary">
+                {vsPhone2?.lowestPrice ? formatPrice(vsPhone2.lowestPrice) : "Fiyat Yok"}
               </div>
             </div>
           </div>
 
           <Link
-            href="/karsilastir"
+            href={vsPhone1 && vsPhone2 ? `/karsilastir?phone1=${vsPhone1.slug}&phone2=${vsPhone2.slug}` : "/karsilastir"}
             className="relative z-10 w-full py-2.5 rounded-full bg-surface-container-highest hover:bg-surface-bright text-xs font-bold text-on-surface flex items-center justify-center gap-1.5 transition-colors"
           >
             <span>Tüm Özellikleri Kıyasla</span>
@@ -441,77 +451,35 @@ export default function StitchMobileHome() {
             </Link>
           </div>
 
-          {/* Row 1: Poco F6 Pro */}
-          <div className="flex items-center justify-between py-1.5 relative z-10">
-            <div className="flex items-center gap-2.5 min-w-0">
-              <span className="w-6 h-6 rounded-full bg-tertiary/15 text-tertiary font-black text-xs flex items-center justify-center shrink-0">
-                1
-              </span>
-              <div className="min-w-0">
-                <Link
-                  href="/telefon/poco-f6-pro"
-                  className="font-bold text-xs text-on-surface hover:text-primary truncate block"
-                >
-                  Poco F6 Pro
-                </Link>
-                <div className="text-[10px] text-outline truncate">
-                  Snapdragon 8 Gen 2
+          {/* Dynamic F/P phones list */}
+          {fpPhones.map((p, idx) => (
+            <div key={p.slug} className={`flex items-center justify-between py-1.5 ${idx > 0 ? "border-t border-white/[0.05]" : ""} relative z-10`}>
+              <div className="flex items-center gap-2.5 min-w-0">
+                <span className="w-6 h-6 rounded-full bg-tertiary/15 text-tertiary font-black text-xs flex items-center justify-center shrink-0">
+                  {idx + 1}
+                </span>
+                <div className="min-w-0">
+                  <Link
+                    href={`/telefon/${p.slug}`}
+                    className="font-bold text-xs text-on-surface hover:text-primary truncate block"
+                  >
+                    {p.name}
+                  </Link>
+                  <div className="text-[10px] text-outline truncate">
+                    {p.lowestPriceStoreName || "Doğrulanmış Satıcı"}
+                  </div>
                 </div>
               </div>
-            </div>
-            <div className="text-right shrink-0">
-              <div className="text-xs font-black text-tertiary">23.499 ₺</div>
-              <div className="text-[9.5px] text-outline">9.8 / 10 Puan</div>
-            </div>
-          </div>
-
-          {/* Row 2: Galaxy A55 */}
-          <div className="flex items-center justify-between py-1.5 border-t border-white/[0.05] relative z-10">
-            <div className="flex items-center gap-2.5 min-w-0">
-              <span className="w-6 h-6 rounded-full bg-primary/15 text-primary font-black text-xs flex items-center justify-center shrink-0">
-                2
-              </span>
-              <div className="min-w-0">
-                <Link
-                  href="/telefon/samsung-galaxy-a55"
-                  className="font-bold text-xs text-on-surface hover:text-primary truncate block"
-                >
-                  Galaxy A55
-                </Link>
-                <div className="text-[10px] text-outline truncate">
-                  AMOLED 120Hz Cam Tasarım
+              <div className="text-right shrink-0">
+                <div className="text-xs font-black text-tertiary">
+                  {p.lowestPrice > 0 ? formatPrice(p.lowestPrice) : "Fiyat Yok"}
                 </div>
+                {p.priceDropPercent ? (
+                  <div className="text-[9.5px] text-emerald-400 font-bold">-%{p.priceDropPercent}</div>
+                ) : null}
               </div>
             </div>
-            <div className="text-right shrink-0">
-              <div className="text-xs font-black text-tertiary">16.890 ₺</div>
-              <div className="text-[9.5px] text-outline">9.4 / 10 Puan</div>
-            </div>
-          </div>
-
-          {/* Row 3: Nothing Phone 2a */}
-          <div className="flex items-center justify-between py-1.5 border-t border-white/[0.05] relative z-10">
-            <div className="flex items-center gap-2.5 min-w-0">
-              <span className="w-6 h-6 rounded-full bg-surface-bright text-on-surface-variant font-black text-xs flex items-center justify-center shrink-0">
-                3
-              </span>
-              <div className="min-w-0">
-                <Link
-                  href="/telefon/nothing-phone-2a"
-                  className="font-bold text-xs text-on-surface hover:text-primary truncate block"
-                >
-                  Nothing Phone 2a
-                </Link>
-                <div className="text-[10px] text-outline truncate">
-                  Özgün Arayüz &amp; Akıcı UI
-                </div>
-              </div>
-            </div>
-            <div className="text-right shrink-0">
-              <div className="text-xs font-black text-tertiary">18.499 ₺</div>
-              <div className="text-[9.5px] text-outline">9.3 / 10 Puan</div>
-            </div>
-          </div>
+          ))}
         </div>
 
         {/* ─── 6. PİYASANIN EN GÖZDELERİ (2X2 GRID OF 4 PHONES) ───────────────── */}
@@ -535,145 +503,61 @@ export default function StitchMobileHome() {
 
           {/* 2x2 Grid with High-Res Studio Renders */}
           <div className="grid grid-cols-2 gap-2.5">
-            {/* Item 1: iPhone 16 */}
-            <div className="rounded-2xl bg-surface-container/90 border border-white/[0.06] p-3 flex flex-col justify-between shadow-lg">
-              <div>
-                <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-tertiary-container/20 text-tertiary text-[9.5px] font-bold mb-2 price-drop-pulse">
-                  <span>🔥 -%12 Fırsat</span>
+            {popularPhones.map((phone) => {
+              const hasDrop = (phone.priceDropPercent || 0) > 0;
+              const hasOldPrice =
+                phone.highestPrice && phone.highestPrice > phone.lowestPrice;
+              return (
+                <div
+                  key={phone.id || phone.slug}
+                  className="rounded-2xl bg-surface-container/90 border border-white/[0.06] p-3 flex flex-col justify-between shadow-lg"
+                >
+                  <div>
+                    {hasDrop ? (
+                      <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-tertiary-container/20 text-tertiary text-[9.5px] font-bold mb-2 price-drop-pulse">
+                        <span>🔥 -%{phone.priceDropPercent} Fırsat</span>
+                      </div>
+                    ) : (
+                      <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-surface-container-highest text-on-surface-variant text-[9.5px] font-bold mb-2">
+                        <span>⚡ Doğrulanmış Fiyat</span>
+                      </div>
+                    )}
+                    <div className="w-full h-28 flex items-center justify-center p-1 mb-2">
+                      <img
+                        src={phone.image || "/images/phones/placeholder.webp"}
+                        alt={phone.name}
+                        className="h-24 object-contain drop-shadow-xl"
+                      />
+                    </div>
+                    <div className="text-[9.5px] font-bold text-outline uppercase">
+                      {phone.brand}
+                    </div>
+                    <h4 className="font-bold text-xs text-on-surface truncate">
+                      {phone.name}
+                    </h4>
+                    <div className="text-[10px] text-outline mt-1 flex items-center justify-between">
+                      <span>{phone.lowestPriceStoreName || "En Uygun"}</span>
+                      {hasOldPrice ? (
+                        <span className="line-through">
+                          {formatPrice(phone.highestPrice!)}
+                        </span>
+                      ) : null}
+                    </div>
+                    <div className="text-sm font-black text-on-surface mt-0.5">
+                      {phone.lowestPrice > 0
+                        ? formatPrice(phone.lowestPrice)
+                        : "Fiyat Yok"}
+                    </div>
+                  </div>
+                  <Link
+                    href={`/telefon/${phone.slug}`}
+                    className="mt-2.5 py-1.5 text-center bg-surface-container-highest hover:bg-primary-container text-[10.5px] font-bold text-on-surface hover:text-white rounded-full block transition-colors"
+                  >
+                    Fiyatları Gör &rarr;
+                  </Link>
                 </div>
-                <div className="w-full h-28 flex items-center justify-center p-1 mb-2">
-                  <img
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuDaUIrBxBw_wRHBE6dWd3wP9kiJbZwEx9868os19xKLeQd2ytUxz3_sZLBkF0W0Z5M0T1LZo9LRJ10oXeopf7d6ajL0YJrg8uoj-TkJ4CVWEaWxJgtYBQhjRaQwkh1nOSLtjNmpdSLsov4nIEENfFDlGxYNYYJB15zKtkza1RBrU_H7X_HXmM6PnHJs_2j46Syr346SAOtmleHJMVC3BdHITUwkHv1hPtxlrykrj24"
-                    alt="iPhone 16 128GB"
-                    className="h-24 object-contain drop-shadow-xl"
-                  />
-                </div>
-                <div className="text-[9.5px] font-bold text-outline uppercase">
-                  APPLE
-                </div>
-                <h4 className="font-bold text-xs text-on-surface truncate">
-                  iPhone 16 128GB
-                </h4>
-                <div className="text-[10px] text-outline mt-1 flex items-center justify-between">
-                  <span>Amazon TR</span>
-                  <span className="line-through">64.999 ₺</span>
-                </div>
-                <div className="text-sm font-black text-on-surface mt-0.5">
-                  58.999 ₺
-                </div>
-              </div>
-              <Link
-                href="/telefon/iphone-16"
-                className="mt-2.5 py-1.5 text-center bg-surface-container-highest hover:bg-primary-container text-[10.5px] font-bold text-on-surface hover:text-white rounded-full block transition-colors"
-              >
-                Fiyatları Gör &rarr;
-              </Link>
-            </div>
-
-            {/* Item 2: Galaxy S24+ */}
-            <div className="rounded-2xl bg-surface-container/90 border border-white/[0.06] p-3 flex flex-col justify-between shadow-lg">
-              <div>
-                <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-tertiary-container/20 text-tertiary text-[9.5px] font-bold mb-2 price-drop-pulse">
-                  <span>-%15 Fırsat</span>
-                </div>
-                <div className="w-full h-28 flex items-center justify-center p-1 mb-2">
-                  <img
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuCpInXkXOXGBE1EHavHpsUF3cXkimDXWCO23Lwl0lGI8vJA9Pv6eEBVyOCdFobvZGztgvBcbMddRZe2o-JKqFprg3qQfCh1lnXxbqdZbF-Tk0JV6bZ-vbPonrStkekMfY9mvcYB0Pyfvu9Q9rx2ZGvwADQYzbJqd_UFuWwRlBcE1tXIvgD0gG3WaiDqlQfSTbqCesH6LpKtWZy38GuSSKGZuXxXVKZl7VBC4Xnil4s"
-                    alt="Galaxy S24+ 256GB"
-                    className="h-24 object-contain drop-shadow-xl"
-                  />
-                </div>
-                <div className="text-[9.5px] font-bold text-outline uppercase">
-                  SAMSUNG
-                </div>
-                <h4 className="font-bold text-xs text-on-surface truncate">
-                  Galaxy S24+ 256GB
-                </h4>
-                <div className="text-[10px] text-outline mt-1 flex items-center justify-between">
-                  <span>Hepsiburada</span>
-                  <span className="line-through">48.490 ₺</span>
-                </div>
-                <div className="text-sm font-black text-on-surface mt-0.5">
-                  41.299 ₺
-                </div>
-              </div>
-              <Link
-                href="/telefon/samsung-galaxy-s24-plus"
-                className="mt-2.5 py-1.5 text-center bg-surface-container-highest hover:bg-primary-container text-[10.5px] font-bold text-on-surface hover:text-white rounded-full block transition-colors"
-              >
-                Fiyatları Gör &rarr;
-              </Link>
-            </div>
-
-            {/* Item 3: Honor Magic 6 Pro */}
-            <div className="rounded-2xl bg-surface-container/90 border border-white/[0.06] p-3 flex flex-col justify-between shadow-lg">
-              <div>
-                <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-surface-container-highest text-on-surface-variant text-[9.5px] font-bold mb-2">
-                  <span>⚡ Yeni Zirve</span>
-                </div>
-                <div className="w-full h-28 flex items-center justify-center p-1 mb-2">
-                  <img
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuCxaJAOIZt-VMc70XFEH2ehSSp1m4KZfGRNKBA9NHXjsT6EAZ5tdJfOv99eSSYQXTO8ys6wDvOTXbKubj4Qc_YEAWwNz0m9hlaxNeUqvEBSXehWmHpOcTLXA1aUueU1e6XN7o_5ADVuN1i6-B4nSVveiZWcGFeaoL9T8zfgghsIaA8Bjr5xvsn7ILi4FiAlh4VMaIbJ5mJ005ygwkxC58oo6eO4k2gl-j--CsR4Ezw"
-                    alt="Magic 6 Pro 512GB"
-                    className="h-24 object-contain drop-shadow-xl"
-                  />
-                </div>
-                <div className="text-[9.5px] font-bold text-outline uppercase">
-                  HONOR
-                </div>
-                <h4 className="font-bold text-xs text-on-surface truncate">
-                  Magic 6 Pro 512GB
-                </h4>
-                <div className="text-[10px] text-outline mt-1 flex items-center justify-between">
-                  <span>Trendyol</span>
-                  <span className="line-through">54.999 ₺</span>
-                </div>
-                <div className="text-sm font-black text-on-surface mt-0.5">
-                  49.999 ₺
-                </div>
-              </div>
-              <Link
-                href="/telefon/honor-magic-v3"
-                className="mt-2.5 py-1.5 text-center bg-surface-container-highest hover:bg-primary-container text-[10.5px] font-bold text-on-surface hover:text-white rounded-full block transition-colors"
-              >
-                Fiyatları Gör &rarr;
-              </Link>
-            </div>
-
-            {/* Item 4: Google Pixel 9 Pro */}
-            <div className="rounded-2xl bg-surface-container/90 border border-white/[0.06] p-3 flex flex-col justify-between shadow-lg">
-              <div>
-                <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-tertiary-container/20 text-tertiary text-[9.5px] font-bold mb-2 price-drop-pulse">
-                  <span>📷 -%8 İndirim</span>
-                </div>
-                <div className="w-full h-28 flex items-center justify-center p-1 mb-2">
-                  <img
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuA8DIkQLUOx3J2LX2QM4leU6SESQEvYgC9nkM55LVyzvTsIQnYUmX4X3GrIB6Z_nD1J3UzWLy-mZHzuIGor7PbFdYa519LDQEwMdRAfz0kdwOnw48M5zuA3cS6im1G19eai7Jqy9AQGbVRuEm9iMwD39SsBtalCCyrzOXVaOPhsknPVZkH1Bj5pFjNFPr-hWAhQ9wi338JFEsaf6W8qtuT3cle4toVc2x4OcO0Mlfs"
-                    alt="Pixel 9 Pro 128GB"
-                    className="h-24 object-contain drop-shadow-xl"
-                  />
-                </div>
-                <div className="text-[9.5px] font-bold text-outline uppercase">
-                  GOOGLE
-                </div>
-                <h4 className="font-bold text-xs text-on-surface truncate">
-                  Pixel 9 Pro 128GB
-                </h4>
-                <div className="text-[10px] text-outline mt-1 flex items-center justify-between">
-                  <span>Amazon TR</span>
-                  <span className="line-through">51.490 ₺</span>
-                </div>
-                <div className="text-sm font-black text-on-surface mt-0.5">
-                  47.500 ₺
-                </div>
-              </div>
-              <Link
-                href="/telefon/iphone-15"
-                className="mt-2.5 py-1.5 text-center bg-surface-container-highest hover:bg-primary-container text-[10.5px] font-bold text-on-surface hover:text-white rounded-full block transition-colors"
-              >
-                Fiyatları Gör &rarr;
-              </Link>
-            </div>
+              );
+            })}
           </div>
         </div>
 

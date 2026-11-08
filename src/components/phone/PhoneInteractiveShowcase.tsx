@@ -23,51 +23,48 @@ interface Props {
 }
 
 export default function PhoneInteractiveShowcase({ phone }: Props) {
-  // Storage variants with realistic pricing offsets
-  const storages = [
-    { label: "128GB", offset: -4000, available: phone.lowestPrice > 35000 },
-    { label: "256GB", offset: 0, available: true },
-    { label: "512GB", offset: 8000, available: true },
-    {
-      label: "1TB",
-      offset: 18000,
-      available: phone.brand === "Apple" || phone.brand === "Samsung",
-    },
-  ].filter((s) => s.available);
+  const currentPrice = phone.lowestPrice || 0;
+  const listPrice =
+    phone.highestPrice && phone.highestPrice > currentPrice
+      ? phone.highestPrice
+      : 0;
+  const savingsAmount = listPrice > currentPrice ? listPrice - currentPrice : 0;
+  const discountPct =
+    phone.priceDropPercent ||
+    (listPrice > currentPrice
+      ? Math.round((savingsAmount / listPrice) * 100)
+      : 0);
 
-  const [selectedStorage, setSelectedStorage] = useState("256GB");
+  const storages = [
+    {
+      label: phone.specs?.performance?.storage
+        ? `${phone.specs.performance.storage}GB`
+        : "Standart",
+      available: true,
+    },
+  ];
+
+  const [selectedStorage, setSelectedStorage] = useState(storages[0].label);
   const [activeMobileTab, setActiveMobileTab] = useState<"stores" | "chart">("stores");
   const [forceMobilePreview, setForceMobilePreview] = useState(false);
   const [copiedShare, setCopiedShare] = useState(false);
 
-  // Colors
-  const colors = [
-    { name: "DOĞAL TİTANYUM", hex: "#9E9A93" },
-    { name: "GECE SİYAHI", hex: "#1C1C1E" },
-    { name: "KUTUP BEYAZI", hex: "#F2F2F7" },
-    { name: "ÇÖL ТİTANYUM", hex: "#C5A880" },
-  ];
+  // Colors from specs
+  const colors =
+    phone.specs?.design?.colors && phone.specs.design.colors.length > 0
+      ? phone.specs.design.colors.map((c) => ({
+          name: c.toUpperCase(),
+          hex: "#64748b",
+        }))
+      : [{ name: "STANDART", hex: "#1C1C1E" }];
   const [selectedColorIdx, setSelectedColorIdx] = useState(0);
-
-  const activeOffset =
-    storages.find((s) => s.label === selectedStorage)?.offset || 0;
-
-  const baseLowest =
-    phone.lowestPrice && phone.lowestPrice > 0 ? phone.lowestPrice : 59899;
-  const currentPrice = baseLowest + activeOffset;
-  const listPrice = Math.round(currentPrice * 1.2187); // e.g. 59.899 -> 72.999
-  const savingsAmount = Math.max(0, listPrice - currentPrice);
-  const discountPct = Math.max(
-    8,
-    Math.min(35, Math.round((savingsAmount / listPrice) * 100))
-  );
 
   const shortChipset =
     phone.specs?.performance?.chipset
       ?.replace(/Apple\s+/i, "")
       ?.replace(/Qualcomm\s+Snapdragon\s+/i, "Snapdragon ")
       ?.split("(")[0]
-      ?.trim() || "A18 Pro";
+      ?.trim() || phone.brand;
 
   const handleShare = () => {
     if (typeof window !== "undefined") {
@@ -245,23 +242,29 @@ export default function PhoneInteractiveShowcase({ phone }: Props) {
             </div>
             <div className="flex items-baseline gap-2 mt-0.5 flex-wrap">
               <span className="text-2xl sm:text-3xl font-black text-white tracking-tight price-display">
-                {formatPrice(currentPrice)}
+                {currentPrice > 0 ? formatPrice(currentPrice) : "Fiyat Belirtilmemiş"}
               </span>
-              <span className="text-xs text-slate-500 line-through font-semibold price-display">
-                {formatPrice(listPrice)}
-              </span>
+              {listPrice > currentPrice && (
+                <span className="text-xs text-slate-500 line-through font-semibold price-display">
+                  {formatPrice(listPrice)}
+                </span>
+              )}
             </div>
           </div>
 
-          <div className="text-right shrink-0">
-            <div className="inline-flex items-center gap-1 bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 rounded-xl px-2.5 py-1 text-[10px] sm:text-[11px] font-black">
-              <TrendingDown className="w-3.5 h-3.5 shrink-0" />
-              <span>%{discountPct} Rekor İndirim</span>
+          {discountPct > 0 && (
+            <div className="text-right shrink-0">
+              <div className="inline-flex items-center gap-1 bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 rounded-xl px-2.5 py-1 text-[10px] sm:text-[11px] font-black">
+                <TrendingDown className="w-3.5 h-3.5 shrink-0" />
+                <span>%{discountPct} İndirim</span>
+              </div>
+              {savingsAmount > 0 && (
+                <div className="text-[11px] font-bold text-slate-300 mt-1">
+                  {formatPrice(savingsAmount)} Tasarruf
+                </div>
+              )}
             </div>
-            <div className="text-[11px] font-bold text-slate-300 mt-1">
-              {formatPrice(savingsAmount)} Tasarruf
-            </div>
-          </div>
+          )}
         </div>
       </div>
 
@@ -308,7 +311,7 @@ export default function PhoneInteractiveShowcase({ phone }: Props) {
         phoneName={phone.name}
         phone={phone}
         selectedStorage={selectedStorage}
-        storageOffset={activeOffset}
+        storageOffset={0}
         activeMobileTab={activeMobileTab}
       />
     </div>

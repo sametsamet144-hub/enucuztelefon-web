@@ -31,70 +31,35 @@ export default function LiveStoreMatrixSection() {
 
   const activePhone = showcasePhones.find((p) => p.slug === activeSlug) || showcasePhones[0] || null;
 
-  const storeRows = [
-    {
-      store: "Trendyol",
-      storeSlug: "trendyol",
-      seller: "Resmi Distribütör Satıcısı",
-      price: activePhone.lowestPrice,
-      isLowest: true,
-      shipping: "Ücretsiz Hızlı Teslimat",
-      guarantee: "2 Yıl Resmi Türkiye Garantili",
-      inStock: true,
-      lastChecked: "12 dakika önce",
-      url: resolveStoreOfferUrl("trendyol", activePhone.name),
-    },
-    {
-      store: "Hepsiburada",
-      storeSlug: "hepsiburada",
-      seller: "Hepsiburada Resmi Mağaza",
-      price: activePhone.lowestPrice + 499,
-      isLowest: false,
-      shipping: "HepsiJET ile Yarın Kapında",
-      guarantee: "2 Yıl Resmi Türkiye Garantili",
-      inStock: true,
-      lastChecked: "18 dakika önce",
-      url: resolveStoreOfferUrl("hepsiburada", activePhone.name),
-    },
-    {
-      store: "Amazon Türkiye",
-      storeSlug: "amazon",
-      seller: "Amazon.com.tr",
-      price: activePhone.lowestPrice + 799,
-      isLowest: false,
-      shipping: "Prime ile Ertesi Gün Ücretsiz",
-      guarantee: "2 Yıl Resmi Türkiye Garantili",
-      inStock: true,
-      lastChecked: "25 dakika önce",
-      url: resolveStoreOfferUrl("amazon", activePhone.name),
-    },
-    {
-      store: "MediaMarkt",
-      storeSlug: "mediamarkt",
-      seller: "MediaMarkt Türkiye",
-      price: activePhone.highestPrice,
-      isLowest: false,
-      shipping: "Mağazadan Hemen Teslim Al",
-      guarantee: "2 Yıl Resmi Distribütör",
-      inStock: true,
-      lastChecked: "35 dakika önce",
-      url: resolveStoreOfferUrl("mediamarkt", activePhone.name),
-    },
-    {
-      store: "Vatan Bilgisayar",
-      storeSlug: "vatan",
-      seller: "Vatan Bilgisayar",
-      price: activePhone.highestPrice - 200,
-      isLowest: false,
-      shipping: "Ücretsiz Kargo / Mağazadan Al",
-      guarantee: "2 Yıl Resmi Distribütör",
-      inStock: true,
-      lastChecked: "42 dakika önce",
-      url: resolveStoreOfferUrl("vatan", activePhone.name),
-    },
-  ];
-
   if (!activePhone || showcasePhones.length === 0) return null;
+
+  const storeRows = (activePhone.storesPrices && activePhone.storesPrices.length > 0)
+    ? activePhone.storesPrices.map((sp) => ({
+        store: sp.store,
+        storeSlug: sp.storeSlug,
+        seller: sp.sellerName || sp.store,
+        price: sp.price,
+        isLowest: sp.price === activePhone.lowestPrice,
+        shipping: sp.shippingText || "Hızlı Teslimat",
+        guarantee: sp.guaranteeText || "2 Yıl Resmi Türkiye Garantili",
+        inStock: sp.isAvailable !== false,
+        lastChecked: "Canlı",
+        url: sp.url || "",
+      }))
+    : (activePhone.lowestPrice > 0 ? [{
+        store: activePhone.lowestPriceStoreName || "Doğrulanmış Satıcı",
+        storeSlug: "store",
+        seller: "Resmi Distribütör",
+        price: activePhone.lowestPrice,
+        isLowest: true,
+        shipping: "Hızlı Teslimat",
+        guarantee: "2 Yıl Resmi Türkiye Garantili",
+        inStock: true,
+        lastChecked: "Canlı",
+        url: activePhone.lowestPriceUrl || "",
+      }] : []);
+
+  if (storeRows.length === 0) return null;
 
   return (
     <section className="py-14 bg-white border-b border-slate-200">
@@ -215,19 +180,31 @@ export default function LiveStoreMatrixSection() {
                         </div>
                       </div>
 
-                      <a
-                        href={row.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className={`px-4 py-2.5 rounded-xl font-bold text-xs inline-flex items-center gap-1.5 transition-all shadow-sm ${
-                          row.isLowest
-                            ? "bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-600/20"
-                            : "bg-slate-900 hover:bg-sky-600 text-white"
-                        }`}
-                      >
-                        <span>Mağazaya Git</span>
-                        <ExternalLink className="w-3.5 h-3.5" />
-                      </a>
+                      {row.url ? (
+                        <a
+                          href={row.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={`px-4 py-2.5 rounded-xl font-bold text-xs inline-flex items-center gap-1.5 transition-all shadow-sm ${
+                            row.isLowest
+                              ? "bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-600/20"
+                              : "bg-slate-900 hover:bg-sky-600 text-white"
+                          }`}
+                        >
+                          <span>Mağazaya Git</span>
+                          <ExternalLink className="w-3.5 h-3.5" />
+                        </a>
+                      ) : (
+                        <span
+                          className={`px-4 py-2.5 rounded-xl font-bold text-xs inline-flex items-center gap-1.5 shadow-sm ${
+                            row.isLowest
+                              ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                              : "bg-slate-100 text-slate-600"
+                          }`}
+                        >
+                          <span>Doğrulanmış Fiyat</span>
+                        </span>
+                      )}
                     </div>
                   </div>
                 ))}

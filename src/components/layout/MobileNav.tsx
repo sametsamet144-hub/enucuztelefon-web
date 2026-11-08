@@ -16,6 +16,7 @@ import {
   BookOpen,
 } from 'lucide-react';
 import clsx from 'clsx';
+import SiteLogo from "@/components/common/SiteLogo";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -144,19 +145,14 @@ export default function MobileNav({ isOpen, onClose }: MobileNavProps) {
         aria-label="Mobil Navigasyon"
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 bg-gradient-to-r from-sky-500 to-sky-600">
-          <div className="flex items-center gap-2">
-            <Smartphone size={22} className="text-white" />
-            <span className="font-bold text-white text-lg">
-              EnUcuzTelefon
-            </span>
-          </div>
+        <div className="flex items-center justify-between px-5 py-4 border-b border-zinc-800 bg-[#131315]">
+          <SiteLogo size="md" href="/" />
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-white/80 hover:text-white hover:bg-white/20 transition-colors"
+            className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors"
             aria-label="Menüyü kapat"
           >
-            <X size={22} />
+            <X size={20} />
           </button>
         </div>
 

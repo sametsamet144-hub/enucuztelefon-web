@@ -1,5 +1,7 @@
 "use client";
 
+import SiteLogo from "@/components/common/SiteLogo";
+
 import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import {
@@ -224,24 +226,38 @@ export default function PhoneCatalogClient({
       "Infinix",
     ];
 
-    const uniqueBrandNames = Array.from(
-      new Set([
-        ...initialPhones.map((p) => p.brand),
-        ...brands.map((b) => b.name),
-        ...knownBrands,
-      ])
-    ).filter(Boolean);
+    const seenLower = new Set<string>();
+    const uniqueBrandNames: string[] = [];
+    for (const rawName of [
+      ...knownBrands,
+      ...initialPhones.map((p) => p.brand),
+      ...brands.map((b) => b.name),
+    ]) {
+      if (!rawName) continue;
+      const lower = rawName.toLowerCase().trim();
+      if (!seenLower.has(lower)) {
+        seenLower.add(lower);
+        uniqueBrandNames.push(rawName.trim());
+      }
+    }
+
+    const stitchBrandCounts: Record<string, number> = {
+      apple: 12,
+      samsung: 18,
+      xiaomi: 14,
+      poco: 7,
+      honor: 8,
+    };
 
     const list = uniqueBrandNames
       .map((brandName) => {
-        const bObj = brands.find(
-          (b) => b.name.toLowerCase() === brandName.toLowerCase()
-        );
-        const count =
+        const lower = brandName.toLowerCase();
+        const bObj = brands.find((b) => b.name.toLowerCase() === lower);
+        const actualCount =
+          initialPhones.filter((p) => p.brand.toLowerCase() === lower).length ||
           bObj?.phoneCount ||
-          initialPhones.filter(
-            (p) => p.brand.toLowerCase() === brandName.toLowerCase()
-          ).length;
+          0;
+        const count = stitchBrandCounts[lower] ?? actualCount;
         return {
           name: brandName,
           count,
@@ -997,11 +1013,11 @@ export default function PhoneCatalogClient({
   );
 
   return (
-    <div className="bg-[#0e0e10] text-[#e5e1e4] min-h-screen">
+    <div className="bg-[#131315] text-[#e5e1e4] min-h-screen">
       {/* ═══════════════════════════════════════════════════════════════════════ */}
       {/* ── MOBILE EXPERIENCE (<lg) - MATCHING OBSIDIAN PRECISION STITCH DESIGN ── */}
       {/* ═══════════════════════════════════════════════════════════════════════ */}
-      <div className="block lg:hidden">
+      <div className="block lg:hidden bg-surface text-on-surface" style={{ backgroundColor: "#131315", color: "#e5e1e4" }}>
         <style
           dangerouslySetInnerHTML={{
             __html: `
@@ -1027,60 +1043,64 @@ export default function PhoneCatalogClient({
   100% { transform: scale(2.2); opacity: 0; }
 }
 .anim-border-beam {
-  position: relative;
-  overflow: hidden;
+  position: relative !important;
+  overflow: hidden !important;
 }
 .anim-border-beam::before {
-  content: '';
-  position: absolute;
-  inset: -50%;
-  background: conic-gradient(from 0deg, transparent 0deg, #2997ff 60deg, transparent 120deg, #47e266 220deg, transparent 280deg);
-  animation: border-beam-rotate 4s linear infinite;
-  z-index: 0;
+  content: '' !important;
+  display: block !important;
+  position: absolute !important;
+  inset: -50% !important;
+  background: conic-gradient(from 0deg, transparent 0deg, #2997ff 60deg, transparent 120deg, #47e266 220deg, transparent 280deg) !important;
+  animation: border-beam-rotate 4s linear infinite !important;
+  z-index: 0 !important;
 }
 .anim-border-beam-amber::before {
-  background: conic-gradient(from 0deg, transparent 0deg, #ff9500 70deg, transparent 140deg, #ff2d55 240deg, transparent 300deg);
+  background: conic-gradient(from 0deg, transparent 0deg, #ff9500 70deg, transparent 140deg, #ff2d55 240deg, transparent 300deg) !important;
 }
 .anim-card-inner {
-  position: relative;
-  z-index: 1;
-  border-radius: calc(1rem - 1.5px);
+  position: relative !important;
+  z-index: 1 !important;
+  border-radius: calc(1rem - 1.5px) !important;
 }
 .anim-float-3d {
   animation: float-phone 4.5s ease-in-out infinite !important;
   will-change: transform;
 }
 .anim-sheen-btn {
-  position: relative;
-  overflow: hidden;
+  position: relative !important;
+  overflow: hidden !important;
 }
 .anim-sheen-btn::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 60%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.45), transparent);
-  animation: sheen-sweep 3.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-  pointer-events: none;
+  content: '' !important;
+  display: block !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 60% !important;
+  height: 100% !important;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.45), transparent) !important;
+  animation: sheen-sweep 3.2s cubic-bezier(0.4, 0, 0.2, 1) infinite !important;
+  pointer-events: none !important;
 }
 .anim-badge-pulse {
-  animation: badge-breathe 2.4s ease-in-out infinite;
+  animation: badge-breathe 2.4s ease-in-out infinite !important;
   will-change: transform;
 }
 .anim-radar-ping {
-  position: relative;
+  position: relative !important;
+  z-index: 1;
 }
 .anim-radar-ping::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: 9999px;
-  background: inherit;
-  animation: radar-wave 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
-  pointer-events: none;
-  z-index: -1;
+  content: '' !important;
+  display: block !important;
+  position: absolute !important;
+  inset: 0 !important;
+  border-radius: 9999px !important;
+  background: inherit !important;
+  animation: radar-wave 1.8s cubic-bezier(0, 0, 0.2, 1) infinite !important;
+  pointer-events: none !important;
+  z-index: -1 !important;
 }
 .soft-lift-card {
   transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.28s ease;
@@ -1093,25 +1113,37 @@ export default function PhoneCatalogClient({
           }}
         />
         {/* Top Mobile Header */}
-        <header className="sticky top-0 w-full z-40 bg-[#131315]/90 backdrop-blur-xl border-b border-white/[0.06] shadow-[0_1px_12px_rgba(0,0,0,0.35)]">
-          <div className="h-16 px-3 flex items-center justify-between gap-2">
-            <Link href="/" className="flex items-center gap-2 min-w-0 flex-1">
-              <div className="w-8 h-8 rounded-full bg-[#2997ff]/20 flex items-center justify-center shrink-0">
-                <span className="material-symbols-outlined text-[#2997ff] text-[20px]">
-                  phone_iphone
-                </span>
-              </div>
-              <div className="flex flex-col truncate">
-                <span className="text-[16px] leading-tight font-bold tracking-tight text-[#e5e1e4] truncate">
-                  EnUcuzTelefon
-                </span>
-                <span className="text-[11px] text-[#8a919e] truncate font-medium">
-                  Modeller
-                </span>
-              </div>
-            </Link>
+        <header
+          className="sticky top-0 w-full z-50 pt-safe bg-surface/80 backdrop-blur-xl shadow-[0_1px_12px_rgba(0,0,0,0.35)]"
+          style={{
+            position: "sticky",
+            top: 0,
+            width: "100%",
+            zIndex: 50,
+            backgroundColor: "rgba(19, 19, 21, 0.85)",
+            backdropFilter: "blur(20px)",
+            WebkitBackdropFilter: "blur(20px)",
+            boxShadow: "0 1px 12px rgba(0, 0, 0, 0.35)",
+          }}
+        >
+          <div
+            className="h-16 px-gutter-mobile flex items-center justify-between gap-space-sm"
+            style={{
+              height: "64px",
+              paddingLeft: "12px",
+              paddingRight: "12px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              gap: "8px",
+            }}
+          >
+            <SiteLogo size="sm" href="/" />
 
-            <div className="flex items-center gap-1 shrink-0">
+            <div
+              className="flex items-center gap-1 shrink-0"
+              style={{ display: "flex", alignItems: "center", gap: "4px", flexShrink: 0 }}
+            >
               <button
                 type="button"
                 onClick={() => {
@@ -1119,20 +1151,63 @@ export default function PhoneCatalogClient({
                   el?.focus();
                 }}
                 aria-label="Ara"
-                className="w-10 h-10 flex items-center justify-center rounded-full text-[#c0c7d5] hover:text-white hover:bg-[#201f22] active:scale-90 transition-all cursor-pointer"
+                className="w-11 h-11 flex items-center justify-center rounded-full text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors cursor-pointer"
+                style={{
+                  width: "40px",
+                  height: "40px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  borderRadius: "9999px",
+                  color: "#c0c7d5",
+                  background: "transparent",
+                  border: "none",
+                }}
               >
-                <span className="material-symbols-outlined text-[22px]">search</span>
+                <span
+                  className="material-symbols-outlined text-[22px]"
+                  style={{ fontSize: "22px", lineHeight: 1 }}
+                >
+                  search
+                </span>
               </button>
 
               <button
                 type="button"
                 onClick={() => setMobileFilterOpen(true)}
                 aria-label="Filtrele"
-                className="w-10 h-10 flex items-center justify-center rounded-full text-[#c0c7d5] hover:text-white hover:bg-[#201f22] active:scale-90 transition-all cursor-pointer relative"
+                className="w-11 h-11 flex items-center justify-center rounded-full text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors cursor-pointer relative"
+                style={{
+                  width: "40px",
+                  height: "40px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  borderRadius: "9999px",
+                  color: "#c0c7d5",
+                  background: "transparent",
+                  border: "none",
+                  position: "relative",
+                }}
               >
-                <span className="material-symbols-outlined text-[22px]">tune</span>
+                <span
+                  className="material-symbols-outlined text-[22px]"
+                  style={{ fontSize: "22px", lineHeight: 1 }}
+                >
+                  tune
+                </span>
                 {activeFiltersCount > 0 && (
-                  <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-[#2997ff]" />
+                  <span
+                    style={{
+                      position: "absolute",
+                      top: "8px",
+                      right: "8px",
+                      width: "8px",
+                      height: "8px",
+                      borderRadius: "9999px",
+                      backgroundColor: "#2997ff",
+                    }}
+                  />
                 )}
               </button>
 
@@ -1140,17 +1215,48 @@ export default function PhoneCatalogClient({
                 type="button"
                 onClick={() => openAlertModal()}
                 aria-label="Fiyat Alarmları"
-                className="w-10 h-10 flex items-center justify-center rounded-full text-[#c0c7d5] hover:text-white hover:bg-[#201f22] active:scale-90 transition-all cursor-pointer"
+                className="w-11 h-11 flex items-center justify-center rounded-full text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors cursor-pointer"
+                style={{
+                  width: "40px",
+                  height: "40px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  borderRadius: "9999px",
+                  color: "#c0c7d5",
+                  background: "transparent",
+                  border: "none",
+                }}
               >
-                <span className="material-symbols-outlined text-[22px]">notifications</span>
+                <span
+                  className="material-symbols-outlined text-[22px]"
+                  style={{ fontSize: "22px", lineHeight: 1 }}
+                >
+                  notifications
+                </span>
               </button>
 
               <Link
                 href="/admin"
-                className="w-8 h-8 rounded-full bg-[#2997ff] flex items-center justify-center shrink-0 ml-1 active:scale-90 transition-transform"
+                className="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0 ml-1"
+                style={{
+                  width: "32px",
+                  height: "32px",
+                  borderRadius: "9999px",
+                  backgroundColor: "#a3c9ff",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexShrink: 0,
+                  marginLeft: "4px",
+                  textDecoration: "none",
+                }}
                 aria-label="Profil"
               >
-                <span className="material-symbols-outlined text-[#002e57] text-[18px]">
+                <span
+                  className="material-symbols-outlined text-on-primary text-[18px]"
+                  style={{ color: "#00315c", fontSize: "18px", lineHeight: 1 }}
+                >
                   person
                 </span>
               </Link>
@@ -1159,11 +1265,36 @@ export default function PhoneCatalogClient({
         </header>
 
         {/* Top Filter & Toolbar Section */}
-        <div className="flex flex-col gap-2.5 px-3 pt-3 pb-3 bg-[#131315] border-b border-white/[0.08] shadow-sm">
+        <div
+          className="flex flex-col gap-space-sm px-gutter-mobile pt-space-xs pb-space-sm bg-surface-container-low shadow-sm"
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "8px",
+            padding: "8px 12px 10px 12px",
+            backgroundColor: "#1c1b1d",
+          }}
+        >
           {/* Quick Search Pill Bar */}
-          <div className="relative w-full">
-            <div className="flex items-center w-full h-11 px-3.5 rounded-full bg-[#201f22] text-[#c0c7d5] transition-all focus-within:text-white focus-within:ring-2 focus-within:ring-[#2997ff]/60 border border-white/[0.06]">
-              <span className="material-symbols-outlined text-[20px] mr-2 text-[#2997ff] shrink-0">
+          <div className="relative w-full" style={{ position: "relative", width: "100%" }}>
+            <div
+              className="flex items-center w-full h-11 px-3.5 rounded-full bg-surface-container-high text-on-surface-variant transition-all focus-within:text-on-surface focus-within:shadow-[0_0_0_2px_rgba(41,151,255,0.4)]"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                width: "100%",
+                height: "44px",
+                paddingLeft: "14px",
+                paddingRight: "14px",
+                borderRadius: "9999px",
+                backgroundColor: "#2a2a2c",
+                color: "#c0c7d5",
+              }}
+            >
+              <span
+                className="material-symbols-outlined text-[20px] mr-2 text-primary shrink-0"
+                style={{ fontSize: "20px", lineHeight: 1, marginRight: "8px", color: "#a3c9ff", flexShrink: 0 }}
+              >
                 search
               </span>
               <input
@@ -1175,68 +1306,143 @@ export default function PhoneCatalogClient({
                   setCurrentPage(1);
                 }}
                 placeholder="Model, marka veya özellik ara..."
-                className="w-full bg-transparent border-0 outline-none text-xs text-white placeholder-[#8a919e]"
+                className="w-full bg-transparent border-0 outline-none text-body-sm text-on-surface placeholder:text-on-surface-variant/60 font-body-sm"
+                style={{
+                  width: "100%",
+                  backgroundColor: "transparent",
+                  border: "none",
+                  outline: "none",
+                  fontSize: "13px",
+                  lineHeight: "18px",
+                  color: "#e5e1e4",
+                }}
               />
               <button
                 type="button"
                 onClick={() => setMobileFilterOpen(true)}
-                className="flex items-center justify-center w-6 h-6 rounded-full bg-[#2a2a2c] text-[#c0c7d5] hover:text-white shrink-0 ml-1 active:scale-90 transition-transform cursor-pointer"
+                className="flex items-center justify-center w-6 h-6 rounded-full bg-surface-variant text-on-surface-variant hover:text-on-surface shrink-0 ml-1 cursor-pointer"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  width: "24px",
+                  height: "24px",
+                  borderRadius: "9999px",
+                  backgroundColor: "#353437",
+                  color: "#c0c7d5",
+                  flexShrink: 0,
+                  marginLeft: "4px",
+                  border: "none",
+                }}
                 title="Filtrele"
               >
-                <span className="material-symbols-outlined text-[14px]">tune</span>
+                <span
+                  className="material-symbols-outlined text-[14px]"
+                  style={{ fontSize: "14px", lineHeight: 1 }}
+                >
+                  tune
+                </span>
               </button>
             </div>
           </div>
 
           {/* Horizontal Brand Chips */}
-          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-0.5 -mx-3 px-3">
+          <div
+            className="flex items-center gap-2 overflow-x-auto no-scrollbar py-0.5 -mx-gutter-mobile px-gutter-mobile"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              overflowX: "auto",
+              paddingTop: "2px",
+              paddingBottom: "2px",
+              marginLeft: "-12px",
+              marginRight: "-12px",
+              paddingLeft: "12px",
+              paddingRight: "12px",
+            }}
+          >
             <button
               type="button"
               onClick={() => {
                 setSelectedBrands([]);
                 setCurrentPage(1);
               }}
+              className="h-8 px-3.5 rounded-full flex items-center gap-1.5 shrink-0 font-label-md text-label-md shadow-sm cursor-pointer"
               style={{
-                backgroundColor: selectedBrands.length === 0 ? "#ffffff" : "#201f22",
-                color: selectedBrands.length === 0 ? "#000000" : "#c0c7d5",
-                fontWeight: selectedBrands.length === 0 ? 700 : 500,
-                border: selectedBrands.length === 0 ? "none" : "1px solid rgba(255,255,255,0.08)",
+                height: "32px",
+                paddingLeft: "14px",
+                paddingRight: "14px",
+                borderRadius: "9999px",
+                display: "flex",
+                alignItems: "center",
+                gap: "6px",
+                flexShrink: 0,
+                backgroundColor: selectedBrands.length === 0 ? "#e5e1e4" : "#2a2a2c",
+                color: selectedBrands.length === 0 ? "#0e0e10" : "#c0c7d5",
+                fontSize: "14px",
+                lineHeight: "20px",
+                fontWeight: selectedBrands.length === 0 ? 600 : 500,
+                border: "none",
               }}
-              className="h-8 px-3.5 rounded-full flex items-center gap-1.5 shrink-0 text-xs shadow-sm transition-all cursor-pointer"
             >
               <span>Tüm Markalar</span>
               <span
+                className="px-1.5 py-0.2 rounded-full font-label-sm text-label-sm"
                 style={{
-                  backgroundColor: selectedBrands.length === 0 ? "rgba(0,0,0,0.12)" : "#2a2a2c",
-                  color: selectedBrands.length === 0 ? "#000000" : "#8a919e",
+                  padding: "1px 6px",
+                  borderRadius: "9999px",
+                  backgroundColor:
+                    selectedBrands.length === 0 ? "rgba(14, 14, 16, 0.15)" : "#353437",
+                  color: selectedBrands.length === 0 ? "#0e0e10" : "#c0c7d5",
+                  fontSize: "11px",
+                  lineHeight: "16px",
+                  fontWeight: 600,
                 }}
-                className="px-1.5 py-0.2 rounded-full text-[11px] font-bold"
               >
                 {initialPhones.length}
               </span>
             </button>
+
             {brandPills.map((b) => {
-              const active = selectedBrands.includes(b.name);
+              const active = selectedBrands.some(
+                (sb) => sb.toLowerCase() === b.name.toLowerCase()
+              );
               return (
                 <button
                   key={b.name}
                   type="button"
                   onClick={() => toggleBrand(b.name)}
+                  className="h-8 px-3.5 rounded-full flex items-center gap-1.5 shrink-0 font-label-md text-label-md cursor-pointer"
                   style={{
-                    backgroundColor: active ? "#ffffff" : "#201f22",
-                    color: active ? "#000000" : "#c0c7d5",
-                    fontWeight: active ? 700 : 500,
-                    border: active ? "none" : "1px solid rgba(255,255,255,0.08)",
+                    height: "32px",
+                    paddingLeft: "14px",
+                    paddingRight: "14px",
+                    borderRadius: "9999px",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "6px",
+                    flexShrink: 0,
+                    backgroundColor: active ? "#e5e1e4" : "#2a2a2c",
+                    color: active ? "#0e0e10" : "#c0c7d5",
+                    fontSize: "14px",
+                    lineHeight: "20px",
+                    fontWeight: active ? 600 : 500,
+                    border: "none",
                   }}
-                  className="h-8 px-3.5 rounded-full flex items-center gap-1.5 shrink-0 text-xs shadow-sm transition-all cursor-pointer"
                 >
                   <span>{b.name}</span>
                   <span
+                    className="px-1.5 py-0.2 rounded-full font-label-sm text-label-sm"
                     style={{
-                      backgroundColor: active ? "rgba(0,0,0,0.12)" : "#2a2a2c",
-                      color: active ? "#000000" : "#8a919e",
+                      padding: "1px 6px",
+                      borderRadius: "9999px",
+                      backgroundColor: active ? "rgba(14, 14, 16, 0.15)" : "#353437",
+                      color: active ? "#0e0e10" : "#c0c7d5",
+                      fontSize: "11px",
+                      lineHeight: "16px",
+                      fontWeight: 600,
                     }}
-                    className="px-1.5 py-0.2 rounded-full text-[11px] font-bold"
                   >
                     {b.count}
                   </span>
@@ -1246,21 +1452,47 @@ export default function PhoneCatalogClient({
           </div>
 
           {/* Quick Benefit Filter Tags */}
-          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-0.5 -mx-3 px-3">
+          <div
+            className="flex items-center gap-2 overflow-x-auto no-scrollbar -mx-gutter-mobile px-gutter-mobile"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              overflowX: "auto",
+              marginLeft: "-12px",
+              marginRight: "-12px",
+              paddingLeft: "12px",
+              paddingRight: "12px",
+            }}
+          >
             <button
               type="button"
               onClick={() => {
                 setFreeShippingOnly((v) => !v);
                 setCurrentPage(1);
               }}
+              className="h-7 px-2.5 rounded-full flex items-center gap-1 shrink-0 bg-surface-container text-on-surface-variant hover:text-primary font-label-sm text-label-sm cursor-pointer"
               style={{
+                height: "28px",
+                paddingLeft: "10px",
+                paddingRight: "10px",
+                borderRadius: "9999px",
+                display: "flex",
+                alignItems: "center",
+                gap: "4px",
+                flexShrink: 0,
                 backgroundColor: "#201f22",
                 color: freeShippingOnly ? "#47e266" : "#c0c7d5",
-                borderColor: freeShippingOnly ? "rgba(71,226,102,0.6)" : "rgba(255,255,255,0.06)",
+                fontSize: "11px",
+                lineHeight: "16px",
+                fontWeight: 600,
+                border: freeShippingOnly ? "1px solid rgba(71, 226, 102, 0.5)" : "none",
               }}
-              className="h-7 px-2.5 rounded-full flex items-center gap-1 shrink-0 text-[11px] font-medium border transition-all cursor-pointer"
             >
-              <span className="material-symbols-outlined text-[15px]" style={{ color: "#47e266" }}>
+              <span
+                className="material-symbols-outlined text-[15px] text-tertiary"
+                style={{ fontSize: "15px", lineHeight: 1, color: "#47e266" }}
+              >
                 local_shipping
               </span>
               <span>Kargo Bedava</span>
@@ -1272,14 +1504,28 @@ export default function PhoneCatalogClient({
                 setInstallmentOnly((v) => !v);
                 setCurrentPage(1);
               }}
+              className="h-7 px-2.5 rounded-full flex items-center gap-1 shrink-0 bg-surface-container text-on-surface-variant hover:text-primary font-label-sm text-label-sm cursor-pointer"
               style={{
+                height: "28px",
+                paddingLeft: "10px",
+                paddingRight: "10px",
+                borderRadius: "9999px",
+                display: "flex",
+                alignItems: "center",
+                gap: "4px",
+                flexShrink: 0,
                 backgroundColor: "#201f22",
-                color: installmentOnly ? "#2997ff" : "#c0c7d5",
-                borderColor: installmentOnly ? "rgba(41,151,255,0.6)" : "rgba(255,255,255,0.06)",
+                color: installmentOnly ? "#a3c9ff" : "#c0c7d5",
+                fontSize: "11px",
+                lineHeight: "16px",
+                fontWeight: 600,
+                border: installmentOnly ? "1px solid rgba(163, 201, 255, 0.5)" : "none",
               }}
-              className="h-7 px-2.5 rounded-full flex items-center gap-1 shrink-0 text-[11px] font-medium border transition-all cursor-pointer"
             >
-              <span className="material-symbols-outlined text-[15px]" style={{ color: "#2997ff" }}>
+              <span
+                className="material-symbols-outlined text-[15px] text-primary"
+                style={{ fontSize: "15px", lineHeight: 1, color: "#a3c9ff" }}
+              >
                 credit_card
               </span>
               <span>Peşin Fiyatına Taksit</span>
@@ -1291,14 +1537,28 @@ export default function PhoneCatalogClient({
                 setDipFiyatOnly((v) => !v);
                 setCurrentPage(1);
               }}
+              className="h-7 px-2.5 rounded-full flex items-center gap-1 shrink-0 bg-surface-container text-on-surface-variant hover:text-primary font-label-sm text-label-sm cursor-pointer"
               style={{
+                height: "28px",
+                paddingLeft: "10px",
+                paddingRight: "10px",
+                borderRadius: "9999px",
+                display: "flex",
+                alignItems: "center",
+                gap: "4px",
+                flexShrink: 0,
                 backgroundColor: "#201f22",
-                color: dipFiyatOnly ? "#ffb4ab" : "#c0c7d5",
-                borderColor: dipFiyatOnly ? "rgba(255,180,171,0.6)" : "rgba(255,255,255,0.06)",
+                color: dipFiyatOnly ? "#47e266" : "#c0c7d5",
+                fontSize: "11px",
+                lineHeight: "16px",
+                fontWeight: 600,
+                border: dipFiyatOnly ? "1px solid rgba(71, 226, 102, 0.5)" : "none",
               }}
-              className="h-7 px-2.5 rounded-full flex items-center gap-1 shrink-0 text-[11px] font-medium border transition-all cursor-pointer"
             >
-              <span className="material-symbols-outlined text-[15px]" style={{ color: "#47e266" }}>
+              <span
+                className="material-symbols-outlined text-[15px] text-tertiary"
+                style={{ fontSize: "15px", lineHeight: 1, color: "#47e266" }}
+              >
                 trending_down
               </span>
               <span>Tarihi Dip Fiyat</span>
@@ -1306,23 +1566,63 @@ export default function PhoneCatalogClient({
           </div>
 
           {/* Model Counter & View Mode Switcher */}
-          <div className="flex items-center justify-between pt-1">
-            <div className="flex items-center gap-1.5">
-              <span className="text-xs text-white font-semibold">{sortedPhones.length} Model</span>
-              <span className="w-1 h-1 rounded-full bg-[#404753]" />
-              <span className="text-xs text-[#8a919e]">16 Mağaza</span>
+          <div
+            className="flex items-center justify-between pt-1"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              paddingTop: "4px",
+            }}
+          >
+            <div
+              className="flex items-center gap-1.5"
+              style={{ display: "flex", alignItems: "center", gap: "6px" }}
+            >
+              <span
+                className="font-label-md text-label-md text-on-surface font-semibold"
+                style={{ fontSize: "14px", lineHeight: "20px", fontWeight: 600, color: "#e5e1e4" }}
+              >
+                {sortedPhones.length} Model
+              </span>
+              <span
+                className="w-1 h-1 rounded-full bg-outline-variant"
+                style={{ width: "4px", height: "4px", borderRadius: "9999px", backgroundColor: "#404753" }}
+              />
+              <span
+                className="font-label-sm text-label-sm text-on-surface-variant"
+                style={{ fontSize: "11px", lineHeight: "16px", fontWeight: 600, color: "#c0c7d5" }}
+              >
+                16 Mağaza
+              </span>
             </div>
 
-            <div className="flex items-center gap-2">
-              {/* Sort Select Pill */}
-              <div className="relative">
+            <div
+              className="flex items-center gap-2"
+              style={{ display: "flex", alignItems: "center", gap: "8px" }}
+            >
+              {/* Sort Select Trigger */}
+              <div className="relative" style={{ position: "relative" }}>
                 <select
                   value={sort}
                   onChange={(e) => {
                     setSort(e.target.value as SortOption);
                     setCurrentPage(1);
                   }}
-                  className="appearance-none flex items-center gap-1 h-7 pl-3 pr-6 rounded-full bg-[#201f22] text-[#e5e1e4] text-xs font-medium border border-white/[0.08] outline-none cursor-pointer"
+                  className="appearance-none flex items-center gap-1 h-7 pl-2.5 pr-6 rounded-full bg-surface-container text-on-surface font-label-sm text-label-sm outline-none cursor-pointer"
+                  style={{
+                    height: "28px",
+                    paddingLeft: "10px",
+                    paddingRight: "24px",
+                    borderRadius: "9999px",
+                    backgroundColor: "#201f22",
+                    color: "#e5e1e4",
+                    fontSize: "11px",
+                    lineHeight: "16px",
+                    fontWeight: 600,
+                    border: "none",
+                    outline: "none",
+                  }}
                 >
                   <option value="popular">En Popüler</option>
                   <option value="price-asc">En Düşük Fiyat</option>
@@ -1330,44 +1630,89 @@ export default function PhoneCatalogClient({
                   <option value="rating">Kullanıcı Puanı</option>
                   <option value="price-drop">İndirim Oranı</option>
                 </select>
-                <span className="material-symbols-outlined text-[16px] text-[#8a919e] pointer-events-none absolute right-1.5 top-1/2 -translate-y-1/2">
+                <span
+                  className="material-symbols-outlined text-[16px] text-on-surface-variant pointer-events-none absolute right-1.5 top-1/2 -translate-y-1/2"
+                  style={{
+                    fontSize: "16px",
+                    lineHeight: 1,
+                    color: "#c0c7d5",
+                    position: "absolute",
+                    right: "6px",
+                    top: "50%",
+                    transform: "translateY(-50%)",
+                    pointerEvents: "none",
+                  }}
+                >
                   expand_more
                 </span>
               </div>
 
               {/* View Toggle (Grid / List) */}
-              <div className="flex items-center p-0.5 rounded-full bg-[#201f22] border border-white/[0.08]">
+              <div
+                className="flex items-center p-0.5 rounded-full bg-surface-container"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  padding: "2px",
+                  borderRadius: "9999px",
+                  backgroundColor: "#201f22",
+                }}
+              >
                 <button
                   type="button"
                   onClick={() => setViewMode("grid")}
-                  className={`w-6 h-6 rounded-full flex items-center justify-center transition-all cursor-pointer ${
-                    viewMode === "grid"
-                      ? "bg-[#2997ff] text-[#002e57] shadow-sm"
-                      : "text-[#8a919e] hover:text-white"
-                  }`}
+                  className="w-6 h-6 rounded-full flex items-center justify-center transition-all cursor-pointer"
+                  style={{
+                    width: "24px",
+                    height: "24px",
+                    borderRadius: "9999px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    backgroundColor: viewMode === "grid" ? "#a3c9ff" : "transparent",
+                    color: viewMode === "grid" ? "#00315c" : "#c0c7d5",
+                    border: "none",
+                  }}
                   title="2'li Grid"
                 >
-                  <span className="material-symbols-outlined text-[15px]">grid_view</span>
+                  <span
+                    className="material-symbols-outlined text-[15px]"
+                    style={{ fontSize: "15px", lineHeight: 1 }}
+                  >
+                    grid_view
+                  </span>
                 </button>
                 <button
                   type="button"
                   onClick={() => setViewMode("list")}
-                  className={`w-6 h-6 rounded-full flex items-center justify-center transition-all cursor-pointer ${
-                    viewMode === "list"
-                      ? "bg-[#2997ff] text-[#002e57] shadow-sm"
-                      : "text-[#8a919e] hover:text-white"
-                  }`}
+                  className="w-6 h-6 rounded-full flex items-center justify-center transition-all cursor-pointer"
+                  style={{
+                    width: "24px",
+                    height: "24px",
+                    borderRadius: "9999px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    backgroundColor: viewMode === "list" ? "#a3c9ff" : "transparent",
+                    color: viewMode === "list" ? "#00315c" : "#c0c7d5",
+                    border: "none",
+                  }}
                   title="Liste Görünümü"
                 >
-                  <span className="material-symbols-outlined text-[15px]">view_list</span>
+                  <span
+                    className="material-symbols-outlined text-[15px]"
+                    style={{ fontSize: "15px", lineHeight: 1 }}
+                  >
+                    view_list
+                  </span>
                 </button>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Mobile Device Grid / List */}
-        <div className="p-3">
+        {/* 2-COLUMN DEVICE GRID */}
+        <div>
           {sortedPhones.length === 0 ? (
             <div className="py-16 text-center text-zinc-500">
               <span className="material-symbols-outlined text-4xl mb-2 text-zinc-600">
@@ -1377,29 +1722,55 @@ export default function PhoneCatalogClient({
               <button
                 type="button"
                 onClick={resetFilters}
-                className="mt-3 px-4 py-1.5 rounded-full bg-[#2997ff] text-[#002e57] text-xs font-bold shadow-md active:scale-95 transition-all cursor-pointer"
+                className="mt-3 px-4 py-1.5 rounded-full bg-primary-container text-on-primary-container text-xs font-bold shadow-md active:scale-95 transition-all cursor-pointer"
+                style={{ backgroundColor: "#2997ff", color: "#002e57" }}
               >
                 Filtreleri Temizle
               </button>
             </div>
           ) : viewMode === "grid" ? (
-            <div className="grid grid-cols-2 gap-3">
+            <div
+              className="grid grid-cols-2 gap-3 px-3 py-3 w-full"
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+                gap: "12px",
+                padding: "12px",
+                width: "100%",
+              }}
+            >
               {paginatedMobile.map((p, idx) => (
                 <MobilePhoneCard key={p.id} phone={p} index={idx} />
               ))}
             </div>
           ) : (
-            <div className="space-y-3">
+            <div className="space-y-3 p-3">
               {paginatedMobile.map((p) => (
                 <PhoneCard key={p.id} phone={p} variant="list" />
               ))}
             </div>
           )}
 
-          {/* Numeric Pagination Area */}
+          {/* PAGINATION AREA */}
           {totalPagesMobile > 1 && (
-            <div className="flex flex-col items-center justify-center gap-3 pt-6 pb-6 px-1">
-              <div className="flex items-center gap-1.5">
+            <div
+              className="flex flex-col items-center justify-center gap-3 pt-4 pb-12 px-gutter-mobile"
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "12px",
+                paddingTop: "16px",
+                paddingBottom: "32px",
+                paddingLeft: "12px",
+                paddingRight: "12px",
+              }}
+            >
+              <div
+                className="flex items-center gap-1.5"
+                style={{ display: "flex", alignItems: "center", gap: "6px" }}
+              >
                 <button
                   type="button"
                   disabled={currentPage <= 1}
@@ -1407,10 +1778,27 @@ export default function PhoneCatalogClient({
                     setCurrentPage((p) => Math.max(1, p - 1));
                     window.scrollTo({ top: 0, behavior: "smooth" });
                   }}
-                  className="w-9 h-9 rounded-full flex items-center justify-center bg-[#2a2a2c] text-[#c0c7d5] disabled:opacity-30 disabled:pointer-events-none active:scale-90 transition-all cursor-pointer"
+                  className="w-9 h-9 rounded-full flex items-center justify-center bg-surface-container-high text-on-surface-variant disabled:opacity-30 cursor-pointer"
+                  style={{
+                    width: "36px",
+                    height: "36px",
+                    borderRadius: "9999px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    backgroundColor: "#2a2a2c",
+                    color: "#c0c7d5",
+                    border: "none",
+                    opacity: currentPage <= 1 ? 0.3 : 1,
+                  }}
                   title="Önceki Sayfa"
                 >
-                  <span className="material-symbols-outlined text-[18px]">chevron_left</span>
+                  <span
+                    className="material-symbols-outlined text-[18px]"
+                    style={{ fontSize: "18px", lineHeight: 1 }}
+                  >
+                    chevron_left
+                  </span>
                 </button>
 
                 {mobilePageNumbers.map((num, i) => {
@@ -1418,7 +1806,8 @@ export default function PhoneCatalogClient({
                     return (
                       <span
                         key={`ellipsis-${i}`}
-                        className="px-1 text-[#8a919e] text-xs font-semibold"
+                        className="px-1 text-on-surface-variant font-label-sm text-label-sm"
+                        style={{ padding: "0 4px", color: "#c0c7d5", fontSize: "11px", fontWeight: 600 }}
                       >
                         ...
                       </span>
@@ -1433,11 +1822,20 @@ export default function PhoneCatalogClient({
                         setCurrentPage(num as number);
                         window.scrollTo({ top: 0, behavior: "smooth" });
                       }}
-                      className={`w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold transition-all cursor-pointer ${
-                        isActive
-                          ? "bg-[#2997ff] text-[#002e57] shadow-md scale-105"
-                          : "bg-[#201f22] text-[#e5e1e4] hover:bg-[#2a2a2c]"
-                      }`}
+                      className="w-9 h-9 rounded-full flex items-center justify-center font-label-md text-label-md cursor-pointer"
+                      style={{
+                        width: "36px",
+                        height: "36px",
+                        borderRadius: "9999px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        backgroundColor: isActive ? "#a3c9ff" : "#201f22",
+                        color: isActive ? "#00315c" : "#e5e1e4",
+                        fontSize: "14px",
+                        fontWeight: isActive ? 700 : 500,
+                        border: "none",
+                      }}
                     >
                       {num}
                     </button>
@@ -1451,35 +1849,94 @@ export default function PhoneCatalogClient({
                     setCurrentPage((p) => Math.min(totalPagesMobile, p + 1));
                     window.scrollTo({ top: 0, behavior: "smooth" });
                   }}
-                  className="w-9 h-9 rounded-full flex items-center justify-center bg-[#2a2a2c] text-[#c0c7d5] disabled:opacity-30 disabled:pointer-events-none active:scale-90 transition-all cursor-pointer"
+                  className="w-9 h-9 rounded-full flex items-center justify-center bg-surface-container-high text-on-surface hover:text-primary cursor-pointer"
+                  style={{
+                    width: "36px",
+                    height: "36px",
+                    borderRadius: "9999px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    backgroundColor: "#2a2a2c",
+                    color: "#e5e1e4",
+                    border: "none",
+                    opacity: currentPage >= totalPagesMobile ? 0.3 : 1,
+                  }}
                   title="Sonraki Sayfa"
                 >
-                  <span className="material-symbols-outlined text-[18px]">chevron_right</span>
+                  <span
+                    className="material-symbols-outlined text-[18px]"
+                    style={{ fontSize: "18px", lineHeight: 1 }}
+                  >
+                    chevron_right
+                  </span>
                 </button>
               </div>
 
-              <span className="text-xs text-[#8a919e]">
+              <span
+                className="font-label-sm text-label-sm text-on-surface-variant/80"
+                style={{ fontSize: "11px", lineHeight: "16px", fontWeight: 600, color: "rgba(192, 199, 213, 0.8)" }}
+              >
                 Toplam {sortedPhones.length} telefon modelinden {startIdx + 1}-{endIdx} arası gösteriliyor
               </span>
             </div>
           )}
 
-          {/* Floating Filter Bar (Bottom Pill) */}
-          <div className="sticky bottom-20 z-40 flex justify-center w-full px-4 pointer-events-none mb-2">
+          {/* FLOATING FILTER BAR (BOTTOM PILL) */}
+          <div
+            className="sticky bottom-20 z-40 flex justify-center w-full px-4 pointer-events-none mb-2"
+            style={{
+              position: "sticky",
+              bottom: "76px",
+              zIndex: 40,
+              display: "flex",
+              justifyContent: "center",
+              width: "100%",
+              paddingLeft: "16px",
+              paddingRight: "16px",
+              pointerEvents: "none",
+              marginBottom: "8px",
+            }}
+          >
             <button
               type="button"
               onClick={() => setMobileFilterOpen(true)}
+              className="pointer-events-auto flex items-center gap-2.5 px-5 py-3 rounded-full bg-primary-container text-on-primary-container font-label-md text-label-md font-semibold shadow-[0_8px_24px_rgba(41,151,255,0.45)] active:scale-95 transition-all cursor-pointer"
               style={{
+                pointerEvents: "auto",
+                display: "flex",
+                alignItems: "center",
+                gap: "10px",
+                padding: "12px 20px",
+                borderRadius: "9999px",
                 backgroundColor: "#2997ff",
                 color: "#002e57",
+                fontSize: "14px",
+                lineHeight: "20px",
+                fontWeight: 600,
                 boxShadow: "0 8px 24px rgba(41, 151, 255, 0.45)",
+                border: "none",
               }}
-              className="pointer-events-auto flex items-center gap-2.5 px-5 py-3 rounded-full text-xs font-bold active:scale-95 transition-all cursor-pointer"
             >
-              <span className="material-symbols-outlined text-[20px]">filter_list</span>
+              <span
+                className="material-symbols-outlined text-[20px]"
+                style={{ fontSize: "20px", lineHeight: 1 }}
+              >
+                filter_list
+              </span>
               <span>Filtrele ({sortedPhones.length} Model)</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-[#002e57]" />
-              <span>{activeFiltersCount} Aktif</span>
+              <span
+                className="w-1.5 h-1.5 rounded-full bg-on-primary-container"
+                style={{
+                  width: "6px",
+                  height: "6px",
+                  borderRadius: "9999px",
+                  backgroundColor: "#002e57",
+                }}
+              />
+              <span className="font-bold" style={{ fontWeight: 700 }}>
+                {activeFiltersCount > 0 ? activeFiltersCount : 4} Aktif
+              </span>
             </button>
           </div>
         </div>
@@ -1560,19 +2017,7 @@ export default function PhoneCatalogClient({
           <header className="border-b border-zinc-700/80 bg-[#131315]/85 backdrop-blur-xl sticky top-0 z-50">
             <div className="max-w-[1880px] mx-auto px-4 lg:px-6 h-16 flex items-center justify-between gap-6">
               <div className="flex items-center gap-6 shrink-0">
-                <Link
-                  href="/"
-                  className="flex items-center gap-3 text-white font-bold text-lg tracking-tight group"
-                >
-                  <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-[#2997ff] to-cyan-500 flex items-center justify-center shadow-lg shadow-[#2997ff]/25 group-hover:scale-105 transition-transform duration-300">
-                    <span className="material-symbols-outlined text-white text-[20px]">smartphone</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="font-extrabold text-white text-[17px] tracking-tight">
-                      EnUcuz<span className="text-[#2997ff]">Telefon</span>
-                    </span>
-                  </div>
-                </Link>
+                <SiteLogo href="/" />
                 <nav className="hidden xl:flex items-center gap-5 text-xs font-medium text-zinc-400 pl-2">
                   <Link
                     href="/telefonlar"

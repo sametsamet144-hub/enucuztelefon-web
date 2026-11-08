@@ -1,5 +1,7 @@
 "use client";
 
+import SiteLogo from "@/components/common/SiteLogo";
+
 import { useState, useEffect, useRef, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -269,22 +271,7 @@ export default function StitchMobileHome() {
         style={{ paddingTop: "env(safe-area-inset-top, 0px)" }}
       >
         <div className="h-16 px-4 flex items-center justify-between">
-          <Link
-            href="/"
-            className="flex items-center gap-2 active:scale-95 transition-transform duration-200 cursor-pointer"
-          >
-            <div className="relative w-9 h-9 rounded-full bg-[#2a2a2c]/90 border border-white/10 flex items-center justify-center text-[#2997ff] shadow-inner">
-              <span className="material-symbols-outlined text-[20px]">phone_iphone</span>
-            </div>
-            <div className="flex flex-col">
-              <span className="text-[17px] leading-tight tracking-tight text-white font-extrabold">
-                EnUcuz
-                <span className="bg-gradient-to-r from-[#2997ff] to-[#a3c9ff] bg-clip-text text-transparent">
-                  Telefon
-                </span>
-              </span>
-            </div>
-          </Link>
+          <SiteLogo href="/" />
 
           <div className="flex items-center gap-2">
             <button

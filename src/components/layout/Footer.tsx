@@ -1,3 +1,4 @@
+import SiteLogo from "@/components/common/SiteLogo";
 import Link from "next/link";
 
 export default function Footer() {
@@ -35,7 +36,8 @@ export default function Footer() {
             </div>
           </div>
         </div>
-        <div className="flex flex-col md:flex-row items-center justify-between gap-space-md text-on-surface-variant font-body-sm text-body-sm">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-space-md border-t border-white/[0.05] pt-6 text-on-surface-variant font-body-sm text-body-sm">
+          <SiteLogo size="sm" href="/" />
           <div className="flex flex-wrap items-center gap-space-md">
             <Link
               className="hover:text-on-surface transition-colors font-body-sm text-body-sm text-on-surface-variant"

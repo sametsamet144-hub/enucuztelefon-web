@@ -27,7 +27,7 @@ function SiteLayoutInner({ children }: SiteLayoutProps) {
     >
       <Header />
       <main className="flex-1 w-full">{children}</main>
-      <div className={isHomePage ? "hidden lg:block" : ""}>
+      <div className={isHomePage || pathname === "/telefonlar" ? "hidden lg:block" : ""}>
         <Footer />
       </div>
 

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useApp } from "@/context/AppContext";
+import SiteLogo from "@/components/common/SiteLogo";
 
 export default function Header() {
   const pathname = usePathname();
@@ -31,19 +32,7 @@ export default function Header() {
   return (
     <header className={`sticky top-0 left-0 right-0 z-50 bg-surface/80 backdrop-blur-md shadow-[0_1px_8px_rgba(0,0,0,0.04)] border-b border-white/[0.05] ${hideOnMobile ? "hidden lg:block" : ""}`}>
       <div className="h-16 max-w-7xl mx-auto px-gutter flex items-center justify-between gap-gutter">
-        <Link
-          href="/"
-          className="flex items-center gap-space-sm shrink-0 group"
-        >
-          <img
-            alt="EnUcuzTelefon Logo"
-            className="h-8 w-auto object-contain"
-            src="https://lh3.googleusercontent.com/aida/ALJJyrAhj_u0wlotCePixGC8Yd9f-jJJAE6wfLjBZNT7KwBqhIySHTgJrhHxmiK_ZaEJHt8dphvmTy44zWvpBqa8m84Y8eg5SBNCnRlP5kxEuxqJ7xTnGiruqkqq11BqoyUEfdmMEvABcRLqE5ee8g9FCnSmBEamWlSTpxVGjZWItapeTOWAVtCRF_2ivjKIKfyA5FaRSwlRKyUmWpgnuKUrvgxYbor5c5UrPkIkgXKrn34"
-          />
-          <span className="font-title-sm text-title-sm tracking-tight text-on-surface font-semibold">
-            EnUcuzTelefon
-          </span>
-        </Link>
+        <SiteLogo />
 
         <nav className="hidden xl:flex items-center gap-space-lg">
           <Link

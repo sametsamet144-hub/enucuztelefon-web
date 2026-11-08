@@ -5,14 +5,14 @@
 // ─── Display ────────────────────────────────────────────────
 export interface DisplaySpecs {
   size: number; // inches, e.g. 6.7
-  resolution: string; // e.g. "2796 x 1290"
-  technology: string; // e.g. "OLED", "AMOLED", "IPS LCD"
+  resolution: string; // e.g. "2796 x 1290" or "2868 x 1320"
+  technology?: string; // e.g. "OLED", "AMOLED", "IPS LCD"
   refreshRate: number; // Hz, e.g. 120
-  brightness: number; // nits, e.g. 2000
-  aspectRatio: string; // e.g. "19.5:9"
+  brightness?: number; // nits, e.g. 2000
+  aspectRatio?: string; // e.g. "19.5:9"
   protection?: string; // e.g. "Corning Gorilla Glass Victus 2"
   hdr?: string; // e.g. "HDR10+", "Dolby Vision"
-  ppi: number; // pixels per inch
+  ppi?: number; // pixels per inch
 }
 
 // ─── Camera ─────────────────────────────────────────────────
@@ -24,6 +24,9 @@ export interface CameraSpecs {
     ois: boolean;
     autofocus: string; // e.g. "PDAF, Laser AF"
   };
+  mainMp?: string | number; // e.g. "48" or 48 from backend
+  telephotoMp?: string | number; // e.g. "12" or 12
+  ultrawideMp?: string | number; // e.g. "48" or 48
   ultrawide?: {
     megapixels: number;
     aperture: string;
@@ -37,23 +40,24 @@ export interface CameraSpecs {
   };
   periscope?: {
     megapixels: number;
-    aperture: string;
+    aperture?: string;
     opticalZoom: number;
     maxZoom?: number;
   };
-  frontCamera: {
+  frontCamera?: {
     megapixels: number;
     aperture: string;
     autofocus?: boolean | string;
   };
-  videoCapabilities: string[]; // e.g. ["4K@60fps", "1080p@240fps"]
+  videoCapabilities?: string[]; // e.g. ["4K@60fps", "1080p@240fps"]
   features?: string[]; // e.g. ["Night Mode", "Portrait", "ProRAW"]
 }
 
 // ─── Battery ─────────────────────────────────────────────────
 export interface BatterySpecs {
-  capacity: number; // mAh
-  wiredCharging: number; // watts
+  capacity: number; // mAh, e.g. 5000 or 4685
+  wiredCharging: number; // watts e.g. 25
+  fastChargingWatt?: string | number; // watts e.g. "25"
   wirelessCharging?: number; // watts, optional
   reverseWirelessCharging?: boolean;
   chargingTime?: string; // e.g. "0'dan 50%'ye 20 dakika"
@@ -67,8 +71,8 @@ export interface PerformanceSpecs {
   gpu: string; // e.g. "Apple GPU (6-core)"
   ram: number; // GB
   storage: number; // GB
-  storageType: string; // e.g. "NVMe", "UFS 4.0"
-  expandableStorage: boolean;
+  storageType?: string; // e.g. "NVMe", "UFS 4.0"
+  expandableStorage?: boolean;
   antutuScore?: number;
   geekbenchSingle?: number;
   geekbenchMulti?: number;
@@ -90,20 +94,20 @@ export interface ConnectivitySpecs {
 
 // ─── Design ──────────────────────────────────────────────────
 export interface DesignSpecs {
-  width: number; // mm
-  height: number; // mm
-  thickness: number; // mm
-  weight: number; // grams
-  materials: string; // e.g. "Alüminyum çerçeve, cam arka"
-  colors: string[]; // e.g. ["Siyah Titanyum", "Doğal Titanyum"]
-  waterResistance: string; // e.g. "IP68"
-  fingerprint: string; // e.g. "Ekran altı optik", "Yan baskı"
-  faceId: boolean;
+  width?: number; // mm
+  height?: number; // mm
+  thickness?: number; // mm
+  weight?: number; // grams
+  materials?: string; // e.g. "Alüminyum çerçeve, cam arka"
+  colors?: string[]; // e.g. ["Siyah Titanyum", "Doğal Titanyum"]
+  waterResistance?: string; // e.g. "IP68"
+  fingerprint?: string; // e.g. "Ekran altı optik", "Yan baskı"
+  faceId?: boolean;
 }
 
 // ─── Software ────────────────────────────────────────────────
 export interface SoftwareSpecs {
-  os: string; // e.g. "iOS 18"
+  os?: string; // e.g. "iOS 18"
   androidVersion?: number;
   uiLayer?: string; // e.g. "One UI 7", "MIUI 15"
   updatePolicy?: string; // e.g. "7 yıl Android güncellemesi"
@@ -128,8 +132,8 @@ export interface StorePrice {
   sellerRating?: number; // e.g. 9.8
   price: number; // TRY
   url: string;
-  isAvailable: boolean;
-  lastUpdated: string; // ISO date
+  isAvailable?: boolean;
+  lastUpdated?: string; // ISO date
   shippingText?: string; // e.g. "Ücretsiz Kargo • Aynı Gün"
   guaranteeText?: string; // e.g. "2 Yıl Resmi Distribütör Garantili"
   installmentText?: string; // e.g. "Peşin Fiyatına 3 Taksit"
@@ -138,9 +142,10 @@ export interface StorePrice {
 
 // ─── PriceHistory ────────────────────────────────────────────
 export interface PriceHistory {
-  date: string; // ISO date
+  date: string; // ISO date e.g. "2026-09-08T00:00:00Z"
   price: number; // TRY
-  store: string;
+  changePercent?: number | null; // e.g. -3.6
+  store?: string;
 }
 
 // ─── Phone ───────────────────────────────────────────────────
@@ -151,18 +156,21 @@ export interface Phone {
   brand: string;
   brandSlug: string;
   image: string;
-  images: string[];
+  images?: string[];
   lowestPrice: number;
   highestPrice: number;
   sixMonthLowestPrice?: number;
+  lowestPriceStoreName?: string;
+  lowestPriceUrl?: string;
   priceStore?: string | null;
   priceUrl?: string | null;
-  releaseDate: string; // ISO date
-  isNew: boolean;
-  isPriceDropped: boolean;
-  priceDropPercent?: number;
+  releaseDate?: string; // ISO date
+  isNew?: boolean;
+  isPriceDropped?: boolean;
+  priceDropPercent?: number | null;
   specs: PhoneSpecs;
-  storesPrices: StorePrice[];
+  storesPrices?: StorePrice[];
+  storesCount?: number;
   rating?: number; // 0–10
   reviewCount?: number;
   tags?: string[];
@@ -215,15 +223,23 @@ export interface QAItem {
 
 // ─── FilterOptions ───────────────────────────────────────────
 export interface FilterOptions {
-  brands: string[];
-  priceRange: [number, number];
-  ram: number[];
-  storage: number[];
-  screenSize: [number, number];
-  battery: number[];
-  os: string[];
-  features: string[];
+  brands?: string[];
+  brand?: string;
+  priceRange?: [number, number];
+  minPrice?: number;
+  maxPrice?: number;
+  ram?: number | number[];
+  storage?: number | number[];
+  screenSize?: [number, number];
+  battery?: number[];
+  os?: string[];
+  features?: string[];
   sortBy?: SortOption;
+  search?: string;
+  page?: number;
+  pageSize?: number;
+  isPriceDropped?: boolean;
+  isNew?: boolean;
 }
 
 export type SortOption =
@@ -235,6 +251,67 @@ export type SortOption =
   | "name-asc"
   | "name-desc"
   | "price-drop";
+
+// ─── Backend Product Filter Parameters ──────────────────────
+export interface ProductFilterParams {
+  brand?: string; // apple, samsung, xiaomi
+  search?: string; // free text search
+  minPrice?: number; // decimal
+  maxPrice?: number; // decimal
+  ram?: number; // 8, 12, 16
+  storage?: number; // 128, 256, 512, 1024
+  isPriceDropped?: boolean;
+  isNew?: boolean;
+  sortBy?: "price-asc" | "price-desc" | "newest" | "rating" | "price-drop" | "popular";
+  page?: number; // default: 1
+  pageSize?: number; // default: 20
+}
+
+// ─── Paged API Result ─────────────────────────────────────────
+export interface PagedApiResult<T> {
+  items: T[];
+  totalCount: number;
+  pageNumber?: number;
+  page?: number;
+  pageSize: number;
+  totalPages: number;
+}
+
+// ─── Price Alert Requests & Responses ────────────────────────
+export interface CreatePriceAlertRequest {
+  productVariantId?: string;
+  productId?: string;
+  phoneSlug?: string;
+  targetPrice: number;
+  email: string;
+}
+
+export interface PriceAlertResponse {
+  id?: string;
+  phoneSlug?: string;
+  phoneName?: string;
+  productVariantId?: string;
+  targetPrice: number;
+  currentPrice?: number;
+  email: string;
+  isTriggered?: boolean;
+  createdAt?: string;
+}
+
+// ─── Redirect API ────────────────────────────────────────────
+export interface StoreRedirectParams {
+  store: string; // mediamarkt, hepsiburada, etc.
+  product: string; // iPhone 16 Pro Max
+  url?: string; // Direct store offer URL
+  mode?: "json"; // if "json", returns JSON object instead of 302
+}
+
+export interface StoreRedirectResponse {
+  success: boolean;
+  targetUrl: string;
+  store: string;
+  product: string;
+}
 
 // ─── NavItem ─────────────────────────────────────────────────
 export interface NavItem {
@@ -273,7 +350,6 @@ export interface SiteStats {
   totalStores: number;
   lastUpdated: string;
 }
-
 
 // ─── StoreInfo ────────────────────────────────────────────────
 export interface StoreInfo {

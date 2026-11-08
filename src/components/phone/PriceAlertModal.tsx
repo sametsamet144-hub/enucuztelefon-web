@@ -9,12 +9,21 @@ interface Props {
   phoneName: string;
   currentPrice: number;
   phoneSlug?: string;
+  productId?: string;
+  productVariantId?: string;
 }
 
-export default function PriceAlertModal({ phoneName, currentPrice, phoneSlug }: Props) {
+export default function PriceAlertModal({
+  phoneName,
+  currentPrice,
+  phoneSlug,
+  productId,
+  productVariantId,
+}: Props) {
   const [isOpen, setIsOpen] = useState(false);
   const [targetPrice, setTargetPrice] = useState(Math.round(currentPrice * 0.95));
   const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -28,20 +37,25 @@ export default function PriceAlertModal({ phoneName, currentPrice, phoneSlug }: 
         .replace(/[^a-z0-9]+/g, "-")
         .replace(/^-|-$/g, "");
 
+    setLoading(true);
     try {
       await backendApi.createPriceAlert({
+        productVariantId: productVariantId || productId,
         phoneSlug: slug,
         targetPrice,
         email,
       });
     } catch {
       // Backend offline fallback
+    } finally {
+      setLoading(false);
     }
 
     try {
       const existing = JSON.parse(localStorage.getItem("enucuztelefon_alerts") || "[]");
       existing.push({
         phoneSlug: slug,
+        productId: productId || productVariantId,
         phoneName,
         targetPrice,
         email,
@@ -99,59 +113,66 @@ export default function PriceAlertModal({ phoneName, currentPrice, phoneSlug }: 
                     <label className="block text-xs font-bold text-slate-300 mb-1.5">
                       Hedeflediğiniz İndirimli Fiyat (₺)
                     </label>
-                    <input
-                      type="number"
-                      required
-                      value={targetPrice}
-                      onChange={(e) => setTargetPrice(Number(e.target.value))}
-                      className="w-full px-4 py-3 rounded-2xl bg-white/5 border border-white/15 text-white font-bold text-sm focus:outline-none focus:ring-2 focus:ring-sky-400"
-                    />
-                    <div className="text-[11px] text-emerald-400 mt-1">
-                      Şu anki en düşük fiyat: {formatPrice(currentPrice)}
+                    <div className="relative">
+                      <input
+                        type="number"
+                        value={targetPrice}
+                        onChange={(e) => setTargetPrice(Number(e.target.value))}
+                        className="w-full bg-slate-800/80 border border-white/15 rounded-xl px-4 py-3 text-sm text-white font-bold focus:outline-none focus:ring-2 focus:ring-amber-400"
+                        min="1000"
+                        max={currentPrice}
+                        required
+                      />
+                      <span className="absolute right-4 top-3 text-xs text-slate-400">
+                        Şu an: {formatPrice(currentPrice)}
+                      </span>
                     </div>
                   </div>
 
                   <div>
                     <label className="block text-xs font-bold text-slate-300 mb-1.5">
-                      E-Posta Adresiniz
+                      Bildirim E-posta Adresiniz
                     </label>
                     <input
                       type="email"
-                      required
-                      placeholder="adiniz@example.com"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="w-full px-4 py-3 rounded-2xl bg-white/5 border border-white/15 text-white text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 placeholder:text-slate-500"
+                      placeholder="adiniz@ornek.com"
+                      className="w-full bg-slate-800/80 border border-white/15 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-amber-400 placeholder:text-slate-500"
+                      required
                     />
+                  </div>
+
+                  <div className="flex items-center gap-2 text-[11px] text-slate-400 pt-1">
+                    <Shield className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                    <span>Spam göndermiyoruz. Sadece fiyat hedefi gerçekleştiğinde 1 kez bildirim alırsınız.</span>
                   </div>
 
                   <button
                     type="submit"
-                    className="w-full py-3.5 bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-white font-black text-sm rounded-2xl shadow-xl shadow-sky-500/25 transition-all flex items-center justify-center gap-2"
+                    disabled={loading}
+                    className="w-full mt-2 py-3.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-sm flex items-center justify-center gap-2 transition-all shadow-lg shadow-amber-500/20 active:scale-98 disabled:opacity-50"
                   >
-                    <span>Fiyat Alarmını Başlat</span>
+                    <span>{loading ? "Kaydediliyor..." : "Fiyat Alarmını Aktif Et"}</span>
                     <ArrowRight className="w-4 h-4" />
                   </button>
                 </form>
-
-                <div className="mt-4 pt-4 border-t border-white/10 flex items-center gap-2 text-[11px] text-slate-400">
-                  <Shield className="w-3.5 h-3.5 text-emerald-400" />
-                  <span>Kişisel verileriniz gizli tutulur, asla spam gönderilmez.</span>
-                </div>
               </div>
             ) : (
               <div className="text-center py-6">
                 <div className="w-16 h-16 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto mb-4 border border-emerald-500/30">
-                  <Check className="w-8 h-8" />
+                  <Check className="w-8 h-8 stroke-[3]" />
                 </div>
-                <h3 className="text-xl font-black text-white">Alarmınız Kuruldu!</h3>
-                <p className="text-xs text-slate-300 mt-2 max-w-sm mx-auto leading-relaxed">
-                  <strong className="text-white">{phoneName}</strong> fiyatı <strong>{formatPrice(targetPrice)}</strong> seviyesine ulaştığında <strong>{email}</strong> adresinize haber vereceğiz.
+                <h3 className="text-xl font-black text-white">
+                  Alarm Başarıyla Kuruldu!
+                </h3>
+                <p className="text-xs text-slate-300 mt-2 max-w-xs mx-auto leading-relaxed">
+                  <strong className="text-white">{phoneName}</strong> fiyatı <strong>{formatPrice(targetPrice)}</strong> seviyesine indiğinde <strong>{email}</strong> adresinize anında e-posta göndereceğiz.
                 </p>
                 <button
                   type="button"
                   onClick={() => setIsOpen(false)}
-                  className="mt-6 px-6 py-2.5 bg-white/10 hover:bg-white/20 text-white font-bold text-xs rounded-xl transition-all"
+                  className="mt-6 px-6 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs transition-colors"
                 >
                   Tamam
                 </button>

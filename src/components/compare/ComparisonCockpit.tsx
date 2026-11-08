@@ -9,6 +9,7 @@ import DeviceSelectorModal, {
   CANDIDATE_FLAGSHIPS,
 } from "./DeviceSelectorModal";
 import { formatPrice } from "@/lib/utils";
+import { backendApi } from "@/lib/api";
 
 export default function ComparisonCockpit() {
   const searchParams = useSearchParams();
@@ -27,23 +28,41 @@ export default function ComparisonCockpit() {
 
   // Sync with searchParams if present
   useEffect(() => {
-    const phonesParam = searchParams.get("phones");
-    if (phonesParam) {
-      const slugs = phonesParam.split(",");
-      const resolved = slugs
-        .map((s) => CANDIDATE_FLAGSHIPS.find((d) => d.slug === s.trim()))
-        .filter(Boolean) as CandidateDevice[];
-      if (resolved.length > 0) {
-        // Pad to up to 4 if needed
-        const merged = [...resolved];
-        while (merged.length < 4 && merged.length < CANDIDATE_FLAGSHIPS.length) {
-          const next = CANDIDATE_FLAGSHIPS.find(
-            (c) => !merged.some((m) => m.slug === c.slug)
-          );
-          if (next) merged.push(next);
-          else break;
-        }
-        setActiveDevices(merged);
+    const rawParam = searchParams.get("slugs") || searchParams.get("phones");
+    if (rawParam) {
+      const slugs = rawParam.split(",").map((s) => s.trim()).filter((x): x is string => Boolean(x));
+      if (slugs.length > 0) {
+        backendApi.comparePhones(slugs).then((apiPhones) => {
+          if (apiPhones && apiPhones.length > 0) {
+            const mapped = apiPhones.map((p) => {
+              const matchedCandidate = CANDIDATE_FLAGSHIPS.find((c) => c.slug === p.slug);
+              return {
+                slug: p.slug,
+                brand: p.brand,
+                name: p.name,
+                score: (p.rating || 9.5).toFixed(1),
+                chipset: p.specs?.performance?.chipset || matchedCandidate?.chipset || "Sekiz Çekirdekli",
+                battery: `${p.specs?.battery?.capacity || 5000} mAh`,
+                camera: `${p.specs?.camera?.mainCamera?.megapixels || p.specs?.camera?.mainMp || 50}MP Kamera`,
+                price: p.lowestPrice,
+                store: p.lowestPriceStoreName || p.storesPrices?.[0]?.store || "Mağaza",
+                image: p.image || matchedCandidate?.image,
+                isFlagship: matchedCandidate?.isFlagship ?? true,
+                hasPeriscope: matchedCandidate?.hasPeriscope ?? false,
+                hasRecordDiscount: p.isPriceDropped ?? matchedCandidate?.hasRecordDiscount ?? false,
+              };
+            });
+            setActiveDevices(mapped.slice(0, 4));
+            return;
+          }
+
+          const resolved = slugs
+            .map((s) => CANDIDATE_FLAGSHIPS.find((d) => d.slug === s))
+            .filter((x): x is CandidateDevice => Boolean(x));
+          if (resolved.length > 0) {
+            setActiveDevices(resolved.slice(0, 4));
+          }
+        });
       }
     }
   }, [searchParams]);

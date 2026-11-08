@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Store, ShieldCheck, Truck, ExternalLink, ChevronRight, Star, CheckCircle2 } from "lucide-react";
 import type { StoreInfo } from "@/types";
 import { getPhones, getStores } from "@/lib/data";
-import { resolveStoreOfferUrl } from "@/lib/utils";
+import { resolveStoreOfferUrl, getStoreRedirectUrl } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
@@ -58,18 +58,17 @@ export default async function StoresPage() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {storeList.map((store) => {
             const activeOfferCount = phones.filter((p) =>
-              p.storesPrices.some(
-                (sp) =>
-                  sp.storeSlug === store.slug ||
-                  sp.store.toLowerCase() === store.name.toLowerCase()
-              )
+              p.storesPrices?.some((sp) => sp.storeSlug.toLowerCase() === store.slug.toLowerCase())
             ).length;
-            const storeUrl =
-              store.website ||
-              resolveStoreOfferUrl(store.slug, store.name, "cep telefonu");
+
+            const redirectUrl = getStoreRedirectUrl(
+              store.slug,
+              store.name,
+              store.website || resolveStoreOfferUrl(store.slug, store.name, "cep telefonu")
+            );
 
             return (
               <div
@@ -82,7 +81,11 @@ export default async function StoresPage() {
                       <span className="text-[11px] font-semibold text-sky-600 uppercase tracking-wider">
                         {store.typeLabel}
                       </span>
-                      <h2 className="text-lg font-bold text-slate-900">{store.name}</h2>
+                      <h2 className="text-lg font-bold text-slate-900">
+                        <Link href={`/magazalar/${store.slug}`} className="hover:text-sky-600 transition-colors">
+                          {store.name}
+                        </Link>
+                      </h2>
                       <div className="flex items-center gap-1.5 mt-1 text-xs text-emerald-600 font-medium">
                         <ShieldCheck className="w-4 h-4" />
                         <span>
@@ -108,7 +111,7 @@ export default async function StoresPage() {
                       </span>
                     </div>
                     <div>
-                      <span className="text-slate-400 block">Kargo & Teslimat</span>
+                      <span className="text-slate-400 block">Kargo &amp; Teslimat</span>
                       <span className="font-bold text-slate-800 text-xs flex items-center gap-1 mt-0.5">
                         <Truck className="w-3.5 h-3.5 text-sky-600 shrink-0" />
                         <span className="truncate">{store.shippingInfo}</span>
@@ -119,18 +122,18 @@ export default async function StoresPage() {
 
                 <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
                   <Link
-                    href="/telefonlar"
+                    href={`/magazalar/${store.slug}`}
                     className="text-xs font-semibold text-slate-600 hover:text-sky-600 transition-colors"
                   >
-                    Fiyatları Karşılaştır →
+                    Mağaza Detayları →
                   </Link>
                   <a
-                    href={storeUrl}
+                    href={redirectUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-sky-50 hover:bg-sky-600 text-sky-700 hover:text-white text-xs font-semibold transition-colors"
                   >
-                    <span>Mağazayı Ziyaret Et</span>
+                    <span>Mağazaya Git</span>
                     <ExternalLink className="w-3.5 h-3.5" />
                   </a>
                 </div>

@@ -1,10 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Flame, ArrowRight, Camera, Battery, Cpu, Sparkles, Tag } from "lucide-react";
-import { useEffect } from "react";
-import { getPhones } from "@/lib/data";
+import { getPhones, getPopularPhones } from "@/lib/data";
 import type { Phone } from "@/types";
 import PhoneCard from "@/components/phone/PhoneCard";
 
@@ -14,8 +13,17 @@ export default function PopularPhonesGallery() {
   const [phones, setPhones] = useState<Phone[]>([]);
 
   useEffect(() => {
-    getPhones().then((p) => { if (p) setPhones(p); });
+    getPopularPhones(18).then((popular) => {
+      if (popular && popular.length > 0) {
+        setPhones(popular);
+      } else {
+        getPhones().then((p) => {
+          if (p) setPhones(p);
+        });
+      }
+    });
   }, []);
+
   const [activeTab, setActiveTab] = useState<WallTab>("all");
 
   const tabs: { id: WallTab; label: string; icon: React.ReactNode; count: number }[] = [
@@ -30,14 +38,21 @@ export default function PopularPhonesGallery() {
   const getFilteredWallPhones = () => {
     switch (activeTab) {
       case "flagship":
-        return phones.filter((p) => p.specs.performance.ram >= 12).slice(0, 18);
+        return phones.filter((p) => (p.specs?.performance?.ram ?? 0) >= 12).slice(0, 18);
       case "camera":
         return [...phones]
-          .sort((a, b) => b.specs.camera.mainCamera.megapixels - a.specs.camera.mainCamera.megapixels)
+          .sort(
+            (a, b) =>
+              (Number(b.specs?.camera?.mainMp || b.specs?.camera?.mainCamera?.megapixels) || 0) -
+              (Number(a.specs?.camera?.mainMp || a.specs?.camera?.mainCamera?.megapixels) || 0)
+          )
           .slice(0, 18);
       case "battery":
         return [...phones]
-          .sort((a, b) => b.specs.battery.capacity - a.specs.battery.capacity)
+          .sort(
+            (a, b) =>
+              (Number(b.specs?.battery?.capacity) || 0) - (Number(a.specs?.battery?.capacity) || 0)
+          )
           .slice(0, 18);
       case "budget":
         return phones
@@ -76,7 +91,7 @@ export default function PopularPhonesGallery() {
             href="/telefonlar"
             className="px-5 py-2.5 rounded-2xl bg-sky-600 hover:bg-sky-700 text-white text-xs sm:text-sm font-black inline-flex items-center gap-2 shadow-md transition-colors shrink-0"
           >
-            <span>97 Modelin Tamamını Filtele</span>
+            <span>Tüm Modelleri Filtrele</span>
             <ArrowRight className="w-4 h-4" />
           </Link>
         </div>

@@ -230,17 +230,17 @@ export function resolveStoreOfferUrl(
   phoneName: string,
   rawUrl?: string
 ): string {
-  const slug = (storeSlug || '').toLowerCase().trim();
+  const slug = (storeSlug || "").toLowerCase().trim();
   const q = encodeURIComponent(phoneName.trim());
-  const qPlus = encodeURIComponent(phoneName.trim()).replace(/%20/g, '+');
+  const qPlus = encodeURIComponent(phoneName.trim()).replace(/%20/g, "+");
 
   // If a valid full product URL exists and is not a broken mock pattern, use it
   if (
     rawUrl &&
-    (rawUrl.startsWith('http://') || rawUrl.startsWith('https://')) &&
-    !rawUrl.includes('enucuztelefon.com') &&
-    !rawUrl.includes('-10000000') &&
-    !rawUrl.includes('HBC0000100000') &&
+    (rawUrl.startsWith("http://") || rawUrl.startsWith("https://")) &&
+    !rawUrl.includes("enucuztelefon.com") &&
+    !rawUrl.includes("-10000000") &&
+    !rawUrl.includes("HBC0000100000") &&
     rawUrl.length > 20
   ) {
     return rawUrl;
@@ -248,58 +248,83 @@ export function resolveStoreOfferUrl(
 
   // Guaranteed working destination store links (Akakce / Cimri standard)
   switch (slug) {
-    case 'trendyol':
+    case "trendyol":
       return `https://www.trendyol.com/sr?q=${qPlus}`;
-    case 'hepsiburada':
+    case "hepsiburada":
       return `https://www.hepsiburada.com/ara?q=${qPlus}`;
-    case 'amazon':
-    case 'amazon-tr':
-    case 'amazon turkiye':
+    case "amazon":
+    case "amazon-tr":
+    case "amazon turkiye":
       return `https://www.amazon.com.tr/s?k=${qPlus}`;
-    case 'teknosa':
+    case "teknosa":
       return `https://www.teknosa.com/arama/?s=${qPlus}`;
-    case 'vatan':
-    case 'vatan-bilgisayar':
+    case "vatan":
+    case "vatan-bilgisayar":
       return `https://www.vatanbilgisayar.com/arama/${q}/`;
-    case 'mediamarkt':
+    case "mediamarkt":
       return `https://www.mediamarkt.com.tr/tr/search.html?query=${qPlus}`;
-    case 'n11':
+    case "n11":
       return `https://www.n11.com/arama?q=${qPlus}`;
-    case 'pttavm':
+    case "pttavm":
       return `https://www.pttavm.com/arama?q=${qPlus}`;
-    case 'pazarama':
+    case "pazarama":
       return `https://www.pazarama.com/arama?q=${qPlus}`;
-    case 'turkcell':
-    case 'turkcell-pasaj':
+    case "turkcell":
+    case "turkcell-pasaj":
       return `https://pasaj.turkcell.com.tr/arama?q=${qPlus}`;
-    case 'vodafone':
-      return 'https://www.vodafone.com.tr/faturaya-ek/telefonlar';
-    case 'turk-telekom':
-    case 'turktelekom':
-      return 'https://bireysel.turktelekom.com.tr/cihazlar';
-    case 'itopya':
+    case "vodafone":
+      return "https://www.vodafone.com.tr/faturaya-ek/telefonlar";
+    case "turk-telekom":
+    case "turktelekom":
+      return "https://bireysel.turktelekom.com.tr/cihazlar";
+    case "itopya":
       return `https://www.itopya.com/Arama?q=${qPlus}`;
-    case 'sinerji':
+    case "sinerji":
       return `https://www.sinerji.gen.tr/arama?q=${qPlus}`;
-    case 'incehesap':
+    case "incehesap":
       return `https://www.incehesap.com/arama/${q}/`;
-    case 'ciceksepeti':
+    case "ciceksepeti":
       return `https://www.ciceksepeti.com/arama?query=${qPlus}`;
-    case 'applestore':
-    case 'apple':
-    case 'apple-store':
-      return 'https://www.apple.com/tr/iphone/';
-    case 'samsungstore':
-    case 'samsung':
-    case 'samsung-shop':
-      return 'https://www.samsung.com/tr/smartphones/';
-    case 'mistore':
-    case 'xiaomi':
-    case 'mi-store':
-      return 'https://www.mi.com/tr/phone/';
+    case "applestore":
+    case "apple":
+    case "apple-store":
+      return "https://www.apple.com/tr/iphone/";
+    case "samsungstore":
+    case "samsung":
+    case "samsung-shop":
+      return "https://www.samsung.com/tr/smartphones/";
+    case "mistore":
+    case "xiaomi":
+    case "mi-store":
+      return "https://www.mi.com/tr/phone/";
     default:
       return `https://www.hepsiburada.com/ara?q=${qPlus}`;
   }
+}
+
+/**
+ * Generates the backend redirect URL for outbound store links.
+ * When visited, backend logs clicks, validates the domain, and redirects (302).
+ */
+export function getStoreRedirectUrl(
+  storeSlug: string,
+  phoneName: string,
+  rawUrl?: string
+): string {
+  const backendBase =
+    (typeof window !== "undefined"
+      ? process.env.NEXT_PUBLIC_API_URL
+      : process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL) ||
+    "http://localhost:5000/api/v1";
+
+  const resolved = resolveStoreOfferUrl(storeSlug, phoneName, rawUrl);
+  const params = new URLSearchParams({
+    store: storeSlug,
+    product: phoneName,
+    url: resolved,
+  });
+
+  return `${backendBase}/redirect?${params.toString()}`;
 }
 
 /**

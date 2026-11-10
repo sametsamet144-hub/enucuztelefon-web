@@ -466,7 +466,11 @@ export default function StoreComparisonTable({
 
             {/* Primary Store Offer CTA Button */}
             <a
-              href={activeStore.url}
+              href={
+                (activeStore.url && (activeStore.url.startsWith("http://") || activeStore.url.startsWith("https://")))
+                  ? activeStore.url
+                  : resolveStoreOfferUrl(activeStore.storeSlug || activeStore.store, phoneName, activeStore.url)
+              }
               target="_blank"
               rel="noopener noreferrer"
               className="w-full py-3.5 px-5 rounded-2xl bg-[#2b8cff] hover:bg-blue-500 active:scale-[0.99] text-white font-black text-xs sm:text-sm shadow-lg shadow-blue-500/25 flex items-center justify-center gap-2 transition-all"
@@ -584,7 +588,11 @@ export default function StoreComparisonTable({
                     </div>
 
                     <a
-                      href={item.url}
+                      href={
+                        (item.url && (item.url.startsWith("http://") || item.url.startsWith("https://")))
+                          ? item.url
+                          : resolveStoreOfferUrl(item.storeSlug || item.store, phoneName, item.url)
+                      }
                       target="_blank"
                       rel="noopener noreferrer"
                       onClick={(e) => e.stopPropagation()}

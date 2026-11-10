@@ -39,7 +39,7 @@ export default function PhoneCard({
   const brandName = phone.brand;
   const displayName = phone.name;
   const ratingVal = (phone.rating || 9.2).toFixed(1);
-  const discountPercent = phone.priceDropPercent || (phone.isPriceDropped ? 18 : 0);
+  const discountPercent = (phone.lowestPrice && phone.lowestPrice > 0) ? (phone.priceDropPercent || 0) : 0;
 
   const brandLower = (phone.brand || "").toLowerCase();
   let holoGlowClass = "holo-glow-default";
@@ -67,21 +67,15 @@ export default function PhoneCard({
   const strikethroughPrice =
     phone.highestPrice && phone.highestPrice > displayPrice
       ? phone.highestPrice
-      : Math.round(displayPrice * 1.15);
+      : 0;
 
-  let cheapestStore = phone.lowestPriceStoreName || "Amazon TR";
+  let cheapestStore = phone.lowestPriceStoreName || "";
   let storeList: { store: string; price: number }[] = [];
 
   if (phone.storesPrices && phone.storesPrices.length > 0) {
     const sorted = [...phone.storesPrices].sort((a, b) => a.price - b.price);
     cheapestStore = sorted[0].store;
     storeList = sorted.slice(0, 3).map((s) => ({ store: s.store, price: s.price }));
-  } else if (displayPrice > 0) {
-    storeList = [
-      { store: cheapestStore, price: displayPrice },
-      { store: "Hepsiburada", price: Math.round(displayPrice * 1.02) },
-      { store: "Trendyol", price: Math.round(displayPrice * 1.03) },
-    ];
   }
 
   // ── List Layout (if user selects list view) ──
@@ -295,30 +289,39 @@ export default function PhoneCard({
 
           {/* 5. Fiyat Kutusu */}
           <div className="h-[92px] bg-[#0e0e10] p-3 rounded-xl border border-zinc-700/80 mb-3 flex flex-col justify-between shrink-0">
-            <div className="flex items-baseline justify-between">
-              <div>
-                <span className="text-[10px] text-zinc-400 block font-medium">En Düşük Fiyat</span>
-                <span className="text-[18px] font-extrabold text-white tracking-tight leading-none mt-0.5 block">
-                  {formatPrice(displayPrice)}
-                </span>
+            {displayPrice > 0 ? (
+              <>
+                <div className="flex items-baseline justify-between">
+                  <div>
+                    <span className="text-[10px] text-zinc-400 block font-medium">En Düşük Fiyat</span>
+                    <span className="text-[18px] font-extrabold text-white tracking-tight leading-none mt-0.5 block">
+                      {formatPrice(displayPrice)}
+                    </span>
+                  </div>
+                  {strikethroughPrice > displayPrice && (
+                    <span className="text-xs text-zinc-500 line-through">
+                      {formatPrice(strikethroughPrice)}
+                    </span>
+                  )}
+                </div>
+                <div className="pt-2 border-t border-zinc-800 flex items-center justify-between w-full gap-2">
+                  <div className="flex flex-col leading-tight">
+                    <span className="text-[11px] text-zinc-400">En ucuz:</span>
+                    <span className="text-xs font-semibold text-[#2997ff]">{cheapestStore || "Doğrulanmış Satıcı"}</span>
+                  </div>
+                  <div className="flex items-center text-right shrink-0">
+                    <span className="text-[11px] font-medium text-emerald-400 flex items-center gap-1">
+                      <span className="radar-pulse-ring w-2 h-2 rounded-full bg-emerald-400 mr-0.5" /> Resmi Distribütör
+                    </span>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div className="flex flex-col justify-center items-center h-full text-center">
+                <span className="text-[13px] font-bold text-zinc-300">Stokta Bulunmuyor</span>
+                <span className="text-[10px] text-zinc-500 mt-0.5">Doğrulanmış aktif fiyat teklifi yok</span>
               </div>
-              {strikethroughPrice > displayPrice && (
-                <span className="text-xs text-zinc-500 line-through">
-                  {formatPrice(strikethroughPrice)}
-                </span>
-              )}
-            </div>
-            <div className="pt-2 border-t border-zinc-800 flex items-center justify-between w-full gap-2">
-              <div className="flex flex-col leading-tight">
-                <span className="text-[11px] text-zinc-400">En ucuz:</span>
-                <span className="text-xs font-semibold text-[#2997ff]">{cheapestStore}</span>
-              </div>
-              <div className="flex items-center text-right shrink-0">
-                <span className="text-[11px] font-medium text-emerald-400 flex items-center gap-1">
-                  <span className="radar-pulse-ring w-2 h-2 rounded-full bg-emerald-400 mr-0.5" /> Resmi Distribütör
-                </span>
-              </div>
-            </div>
+            )}
           </div>
 
           {/* 6. Mağaza Listesi (Verified Offers) */}

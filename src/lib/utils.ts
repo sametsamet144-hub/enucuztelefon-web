@@ -222,24 +222,72 @@ export function isRecentRelease(releaseDate: string, days = 90): boolean {
 }
 
 /**
- * Validates real outbound store offer URLs.
- * If no real offer URL is provided by the backend API, returns empty string.
- * Linkler ve fiyatlar için sahte fallback üretilmez — data yoksa boştur.
+ * Validates or resolves real outbound store offer URLs.
+ * Checks all provided arguments for a direct http/https link.
+ * If no direct product URL is supplied, constructs a safe retailer search destination so outbound links never stay empty.
  */
 export function resolveStoreOfferUrl(
-  _storeSlug?: string,
-  _phoneName?: string,
-  rawUrl?: string
+  arg1?: string,
+  arg2?: string,
+  arg3?: string
 ): string {
-  if (
-    rawUrl &&
-    typeof rawUrl === "string" &&
-    (rawUrl.startsWith("http://") || rawUrl.startsWith("https://")) &&
-    !rawUrl.includes("enucuztelefon.com") &&
-    !rawUrl.includes("-10000000") &&
-    !rawUrl.includes("HBC0000100000")
-  ) {
-    return rawUrl;
+  // Check if any argument is already a direct valid absolute URL
+  const directCandidate = [arg1, arg2, arg3].find(
+    (arg) =>
+      typeof arg === "string" &&
+      (arg.startsWith("http://") || arg.startsWith("https://")) &&
+      !arg.includes("enucuztelefon.com") &&
+      !arg.includes("-10000000") &&
+      !arg.includes("HBC0000100000")
+  );
+
+  if (directCandidate) {
+    return directCandidate;
+  }
+
+  // If no direct URL argument was provided, try generating a store search link
+  // from the store name/slug and product query
+  const store = [arg1, arg2, arg3].find(
+    (arg) => typeof arg === "string" && arg.trim().length > 0 && !arg.startsWith("http")
+  );
+  const queryArg = [arg2, arg3, arg1].find(
+    (arg) => typeof arg === "string" && arg.trim().length > 0 && !arg.startsWith("http") && arg !== store
+  );
+
+  if (store && queryArg) {
+    const s = store.toLowerCase().trim();
+    const q = encodeURIComponent(queryArg.trim());
+    if (s.includes("trendyol")) return `https://www.trendyol.com/sr?q=${q}`;
+    if (s.includes("hepsiburada")) return `https://www.hepsiburada.com/ara?q=${q}`;
+    if (s.includes("amazon")) return `https://www.amazon.com.tr/s?k=${q}`;
+    if (s.includes("teknosa")) return `https://www.teknosa.com/arama?s=${q}`;
+    if (s.includes("mediamarkt")) return `https://www.mediamarkt.com.tr/tr/search.html?query=${q}`;
+    if (s.includes("vatan")) return `https://www.vatanbilgisayar.com/arama/${q}/`;
+    if (s.includes("n11")) return `https://www.n11.com/arama?q=${q}`;
+    if (s.includes("pttavm")) return `https://www.pttavm.com/arama?q=${q}`;
+    if (s.includes("ciceksepeti")) return `https://www.ciceksepeti.com/arama?query=${q}`;
+    if (s.includes("turkcell")) return `https://www.turkcell.com.tr/pasaj/arama?q=${q}`;
+    if (s.includes("vodafone")) return `https://www.vodafone.com.tr/her-sey-yanimda/arama?q=${q}`;
+    if (s.includes("apple")) return `https://www.apple.com/tr/search/${q}`;
+    if (s.includes("samsung")) return `https://www.samsung.com/tr/search/?searchvalue=${q}`;
+    if (s.includes("mi") || s.includes("xiaomi")) return `https://www.mi.com/tr/search/${q}`;
+    if (s.includes("huawei")) return `https://consumer.huawei.com/tr/search/?keyword=${q}`;
+    if (s.includes("honor")) return `https://www.honor.com/tr/search/?keyword=${q}`;
+    return `https://www.google.com/search?q=${encodeURIComponent(`${store} ${queryArg} satin al`)}`;
+  }
+
+  if (store) {
+    const s = store.toLowerCase().trim();
+    if (s.includes("trendyol")) return "https://www.trendyol.com";
+    if (s.includes("hepsiburada")) return "https://www.hepsiburada.com";
+    if (s.includes("amazon")) return "https://www.amazon.com.tr";
+    if (s.includes("teknosa")) return "https://www.teknosa.com";
+    if (s.includes("mediamarkt")) return "https://www.mediamarkt.com.tr";
+    if (s.includes("vatan")) return "https://www.vatanbilgisayar.com";
+    if (s.includes("n11")) return "https://www.n11.com";
+    if (s.includes("pttavm")) return "https://www.pttavm.com";
+    if (s.includes("apple")) return "https://www.apple.com/tr";
+    if (s.includes("samsung")) return "https://www.samsung.com/tr";
   }
 
   return "";

@@ -278,10 +278,14 @@ export default function MobilePhoneCard({ phone, index = 0 }: MobilePhoneCardPro
       const second = sorted[1];
       const moreCount = Math.max(0, (phone.storesCount || sorted.length) - 2);
       secondStoreText = `${second.store} ${formatPrice(second.price)}${
-        moreCount > 0 ? ` • +${moreCount} mağaza` : " • +8 mağaza"
+        moreCount > 0 ? ` • +${moreCount} mağaza` : ""
       }`;
+    } else if (phone.storesPrices && phone.storesPrices.length === 1) {
+      cheapestStore = phone.storesPrices[0].store;
+      secondStoreText = "";
     } else {
-      secondStoreText = "Hepsiburada • +14 mağaza";
+      cheapestStore = "";
+      secondStoreText = "";
     }
   }
 

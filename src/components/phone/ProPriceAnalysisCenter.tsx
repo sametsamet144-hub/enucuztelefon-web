@@ -448,11 +448,10 @@ export default function ProPriceAnalysisCenter({
     );
   }
 
-  const primaryTargetUrl = resolveStoreOfferUrl(
-    selectedStore.url,
-    selectedStore.name,
-    phone.name
-  );
+  const primaryTargetUrl =
+    (selectedStore.url && (selectedStore.url.startsWith("http://") || selectedStore.url.startsWith("https://")))
+      ? selectedStore.url
+      : resolveStoreOfferUrl(selectedStore.slug || selectedStore.name, phone.name, selectedStore.url);
 
   return (
     <>
@@ -563,7 +562,10 @@ export default function ProPriceAnalysisCenter({
                 <div className="flex flex-col gap-2.5" id="store-ranking-list">
                   {storeItems.map((item) => {
                     const isSelected = item.rank === selectedRank;
-                    const offerUrl = resolveStoreOfferUrl(item.url, item.name, phone.name);
+                    const offerUrl =
+                      (item.url && (item.url.startsWith("http://") || item.url.startsWith("https://")))
+                        ? item.url
+                        : resolveStoreOfferUrl(item.slug || item.name, phone.name, item.url);
 
                     return (
                       <div

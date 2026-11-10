@@ -82,9 +82,7 @@ export default function PhoneCard({
   if (variant === "list") {
     return (
       <article
-        className={`phone-card group rounded-2xl border border-zinc-700/80 bg-[#131315]/95 hover:border-[#2997ff]/60 p-4 flex flex-col sm:flex-row gap-4 items-center justify-between transition-all duration-300 shadow-lg ${
-          isTopDeal ? "border-beam-container" : ""
-        }`}
+        className="phone-card group rounded-2xl border border-zinc-700/80 bg-[#131315]/95 hover:border-[#2997ff]/60 p-4 flex flex-col sm:flex-row gap-4 items-center justify-between transition-all duration-300 shadow-lg"
         onMouseMove={(e) => {
           const r = e.currentTarget.getBoundingClientRect();
           e.currentTarget.style.setProperty("--card-mouse-x", `${e.clientX - r.left}px`);
@@ -157,7 +155,7 @@ export default function PhoneCard({
 
             <Link
               href={`/telefon/${phone.slug}`}
-              className="btn-sheen-beam px-4 py-2 bg-[#2997ff] hover:bg-[#1d8cf8] text-white text-xs font-bold rounded-xl transition-all shadow-md flex items-center gap-1.5"
+              className="px-4 py-2 bg-[#2997ff] hover:bg-[#1d8cf8] text-white text-xs font-bold rounded-xl transition-all shadow-md flex items-center gap-1.5"
             >
               <span>Fiyatları Gör & Karşılaştır</span>
               <ArrowRight className="w-3.5 h-3.5" />
@@ -171,9 +169,7 @@ export default function PhoneCard({
   // ── Default Grid Layout matching stitch_apple_tarz_web_tasar_m_(4) ──
   return (
     <article
-      className={`phone-card bg-[#131315]/95 backdrop-blur-md border border-zinc-700/80 rounded-2xl p-4 flex flex-col justify-between group shadow-lg hover:border-[#2997ff]/60 ${
-        isTopDeal ? "border-beam-container" : ""
-      }`}
+      className="phone-card bg-[#131315]/95 backdrop-blur-md border border-zinc-700/80 rounded-2xl p-4 flex flex-col justify-between group shadow-lg hover:border-[#2997ff]/60"
       onMouseMove={(e) => {
         const r = e.currentTarget.getBoundingClientRect();
         e.currentTarget.style.setProperty("--card-mouse-x", `${e.clientX - r.left}px`);
@@ -234,7 +230,6 @@ export default function PhoneCard({
           {/* 2. Mockup & Ambient Holographic Glow */}
           <div className="h-36 w-full flex items-center justify-center relative mb-3 bg-gradient-to-b from-[#18181b]/60 to-[#0e0e10] rounded-xl overflow-hidden border border-zinc-700/50">
             <div className="stage-plasma-disk" />
-            <div className="stage-ring-outer" />
             <div className={`absolute w-28 h-28 rounded-full ${holoGlowClass} blur-xl pointer-events-none transition-all duration-500 device-ambient-glow`} />
             <Link
               href={`/telefon/${phone.slug}`}
@@ -346,7 +341,7 @@ export default function PhoneCard({
         <div className="flex items-center gap-2 pt-2 border-t border-zinc-700/80 mt-auto relative z-10">
           <Link
             href={`/telefon/${phone.slug}`}
-            className="flex-1 bg-[#2997ff] hover:bg-[#1d82ea] text-white font-semibold py-2 rounded-xl text-xs transition-colors shadow-md shadow-[#2997ff]/25 hover:shadow-lg hover:shadow-[#2997ff]/40 btn-sheen-beam text-center block"
+            className="flex-1 bg-[#2997ff] hover:bg-[#1d82ea] text-white font-semibold py-2 rounded-xl text-xs transition-colors shadow-md shadow-[#2997ff]/25 hover:shadow-lg hover:shadow-[#2997ff]/40 text-center block"
           >
             Fiyatları Gör & Karşılaştır
           </Link>

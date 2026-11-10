@@ -1047,16 +1047,10 @@ export default function PhoneCatalogClient({
   overflow: hidden !important;
 }
 .anim-border-beam::before {
-  content: '' !important;
-  display: block !important;
-  position: absolute !important;
-  inset: -50% !important;
-  background: conic-gradient(from 0deg, transparent 0deg, #2997ff 60deg, transparent 120deg, #47e266 220deg, transparent 280deg) !important;
-  animation: border-beam-rotate 4s linear infinite !important;
-  z-index: 0 !important;
+  display: none !important;
 }
 .anim-border-beam-amber::before {
-  background: conic-gradient(from 0deg, transparent 0deg, #ff9500 70deg, transparent 140deg, #ff2d55 240deg, transparent 300deg) !important;
+  display: none !important;
 }
 .anim-card-inner {
   position: relative !important;
@@ -1072,16 +1066,7 @@ export default function PhoneCatalogClient({
   overflow: hidden !important;
 }
 .anim-sheen-btn::after {
-  content: '' !important;
-  display: block !important;
-  position: absolute !important;
-  top: 0 !important;
-  left: 0 !important;
-  width: 60% !important;
-  height: 100% !important;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.45), transparent) !important;
-  animation: sheen-sweep 3.2s cubic-bezier(0.4, 0, 0.2, 1) infinite !important;
-  pointer-events: none !important;
+  display: none !important;
 }
 .anim-badge-pulse {
   animation: badge-breathe 2.4s ease-in-out infinite !important;

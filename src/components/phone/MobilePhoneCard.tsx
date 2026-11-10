@@ -335,9 +335,6 @@ export default function MobilePhoneCard({ phone, index = 0 }: MobilePhoneCardPro
   const installmentText =
     override?.benefit2 || (brandLower === "samsung" ? "Vade Farksız 3 Taksit" : "Peşin 3 Taksit");
 
-  const isBlueBeam = override?.beamType === "blue-green" || index === 0;
-  const isAmberBeam = override?.beamType === "amber-red" || index === 2;
-
   const innerContent = (
     <>
       {/* Top Badges & Micro Actions */}
@@ -784,7 +781,7 @@ export default function MobilePhoneCard({ phone, index = 0 }: MobilePhoneCardPro
         >
           <Link
             href={`/telefon/${phone.slug}`}
-            className="anim-sheen-btn flex-1 h-8 rounded-full bg-primary-container text-on-primary-container font-label-md text-label-md font-semibold flex items-center justify-center active:scale-95 shadow-[0_2px_10px_rgba(41,151,255,0.35)] transition-transform"
+            className="flex-1 h-8 rounded-full bg-primary-container text-on-primary-container font-label-md text-label-md font-semibold flex items-center justify-center active:scale-95 shadow-[0_2px_10px_rgba(41,151,255,0.35)] transition-transform"
             style={{
               flex: 1,
               height: "32px",
@@ -834,68 +831,6 @@ export default function MobilePhoneCard({ phone, index = 0 }: MobilePhoneCardPro
       </div>
     </>
   );
-
-  if (isBlueBeam) {
-    return (
-      <div
-        className="anim-border-beam rounded-DEFAULT p-[1.5px] shadow-[0_4px_24px_rgba(41,151,255,0.22)] group transition-all duration-300 hover:scale-[1.015] soft-lift-card"
-        style={{
-          position: "relative",
-          overflow: "hidden",
-          borderRadius: "16px",
-          padding: "1.5px",
-          boxShadow: "0 4px 24px rgba(41, 151, 255, 0.22)",
-        }}
-      >
-        <div
-          className="anim-card-inner flex flex-col bg-surface-container-low p-2.5 h-full relative"
-          style={{
-            position: "relative",
-            zIndex: 1,
-            borderRadius: "calc(16px - 1.5px)",
-            backgroundColor: "#1c1b1d",
-            padding: "10px",
-            height: "100%",
-            display: "flex",
-            flexDirection: "column",
-          }}
-        >
-          {innerContent}
-        </div>
-      </div>
-    );
-  }
-
-  if (isAmberBeam) {
-    return (
-      <div
-        className="anim-border-beam anim-border-beam-amber rounded-DEFAULT p-[1.5px] shadow-[0_4px_24px_rgba(255,45,85,0.2)] group transition-all duration-300 hover:scale-[1.015] soft-lift-card"
-        style={{
-          position: "relative",
-          overflow: "hidden",
-          borderRadius: "16px",
-          padding: "1.5px",
-          boxShadow: "0 4px 24px rgba(255, 45, 85, 0.2)",
-        }}
-      >
-        <div
-          className="anim-card-inner flex flex-col bg-surface-container-low p-2.5 h-full relative"
-          style={{
-            position: "relative",
-            zIndex: 1,
-            borderRadius: "calc(16px - 1.5px)",
-            backgroundColor: "#1c1b1d",
-            padding: "10px",
-            height: "100%",
-            display: "flex",
-            flexDirection: "column",
-          }}
-        >
-          {innerContent}
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div

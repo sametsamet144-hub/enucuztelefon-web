@@ -452,9 +452,6 @@
   .inset-0 {
     inset: 0px;
   }
-  .inset-\[-50\%\] {
-    inset: -50%;
-  }
   .-top-1\.5 {
     top: calc(var(--spacing) * -1.5);
   }
@@ -1332,9 +1329,6 @@
   .transform {
     transform: var(--tw-rotate-x, ) var(--tw-rotate-y, ) var(--tw-rotate-z, ) var(--tw-skew-x, ) var(--tw-skew-y, );
   }
-  .animate-\[border-beam-rotate_6s_linear_infinite\] {
-    animation: border-beam-rotate 6s linear infinite;
-  }
   .animate-bounce {
     animation: var(--animate-bounce);
   }
@@ -1592,9 +1586,6 @@
   }
   .rounded-\[28px\] {
     border-radius: 28px;
-  }
-  .rounded-\[calc\(1rem-1\.5px\)\] {
-    border-radius: calc(1rem - 1.5px);
   }
   .rounded-full {
     border-radius: calc(infinity * 1px);
@@ -3271,9 +3262,6 @@
   .bg-gradient-to-tr {
     --tw-gradient-position: to top right in oklab;
     background-image: linear-gradient(var(--tw-gradient-stops));
-  }
-  .bg-\[conic-gradient\(from_0deg\,transparent_0deg\,\#2997ff_60deg\,transparent_120deg\,\#47e266_220deg\,transparent_280deg\)\] {
-    background-image: conic-gradient(from 0deg,transparent 0deg,#2997ff 60deg,transparent 120deg,#47e266 220deg,transparent 280deg);
   }
   .from-\[\#0f1f1c\] {
     --tw-gradient-from: #0f1f1c;
@@ -5160,14 +5148,6 @@
   }
   .shadow-\[0_4px_24px_rgba\(41\,151\,255\,0\.5\)\] {
     --tw-shadow: 0 4px 24px var(--tw-shadow-color, rgba(41,151,255,0.5));
-    box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
-  }
-  .shadow-\[0_4px_24px_rgba\(41\,151\,255\,0\.22\)\] {
-    --tw-shadow: 0 4px 24px var(--tw-shadow-color, rgba(41,151,255,0.22));
-    box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
-  }
-  .shadow-\[0_4px_24px_rgba\(255\,45\,85\,0\.2\)\] {
-    --tw-shadow: 0 4px 24px var(--tw-shadow-color, rgba(255,45,85,0.2));
     box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
   }
   .shadow-\[0_8px_20px_rgba\(0\,0\,0\,0\.6\)\] {
@@ -7376,15 +7356,10 @@
   overflow: hidden;
 }
 .anim-border-beam::before {
-  content: '';
-  position: absolute;
-  inset: -50%;
-  background: conic-gradient(from 0deg, transparent 0deg, #2997ff 60deg, transparent 120deg, #47e266 220deg, transparent 280deg);
-  animation: border-beam-rotate 4s linear infinite;
-  z-index: 0;
+  display: none;
 }
 .anim-border-beam-amber::before {
-  background: conic-gradient(from 0deg, transparent 0deg, #ff9500 70deg, transparent 140deg, #ff2d55 240deg, transparent 300deg);
+  display: none;
 }
 .anim-card-inner {
   position: relative;
@@ -7395,19 +7370,7 @@
   position: relative;
 }
 .border-beam-container::after {
-  content: '';
-  position: absolute;
-  inset: -1px;
-  border-radius: inherit;
-  padding: 1px;
-  background: conic-gradient(from 0deg at 50% 50%, transparent 0deg, #2997ff 60deg, #38bdf8 120deg, transparent 180deg);
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  pointer-events: none;
-  z-index: 30;
-  animation: rotateConicBeam 4.5s linear infinite;
+  display: none;
 }
 .anim-float-3d {
   animation: float-phone 4.5s ease-in-out infinite;
@@ -7418,15 +7381,7 @@
   overflow: hidden;
 }
 .anim-sheen-btn::after, .btn-sheen-beam::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 60%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.45), transparent);
-  animation: sheen-sweep 3.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-  pointer-events: none;
+  display: none;
 }
 .anim-badge-pulse, .badge-pulse {
   animation: badge-breathe 2.4s ease-in-out infinite;
@@ -7566,13 +7521,7 @@
   pointer-events: none;
 }
 .stage-ring-outer {
-  position: absolute;
-  width: 155px;
-  height: 155px;
-  border-radius: 9999px;
-  border: 1px dashed rgba(255, 255, 255, 0.08);
-  pointer-events: none;
-  animation: rotateConicBeam 28s linear infinite;
+  display: none;
 }
 .card-backdrop-aurora {
   position: absolute;
@@ -7672,16 +7621,10 @@
   overflow: hidden !important;
 }
 .anim-border-beam::before {
-  content: '' !important;
-  display: block !important;
-  position: absolute !important;
-  inset: -50% !important;
-  background: conic-gradient(from 0deg, transparent 0deg, #2997ff 60deg, transparent 120deg, #47e266 220deg, transparent 280deg) !important;
-  animation: border-beam-rotate 4s linear infinite !important;
-  z-index: 0 !important;
+  display: none !important;
 }
 .anim-border-beam-amber::before {
-  background: conic-gradient(from 0deg, transparent 0deg, #ff9500 70deg, transparent 140deg, #ff2d55 240deg, transparent 300deg) !important;
+  display: none !important;
 }
 .anim-card-inner {
   position: relative !important;
@@ -7697,16 +7640,7 @@
   overflow: hidden !important;
 }
 .anim-sheen-btn::after {
-  content: '' !important;
-  display: block !important;
-  position: absolute !important;
-  top: 0 !important;
-  left: 0 !important;
-  width: 60% !important;
-  height: 100% !important;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.45), transparent) !important;
-  animation: sheen-sweep 3.2s cubic-bezier(0.4, 0, 0.2, 1) infinite !important;
-  pointer-events: none !important;
+  display: none !important;
 }
 .anim-badge-pulse {
   animation: badge-breathe 2.4s ease-in-out infinite !important;

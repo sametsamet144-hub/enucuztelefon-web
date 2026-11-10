@@ -540,21 +540,16 @@
   100% { transform: scale(2.4); opacity: 0; }
 }
 
-/* Rotating Conic Border Gradient Beams */
+/* Rotating Conic Border Gradient Beams - DISABLED */
 .anim-border-beam {
   position: relative;
   overflow: hidden;
 }
 .anim-border-beam::before {
-  content: '';
-  position: absolute;
-  inset: -50%;
-  background: conic-gradient(from 0deg, transparent 0deg, #2997ff 60deg, transparent 120deg, #47e266 220deg, transparent 280deg);
-  animation: border-beam-rotate 4s linear infinite;
-  z-index: 0;
+  display: none;
 }
 .anim-border-beam-amber::before {
-  background: conic-gradient(from 0deg, transparent 0deg, #ff9500 70deg, transparent 140deg, #ff2d55 240deg, transparent 300deg);
+  display: none;
 }
 .anim-card-inner {
   position: relative;
@@ -566,19 +561,7 @@
   position: relative;
 }
 .border-beam-container::after {
-  content: '';
-  position: absolute;
-  inset: -1px;
-  border-radius: inherit;
-  padding: 1px;
-  background: conic-gradient(from 0deg at 50% 50%, transparent 0deg, #2997ff 60deg, #38bdf8 120deg, transparent 180deg);
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  pointer-events: none;
-  z-index: 30;
-  animation: rotateConicBeam 4.5s linear infinite;
+  display: none;
 }
 
 /* 3D Device Float Animation */
@@ -587,7 +570,7 @@
   will-change: transform;
 }
 
-/* Sheen Sweeper on Action Buttons */
+/* Sheen Sweeper on Action Buttons - DISABLED */
 .anim-sheen-btn,
 .btn-sheen-beam {
   position: relative;
@@ -595,15 +578,7 @@
 }
 .anim-sheen-btn::after,
 .btn-sheen-beam::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 60%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.45), transparent);
-  animation: sheen-sweep 3.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-  pointer-events: none;
+  display: none;
 }
 
 /* Badge Pulse */
@@ -752,13 +727,7 @@
   pointer-events: none;
 }
 .stage-ring-outer {
-  position: absolute;
-  width: 155px;
-  height: 155px;
-  border-radius: 9999px;
-  border: 1px dashed rgba(255, 255, 255, 0.08);
-  pointer-events: none;
-  animation: rotateConicBeam 28s linear infinite;
+  display: none;
 }
 .card-backdrop-aurora {
   position: absolute;

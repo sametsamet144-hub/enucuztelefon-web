@@ -460,13 +460,10 @@ export default function ProPriceAnalysisCenter({
         <div className="absolute -top-24 left-1/4 w-96 h-96 bg-primary-container/10 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute -bottom-24 right-1/4 w-96 h-96 bg-tertiary/10 rounded-full blur-3xl pointer-events-none" />
 
-        {/* ── COCKPIT CARD WRAPPER WITH ROTATING BORDER-BEAM ── */}
-        <div className="relative rounded-2xl p-[1.5px] bg-[#1c1b1d] border border-white/[0.08] shadow-[0_20px_60px_rgba(0,0,0,0.85)] overflow-hidden">
-          {/* Rotating Conic Border Gradient Beam */}
-          <div className="absolute inset-[-50%] bg-[conic-gradient(from_0deg,transparent_0deg,#2997ff_60deg,transparent_120deg,#47e266_220deg,transparent_280deg)] animate-[border-beam-rotate_6s_linear_infinite] opacity-60 pointer-events-none" />
-
+        {/* ── COCKPIT CARD WRAPPER ── */}
+        <div className="relative rounded-2xl bg-[#1c1b1d] border border-white/[0.08] shadow-[0_20px_60px_rgba(0,0,0,0.85)] overflow-hidden">
           {/* MAIN OBSIDIAN COCKPIT CORE */}
-          <div className="relative rounded-[calc(1rem-1.5px)] bg-[#131315] p-5 sm:p-8 flex flex-col gap-8 text-[#e5e1e4]">
+          <div className="relative rounded-2xl bg-[#131315] p-5 sm:p-8 flex flex-col gap-8 text-[#e5e1e4]">
             {/* ── 1. TOP HEADER & TELEMETRY SUMMARY STRIP ── */}
             <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 pb-6 border-b border-white/[0.08]">
               {/* Left: Hardware Hero Micro Identity */}
@@ -634,7 +631,7 @@ export default function ProPriceAnalysisCenter({
                               target="_blank"
                               rel="noopener noreferrer"
                               onClick={(e) => e.stopPropagation()}
-                              className="btn-sheen-beam inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-[#2997ff] hover:bg-[#1d8cf8] text-white text-xs font-bold transition-all shadow-md active:scale-95"
+                              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-[#2997ff] hover:bg-[#1d8cf8] text-white text-xs font-bold transition-all shadow-md active:scale-95"
                             >
                               <span>Git</span>
                               <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
@@ -853,7 +850,7 @@ export default function ProPriceAnalysisCenter({
                     href={primaryTargetUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="anim-sheen-btn w-full py-3.5 px-6 rounded-full bg-[#2997ff] hover:bg-[#1d8cf8] text-white font-bold text-sm flex items-center justify-center gap-2 shadow-[0_4px_24px_rgba(41,151,255,0.4)] transition-all active:scale-[0.98]"
+                    className="w-full py-3.5 px-6 rounded-full bg-[#2997ff] hover:bg-[#1d8cf8] text-white font-bold text-sm flex items-center justify-center gap-2 shadow-[0_4px_24px_rgba(41,151,255,0.4)] transition-all active:scale-[0.98]"
                   >
                     <span>{selectedStore.name} Sitesine Git</span>
                     <span className="material-symbols-outlined text-[18px]">open_in_new</span>

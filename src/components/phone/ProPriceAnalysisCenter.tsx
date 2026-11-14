@@ -506,7 +506,7 @@ export default function ProPriceAnalysisCenter({
                   <div className="flex items-center gap-3 text-xs text-[#8a919e] flex-wrap">
                     <div className="flex items-center gap-1 text-[#47e266] font-semibold">
                       <span className="material-symbols-outlined text-[16px]">verified</span>
-                      <span>10 Doğrulanmış Mağaza</span>
+                      <span>{storeItems.length} Doğrulanmış Mağaza</span>
                     </div>
                     <span>•</span>
                     <span>Anlık Satıcı Fiyatları</span>
@@ -525,9 +525,11 @@ export default function ProPriceAnalysisCenter({
                   <span className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight">
                     {formatPrice(lowestMarketPrice)}
                   </span>
-                  <span className="text-xs text-[#47e266] font-bold bg-[#47e266]/15 px-2 py-0.5 rounded-full border border-[#47e266]/30">
-                    -%18 Dip Seviye
-                  </span>
+                  {storeItems.length > 1 && averageMarketPrice > lowestMarketPrice && (
+                    <span className="text-xs text-[#47e266] font-bold bg-[#47e266]/15 px-2 py-0.5 rounded-full border border-[#47e266]/30">
+                      -%{Math.round(((averageMarketPrice - lowestMarketPrice) / averageMarketPrice) * 100)} Piyasa Altı
+                    </span>
+                  )}
                 </div>
                 <div className="flex items-center gap-2 text-xs text-[#8a919e]">
                   <span>Piyasa Ortalaması: <strong className="text-[#c0c7d5]">{formatPrice(averageMarketPrice)}</strong></span>
